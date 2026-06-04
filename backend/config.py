@@ -21,5 +21,6 @@ class Config:
     USE_LOCAL_AI = os.getenv('USE_LOCAL_AI', 'false').lower() == 'true'
     DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', '')
     DEEPSEEK_BASE_URL = 'https://api.deepseek.com'
-    OLLAMA_URL = 'http://localhost:11434/api/generate'
-    OLLAMA_MODEL = 'deepseek-r1:8b'
+    OLLAMA_BASE = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+    MODEL_CHAT = os.getenv('MODEL_CHAT', 'qwen3:8b')
+    MODEL_REASONING = os.getenv('MODEL_REASONING', 'deepseek-r1:8b')

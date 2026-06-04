@@ -254,9 +254,9 @@ def ai_chat():
     for h in history:
         messages.append({'role': h.role, 'content': h.content})
 
-    from utils.ai_client import chat
+    from utils.ai_client import chat, MODEL_CHAT
 
-    response = chat(messages, temperature=0.3)
+    response = chat(messages, temperature=0.3, model=MODEL_CHAT)
 
     # 兜底：过滤废话回复
     if any(p in response for p in BAD_PATTERNS):
@@ -296,11 +296,14 @@ def ai_chat_stream():
     for h in history:
         messages.append({'role': h.role, 'content': h.content})
 
-    from utils.ai_client import chat_stream
+    from utils.ai_client import chat_stream, MODEL_CHAT
+    from flask import current_app
+
+    app = current_app._get_current_object()
 
     def generate():
         full_response = []
-        for token in chat_stream(messages, temperature=0.3):
+        for token in chat_stream(messages, temperature=0.3, model=MODEL_CHAT):
             full_response.append(token)
             yield f"data: {json.dumps({'content': token}, ensure_ascii=False)}\n\n"
 
@@ -310,8 +313,9 @@ def ai_chat_stream():
             complete = '收到，你可以继续说。'
             yield f"data: {json.dumps({'content': '[REPLACE]', 'replace': complete}, ensure_ascii=False)}\n\n"
 
-        # 保存AI回复
-        save_chat(user_id, 'assistant', complete, 'general', conversation_id, 'deepseek-chat')
+        # 保存AI回复（需要应用上下文）
+        with app.app_context():
+            save_chat(user_id, 'assistant', complete, 'general', conversation_id, 'deepseek-chat')
         yield f"data: {json.dumps({'done': True, 'conversation_id': conversation_id}, ensure_ascii=False)}\n\n"
 
     return Response(generate(), mimetype='text/event-stream',

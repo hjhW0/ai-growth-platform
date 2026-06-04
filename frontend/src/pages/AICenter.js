@@ -56,10 +56,10 @@ function AICenter() {
     setMessage('');
     setLoading(true);
 
-    // 先插入 user 消息和空的 assistant 消息
+    // 先插入空的 assistant 消息和 user 消息（assistant 在 index 0，方便流式更新）
     setChatHistory(prev => [
-      { role: 'user', content: userMsg, chat_type: 'general', created_at: new Date().toISOString() },
       { role: 'assistant', content: '', chat_type: 'general', created_at: new Date().toISOString() },
+      { role: 'user', content: userMsg, chat_type: 'general', created_at: new Date().toISOString() },
       ...prev
     ]);
 

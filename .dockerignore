@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+
+# Node
+frontend/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 实例数据（运行时生成）
+backend/instance/
+backend/*.log
+backend/*.txt
+!backend/requirements.txt
+
+# 其他
+*.md
+docs/
+start*.bat
+start*.ps1
+ngrok*

@@ -1,17 +1,15 @@
-import os
 import re
 import json
 import requests
-from dotenv import load_dotenv
+from config import Config
 
-load_dotenv()
-
-# 配置
-USE_LOCAL = os.getenv('USE_LOCAL_AI', 'false').lower() == 'true'
-DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', '')
-DEEPSEEK_BASE_URL = 'https://api.deepseek.com'
-OLLAMA_URL = 'http://localhost:11434/api/generate'
-OLLAMA_MODEL = 'deepseek-r1:8b'
+# 从 Config 统一读取
+USE_LOCAL = Config.USE_LOCAL_AI
+DEEPSEEK_API_KEY = Config.DEEPSEEK_API_KEY
+DEEPSEEK_BASE_URL = Config.DEEPSEEK_BASE_URL
+OLLAMA_URL = f'{Config.OLLAMA_BASE}/api/chat'
+MODEL_CHAT = Config.MODEL_CHAT
+MODEL_REASONING = Config.MODEL_REASONING
 
 
 def chat_with_deepseek(messages, temperature=0.7):
@@ -36,14 +34,18 @@ def chat_with_deepseek(messages, temperature=0.7):
     return response.json()['choices'][0]['message']['content']
 
 
-def chat_with_ollama(messages, temperature=0.7):
+def chat_with_ollama(messages, temperature=0.7, model=None):
     """调用本地 Ollama（使用 /api/chat 接口）"""
+    model = model or MODEL_REASONING
+    # qwen3 系列用 think=False 关闭思考模式，提速
+    use_think = 'qwen3' not in model
     response = requests.post(
-        'http://localhost:11434/api/chat',
+        OLLAMA_URL,
         json={
-            'model': OLLAMA_MODEL,
+            'model': model,
             'messages': messages,
             'stream': False,
+            'think': use_think,
             'options': {'temperature': temperature}
         },
         timeout=300
@@ -51,31 +53,34 @@ def chat_with_ollama(messages, temperature=0.7):
 
     result = response.json()['message']['content']
 
-    # 清理 deepseek-r1 的 think 标签
+    # 清理 think 标签（兜底）
     result = re.sub(r'<think>.*?</think>', '', result, flags=re.DOTALL).strip()
 
     return result
 
 
-def chat(messages, temperature=0.7):
+def chat(messages, temperature=0.7, model=None):
     """统一调用接口"""
     try:
         if USE_LOCAL:
-            return chat_with_ollama(messages, temperature)
+            return chat_with_ollama(messages, temperature, model)
         else:
             return chat_with_deepseek(messages, temperature)
     except Exception as e:
         raise RuntimeError(f'AI调用失败: {str(e)}')
 
 
-def chat_with_ollama_stream(messages, temperature=0.7):
+def chat_with_ollama_stream(messages, temperature=0.7, model=None):
     """Ollama 流式调用，逐 token 返回"""
+    model = model or MODEL_REASONING
+    use_think = 'qwen3' not in model
     response = requests.post(
-        'http://localhost:11434/api/chat',
+        OLLAMA_URL,
         json={
-            'model': OLLAMA_MODEL,
+            'model': model,
             'messages': messages,
             'stream': True,
+            'think': use_think,
             'options': {'temperature': temperature}
         },
         stream=True,
@@ -135,11 +140,11 @@ def chat_with_deepseek_stream(messages, temperature=0.7):
                 yield token
 
 
-def chat_stream(messages, temperature=0.7):
+def chat_stream(messages, temperature=0.7, model=None):
     """统一流式调用接口"""
     try:
         if USE_LOCAL:
-            yield from chat_with_ollama_stream(messages, temperature)
+            yield from chat_with_ollama_stream(messages, temperature, model)
         else:
             yield from chat_with_deepseek_stream(messages, temperature)
     except Exception as e:

@@ -16,8 +16,10 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    # 导入模型（确保表被创建）
+    # 导入模型并自动建表（表不存在时自动创建，不影响已有表）
     import models  # noqa: F401
+    with app.app_context():
+        db.create_all()
 
     # 注册蓝图
     from routes.auth import auth_bp
@@ -36,16 +38,14 @@ def create_app():
     app.register_blueprint(ai_bp, url_prefix='/api/ai')
     app.register_blueprint(feedback_bp, url_prefix='/api/feedback')
 
-    # 前端路由
-    @app.route('/')
-    def serve():
-        return send_from_directory(app.static_folder, 'index.html')
-
-    @app.route('/<path:path>')
-    def static_proxy(path):
-        file_path = os.path.join(app.static_folder, path)
-        if os.path.isfile(file_path):
-            return send_from_directory(app.static_folder, path)
+    # 前端路由（SPA catch-all）
+    @app.errorhandler(404)
+    def spa_fallback(e):
+        # API 路由返回原始 404
+        from flask import request
+        if request.path.startswith('/api/'):
+            return {'error': '接口不存在'}, 404
+        # 其他路由返回 index.html（React Router 接管）
         return send_from_directory(app.static_folder, 'index.html')
 
     return app
