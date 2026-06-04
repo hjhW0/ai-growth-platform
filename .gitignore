@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+
+# Build
+frontend/build/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database & instance
+*.db
+instance/
+
+# Logs
+*.log
+*.txt
+!README.md
+
+# ngrok
+ngrok.exe
+ngrok.yml
+
+# OS
+.DS_Store
+Thumbs.db
+Thumbs.db:encryptable
