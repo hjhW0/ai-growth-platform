@@ -24,8 +24,7 @@ Thumbs.db
 # 实例数据（运行时生成）
 backend/instance/
 backend/*.log
-backend/*.txt
-!backend/requirements.txt
+backend/*.log
 
 # 其他
 *.md
