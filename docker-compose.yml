@@ -6,12 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-change-me-jwt-secret}
       - DATABASE_URL=sqlite:////app/data/growth_platform.db
-      - USE_LOCAL_AI=true
-      - OLLAMA_URL=http://host.docker.internal:11434
     volumes:
       - app-data:/app/data
 
