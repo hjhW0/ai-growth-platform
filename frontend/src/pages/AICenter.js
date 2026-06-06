@@ -35,7 +35,9 @@ function AICenter() {
   const loadHistory = async () => {
     try {
       const data = await getAIHistory();
-      setChatHistory(data.history || []);
+      // API 返回倒序（最新在前），反转为正序（旧消息在前，新消息在后）
+      const history = (data.history || []).reverse();
+      setChatHistory(history);
     } catch (error) {
       console.error('加载历史失败:', error);
     }
@@ -56,23 +58,24 @@ function AICenter() {
     setMessage('');
     setLoading(true);
 
-    // 先插入空的 assistant 消息和 user 消息（assistant 在 index 0，方便流式更新）
+    // 先插入 user 消息和空的 assistant 消息（新消息在末尾，方便流式更新）
     setChatHistory(prev => [
-      { role: 'assistant', content: '', chat_type: 'general', created_at: new Date().toISOString() },
+      ...prev,
       { role: 'user', content: userMsg, chat_type: 'general', created_at: new Date().toISOString() },
-      ...prev
+      { role: 'assistant', content: '', chat_type: 'general', created_at: new Date().toISOString() }
     ]);
 
     try {
       await sendAIMessageStream(userMsg, conversationId,
-        // onToken: 逐 token 追加
+        // onToken: 逐 token 追加（更新最后一条 assistant 消息）
         (token, isReplace) => {
           setChatHistory(prev => {
             const updated = [...prev];
+            const lastIdx = updated.length - 1;
             if (isReplace) {
-              updated[0] = { ...updated[0], content: token };
+              updated[lastIdx] = { ...updated[lastIdx], content: token };
             } else {
-              updated[0] = { ...updated[0], content: updated[0].content + token };
+              updated[lastIdx] = { ...updated[lastIdx], content: updated[lastIdx].content + token };
             }
             return updated;
           });

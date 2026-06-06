@@ -38,6 +38,7 @@ instance/
 *.log
 *.txt
 !README.md
+!backend/requirements.txt
 
 # ngrok
 ngrok.exe

@@ -2,9 +2,17 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from extensions import db
 from models.checkin import CheckIn
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 checkin_bp = Blueprint('checkin', __name__)
+
+# 统一使用北京时间 (UTC+8)
+CN_TZ = timezone(timedelta(hours=8))
+
+
+def get_today_cn():
+    """获取北京时间的今天日期"""
+    return datetime.now(CN_TZ).date()
 
 
 @checkin_bp.route('/', methods=['POST'])
@@ -14,7 +22,7 @@ def check_in():
     user_id = get_jwt_identity()
     data = request.json
 
-    check_date = datetime.strptime(data.get('check_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
+    check_date = datetime.strptime(data.get('check_date', get_today_cn().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
     check_type = data.get('check_type', 'daily')
 
     # 检查是否已打卡
@@ -47,7 +55,7 @@ def check_in():
 def get_checkin_status():
     """获取打卡状态"""
     user_id = get_jwt_identity()
-    check_date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+    check_date = request.args.get('date', get_today_cn().strftime('%Y-%m-%d'))
     date = datetime.strptime(check_date, '%Y-%m-%d').date()
 
     checkin = CheckIn.query.filter_by(
@@ -69,27 +77,27 @@ def get_streak():
     """获取连续打卡天数"""
     user_id = get_jwt_identity()
 
-    # 获取所有打卡日期，按日期倒序
+    # 获取所有打卡日期，按日期升序
     checkins = CheckIn.query.filter_by(
         user_id=user_id,
         is_deleted=False
-    ).order_by(CheckIn.check_date.desc()).all()
+    ).order_by(CheckIn.check_date.asc()).all()
 
     if not checkins:
         return jsonify({'streak': 0})
 
-    # 计算连续打卡天数
-    streak = 0
-    today = datetime.now().date()
-    check_dates = [c.check_date for c in checkins]
+    # 去重，只保留唯一日期
+    check_dates = sorted(set(c.check_date for c in checkins), reverse=True)
 
-    current_date = today
+    # 从今天开始往前数连续天数
+    today = get_today_cn()
+    streak = 0
     for date in check_dates:
-        if date == current_date:
+        expected = today - timedelta(days=streak)
+        if date == expected:
             streak += 1
-            current_date = current_date - timedelta(days=1)
-        elif date < current_date:
-            break
+        elif date < expected:
+            break  # 中断了，停止
 
     return jsonify({'streak': streak})
 
@@ -101,7 +109,7 @@ def get_checkin_history():
     user_id = get_jwt_identity()
     days = request.args.get('days', 30, type=int)
 
-    start_date = datetime.now().date() - timedelta(days=days)
+    start_date = get_today_cn() - timedelta(days=days)
 
     checkins = CheckIn.query.filter(
         CheckIn.user_id == user_id,
