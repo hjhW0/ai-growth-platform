@@ -28,12 +28,12 @@ function BottomNav() {
       transform: 'translateX(-50%)',
       width: '100%',
       maxWidth: '480px',
-      backgroundColor: 'white',
+      backgroundColor: '#0a0a0a',
       display: 'flex',
       justifyContent: 'space-around',
       padding: '8px 0',
       paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-      boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
+      borderTop: '1px solid #27272a',
       zIndex: 50
     }}>
       {NAV_ITEMS.map(item => {
@@ -41,7 +41,7 @@ function BottomNav() {
         return (
           <Link key={item.path} to={item.path} style={{
             textDecoration: 'none',
-            color: active ? '#6366f1' : '#999',
+            color: active ? '#6366f1' : '#71717a',
             textAlign: 'center',
             fontSize: '11px',
             fontWeight: active ? '600' : '400',
@@ -49,13 +49,15 @@ function BottomNav() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '2px',
-            padding: '4px 8px',
+            padding: '6px 8px',
             minWidth: '44px',
             minHeight: '44px',
             justifyContent: 'center',
-            transition: 'color 0.2s'
+            borderRadius: '8px',
+            backgroundColor: active ? 'rgba(99,102,241,0.1)' : 'transparent',
+            transition: 'all 0.2s ease'
           }}>
-            <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
             <span>{item.label}</span>
           </Link>
         );
@@ -99,11 +101,11 @@ function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5'
+        backgroundColor: '#0a0a0a'
       }}>
-        <div style={{ textAlign: 'center', color: '#999' }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px' }}>✨</div>
-          <div>加载中...</div>
+        <div style={{ textAlign: 'center', color: '#71717a' }}>
+          <div style={{ fontSize: '28px', marginBottom: '12px' }}>✨</div>
+          <div style={{ fontSize: '14px' }}>加载中...</div>
         </div>
       </div>
     );
@@ -117,7 +119,7 @@ function App() {
     <Router>
       <div style={{
         minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#0a0a0a',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
@@ -126,30 +128,32 @@ function App() {
         <nav style={{
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: '#6366f1',
-          color: 'white',
+          backgroundColor: '#0a0a0a',
+          color: '#fafafa',
           padding: '12px 16px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           position: 'sticky',
           top: 0,
-          zIndex: 50
+          zIndex: 50,
+          borderBottom: '1px solid #27272a'
         }}>
-          <h1 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>✨ AI 成长平台</h1>
+          <h1 style={{ fontSize: '16px', fontWeight: '600', margin: 0, color: '#fafafa' }}>✨ AI 成长平台</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '14px', opacity: 0.9 }}>{user.username}</span>
+            <span style={{ fontSize: '13px', color: '#a1a1aa' }}>{user.username}</span>
             <button
               onClick={handleLogout}
               style={{
-                background: 'rgba(255,255,255,0.2)',
-                border: 'none',
-                color: 'white',
+                background: '#111111',
+                border: '1px solid #27272a',
+                color: '#a1a1aa',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '13px',
-                minHeight: '32px'
+                fontSize: '12px',
+                minHeight: '32px',
+                transition: 'all 0.2s ease'
               }}
             >
               退出

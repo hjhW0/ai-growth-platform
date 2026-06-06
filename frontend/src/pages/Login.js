@@ -12,14 +12,8 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      let data;
-      if (isRegister) {
-        data = await register(username, password);
-      } else {
-        data = await login(username, password);
-      }
+      let data = isRegister ? await register(username, password) : await login(username, password);
       onLogin(data.user);
     } catch (err) {
       setError(err.error || '操作失败');
@@ -33,44 +27,36 @@ function Login({ onLogin }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      backgroundColor: '#0a0a0a',
       padding: '16px'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: '#111111',
         borderRadius: '16px',
         padding: '32px 24px',
         width: '100%',
         maxWidth: '380px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+        border: '1px solid #27272a'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ fontSize: '36px', marginBottom: '8px' }}>✨</div>
-          <h1 style={{
-            margin: 0,
-            color: '#6366f1',
-            fontSize: '22px',
-            fontWeight: '700'
-          }}>
+          <div style={{ fontSize: '32px', marginBottom: '8px' }}>✨</div>
+          <h1 style={{ margin: 0, color: '#fafafa', fontSize: '20px', fontWeight: '600' }}>
             AI 成长平台
           </h1>
-          <p style={{
-            margin: '8px 0 0 0',
-            color: '#999',
-            fontSize: '14px'
-          }}>
+          <p style={{ margin: '8px 0 0 0', color: '#71717a', fontSize: '13px' }}>
             记录成长，遇见更好的自己
           </p>
         </div>
 
         {error && (
           <div style={{
-            backgroundColor: '#fef2f2',
-            color: '#991b1b',
+            backgroundColor: 'rgba(239,68,68,0.1)',
+            color: '#ef4444',
             padding: '10px 14px',
             borderRadius: '8px',
             marginBottom: '16px',
-            fontSize: '13px'
+            fontSize: '13px',
+            border: '1px solid rgba(239,68,68,0.2)'
           }}>
             {error}
           </div>
@@ -78,9 +64,7 @@ function Login({ onLogin }) {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '14px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#666', fontSize: '13px', fontWeight: '500' }}>
-              用户名
-            </label>
+            <label style={{ display: 'block', marginBottom: '6px', color: '#a1a1aa', fontSize: '13px', fontWeight: '500' }}>用户名</label>
             <input
               type="text"
               value={username}
@@ -89,23 +73,23 @@ function Login({ onLogin }) {
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                border: '1px solid #ddd',
+                border: '1px solid #27272a',
                 borderRadius: '8px',
-                fontSize: '15px',
+                fontSize: '14px',
                 outline: 'none',
                 boxSizing: 'border-box',
+                backgroundColor: '#0a0a0a',
+                color: '#fafafa',
                 transition: 'border-color 0.2s'
               }}
               placeholder="请输入用户名"
               onFocus={e => e.target.style.borderColor = '#6366f1'}
-              onBlur={e => e.target.style.borderColor = '#ddd'}
+              onBlur={e => e.target.style.borderColor = '#27272a'}
             />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#666', fontSize: '13px', fontWeight: '500' }}>
-              密码
-            </label>
+            <label style={{ display: 'block', marginBottom: '6px', color: '#a1a1aa', fontSize: '13px', fontWeight: '500' }}>密码</label>
             <input
               type="password"
               value={password}
@@ -114,16 +98,18 @@ function Login({ onLogin }) {
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                border: '1px solid #ddd',
+                border: '1px solid #27272a',
                 borderRadius: '8px',
-                fontSize: '15px',
+                fontSize: '14px',
                 outline: 'none',
                 boxSizing: 'border-box',
+                backgroundColor: '#0a0a0a',
+                color: '#fafafa',
                 transition: 'border-color 0.2s'
               }}
               placeholder="请输入密码"
               onFocus={e => e.target.style.borderColor = '#6366f1'}
-              onBlur={e => e.target.style.borderColor = '#ddd'}
+              onBlur={e => e.target.style.borderColor = '#27272a'}
             />
           </div>
 
@@ -133,40 +119,32 @@ function Login({ onLogin }) {
             style={{
               width: '100%',
               padding: '12px',
-              backgroundColor: loading ? '#ccc' : '#6366f1',
-              color: 'white',
+              backgroundColor: loading ? '#1a1a1a' : '#6366f1',
+              color: loading ? '#52525b' : 'white',
               border: 'none',
               borderRadius: '8px',
-              fontSize: '15px',
+              fontSize: '14px',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
               minHeight: '44px',
-              transition: 'background-color 0.2s'
+              transition: 'all 0.2s ease'
             }}
           >
             {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
           </button>
         </form>
 
-        <div style={{
-          textAlign: 'center',
-          marginTop: '20px',
-          color: '#999',
-          fontSize: '14px'
-        }}>
+        <div style={{ textAlign: 'center', marginTop: '20px', color: '#71717a', fontSize: '13px' }}>
           {isRegister ? '已有账号？' : '没有账号？'}
           <button
-            onClick={() => {
-              setIsRegister(!isRegister);
-              setError('');
-            }}
+            onClick={() => { setIsRegister(!isRegister); setError(''); }}
             style={{
               background: 'none',
               border: 'none',
               color: '#6366f1',
               cursor: 'pointer',
               textDecoration: 'underline',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: '500'
             }}
           >

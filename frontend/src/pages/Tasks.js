@@ -3,11 +3,11 @@ import { createTask, getTasks, completeTask, deleteTask, updateTask } from '../a
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 
 const CARD = {
-  backgroundColor: 'white',
+  backgroundColor: '#111111',
   borderRadius: '12px',
   padding: '16px',
   marginBottom: '12px',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+  border: '1px solid #27272a'
 };
 
 function Tasks() {
@@ -35,13 +35,8 @@ function Tasks() {
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
-
     try {
-      await createTask({
-        title: newTask,
-        task_date: selectedDate,
-        priority
-      });
+      await createTask({ title: newTask, task_date: selectedDate, priority });
       setNewTask('');
       loadTasks();
     } catch (error) {
@@ -79,27 +74,16 @@ function Tasks() {
   const totalCount = tasks.length;
   const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const priorityColors = {
-    high: '#ef4444',
-    medium: '#f59e0b',
-    low: '#10b981'
-  };
-
   return (
     <div>
-      <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '16px' }}>📋 每日任务</h2>
+      <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#fafafa', marginBottom: '16px' }}>📋 每日任务</h2>
 
       {/* 日期选择器 */}
-      <div style={{
-        ...CARD,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+      <div style={{ ...CARD, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button onClick={() => changeDate(-1)} style={dateBtnStyle}>←</button>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '16px', fontWeight: '600', color: '#333' }}>{formatDateChinese(selectedDate)}</div>
-          <div style={{ color: '#999', fontSize: '13px' }}>{getWeekday(selectedDate)}</div>
+          <div style={{ fontSize: '15px', fontWeight: '600', color: '#fafafa' }}>{formatDateChinese(selectedDate)}</div>
+          <div style={{ color: '#71717a', fontSize: '12px' }}>{getWeekday(selectedDate)}</div>
         </div>
         <button onClick={() => changeDate(1)} style={dateBtnStyle}>→</button>
       </div>
@@ -107,15 +91,15 @@ function Tasks() {
       {/* 进度条 */}
       {totalCount > 0 && (
         <div style={CARD}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-            <span style={{ color: '#666' }}>今日进度</span>
-            <span style={{ color: '#333', fontWeight: '500' }}>{completedCount}/{totalCount} ({progress}%)</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+            <span style={{ color: '#a1a1aa' }}>今日进度</span>
+            <span style={{ color: '#fafafa', fontWeight: '500' }}>{completedCount}/{totalCount} ({progress}%)</span>
           </div>
-          <div style={{ backgroundColor: '#f0f0f0', borderRadius: '4px', height: '6px' }}>
+          <div style={{ backgroundColor: '#1a1a1a', borderRadius: '3px', height: '4px' }}>
             <div style={{
-              backgroundColor: progress >= 80 ? '#10b981' : progress >= 50 ? '#f59e0b' : '#6366f1',
-              borderRadius: '4px',
-              height: '6px',
+              backgroundColor: progress >= 80 ? '#22c55e' : progress >= 50 ? '#f59e0b' : '#6366f1',
+              borderRadius: '3px',
+              height: '4px',
               width: `${progress}%`,
               transition: 'width 0.3s ease'
             }} />
@@ -135,25 +119,28 @@ function Tasks() {
               flex: 1,
               minWidth: '120px',
               padding: '10px 12px',
-              border: '1px solid #ddd',
+              border: '1px solid #27272a',
               borderRadius: '8px',
               fontSize: '14px',
               outline: 'none',
+              backgroundColor: '#0a0a0a',
+              color: '#fafafa',
               transition: 'border-color 0.2s'
             }}
             onFocus={e => e.target.style.borderColor = '#6366f1'}
-            onBlur={e => e.target.style.borderColor = '#ddd'}
+            onBlur={e => e.target.style.borderColor = '#27272a'}
           />
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
             style={{
               padding: '10px 12px',
-              border: '1px solid #ddd',
+              border: '1px solid #27272a',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: '13px',
               outline: 'none',
-              backgroundColor: 'white'
+              backgroundColor: '#0a0a0a',
+              color: '#fafafa'
             }}
           >
             <option value="high">🔴 高</option>
@@ -167,9 +154,10 @@ function Tasks() {
             padding: '10px 20px',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontSize: '14px',
+            fontSize: '13px',
             fontWeight: '600',
-            minHeight: '44px'
+            minHeight: '44px',
+            transition: 'all 0.2s ease'
           }}>
             添加
           </button>
@@ -179,24 +167,18 @@ function Tasks() {
       {/* 任务列表 */}
       {loading ? (
         <div style={CARD}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: '#f0f0f0' }} />
-                <div style={{ flex: 1, height: 16, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
-              </div>
-            ))}
-          </div>
+          {[1, 2, 3].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #1a1a1a' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', backgroundColor: '#1a1a1a' }} />
+              <div style={{ flex: 1, height: 14, backgroundColor: '#1a1a1a', borderRadius: 4 }} />
+            </div>
+          ))}
         </div>
       ) : tasks.length === 0 ? (
-        <div style={{
-          ...CARD,
-          textAlign: 'center',
-          padding: '40px 20px'
-        }}>
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>✨</div>
-          <div style={{ color: '#999', fontSize: '14px' }}>暂无任务</div>
-          <div style={{ color: '#ccc', fontSize: '13px', marginTop: '4px' }}>在上方输入框添加一个吧</div>
+        <div style={{ ...CARD, textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ fontSize: '32px', marginBottom: '12px' }}>✨</div>
+          <div style={{ color: '#71717a', fontSize: '14px' }}>暂无任务</div>
+          <div style={{ color: '#52525b', fontSize: '13px', marginTop: '4px' }}>在上方输入框添加一个吧</div>
         </div>
       ) : (
         tasks.map(task => (
@@ -204,31 +186,25 @@ function Tasks() {
             ...CARD,
             display: 'flex',
             alignItems: 'center',
-            opacity: task.status === 'completed' ? 0.6 : 1,
+            opacity: task.status === 'completed' ? 0.5 : 1,
             transition: 'opacity 0.2s'
           }}>
             <input
               type="checkbox"
               checked={task.status === 'completed'}
               onChange={() => task.status !== 'completed' && handleComplete(task.id)}
-              style={{ marginRight: '12px', width: '20px', height: '20px', cursor: 'pointer', accentColor: '#10b981' }}
+              style={{ marginRight: '12px', width: '18px', height: '18px', cursor: 'pointer', accentColor: '#22c55e' }}
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <span style={{
                 textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                color: task.status === 'completed' ? '#999' : '#333',
+                color: task.status === 'completed' ? '#52525b' : '#fafafa',
                 fontSize: '14px'
               }}>
                 {task.title}
               </span>
             </div>
-            <span style={{
-              fontSize: '11px',
-              color: priorityColors[task.priority] || '#999',
-              marginLeft: '8px',
-              marginRight: '8px',
-              flexShrink: 0
-            }}>
+            <span style={{ fontSize: '11px', color: task.priority === 'high' ? '#ef4444' : task.priority === 'medium' ? '#f59e0b' : '#22c55e', marginLeft: '8px', marginRight: '8px', flexShrink: 0 }}>
               {task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'}
             </span>
             <button
@@ -236,7 +212,7 @@ function Tasks() {
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: '#ccc',
+                color: '#3f3f46',
                 cursor: 'pointer',
                 fontSize: '18px',
                 padding: '4px 8px',
@@ -245,7 +221,7 @@ function Tasks() {
                 transition: 'color 0.2s'
               }}
               onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
-              onMouseOut={e => e.currentTarget.style.color = '#ccc'}
+              onMouseOut={e => e.currentTarget.style.color = '#3f3f46'}
             >
               ×
             </button>
@@ -257,16 +233,15 @@ function Tasks() {
 }
 
 const dateBtnStyle = {
-  backgroundColor: '#f5f5f5',
-  border: '1px solid #eee',
+  backgroundColor: '#1a1a1a',
+  border: '1px solid #27272a',
   padding: '8px 16px',
   borderRadius: '8px',
   cursor: 'pointer',
-  fontSize: '14px',
-  minHeight: '44px',
-  display: 'flex',
-  alignItems: 'center',
-  transition: 'background-color 0.2s'
+  fontSize: '13px',
+  color: '#a1a1aa',
+  minHeight: '40px',
+  transition: 'all 0.2s ease'
 };
 
 export default Tasks;
