@@ -2,6 +2,70 @@ import React, { useEffect, useState } from 'react';
 import useGoalsStore from '../store/useGoalsStore';
 import { generateTasks } from '../api/apiClient';
 
+const CARD = {
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '16px',
+  marginBottom: '12px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+};
+
+const INPUT_STYLE = {
+  width: '100%',
+  padding: '10px 12px',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  fontSize: '14px',
+  outline: 'none',
+  boxSizing: 'border-box',
+  fontFamily: 'inherit',
+  transition: 'border-color 0.2s'
+};
+
+const BTN_PRIMARY = {
+  padding: '10px 20px',
+  backgroundColor: '#6366f1',
+  color: 'white',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontWeight: '600',
+  minHeight: '44px',
+  transition: 'background-color 0.2s'
+};
+
+const BTN_GHOST = {
+  padding: '10px 20px',
+  backgroundColor: '#f5f5f5',
+  color: '#666',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  minHeight: '44px',
+  transition: 'background-color 0.2s'
+};
+
+const priorityColors = {
+  high: '#ef4444',
+  medium: '#f59e0b',
+  low: '#10b981'
+};
+
+const priorityLabels = {
+  high: '高',
+  medium: '中',
+  low: '低'
+};
+
+const statusLabels = {
+  active: '进行中',
+  completed: '已完成',
+  paused: '已暂停',
+  archived: '已归档'
+};
+
 export default function Goals() {
   const { goals, loading, error, fetchGoals, addGoal, updateGoal, deleteGoal, clearError } = useGoalsStore();
 
@@ -21,7 +85,6 @@ export default function Goals() {
     fetchGoals();
   }, []);
 
-  // Toast 提示
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -81,150 +144,118 @@ export default function Goals() {
     }
   };
 
-  const priorityColors = {
-    high: '#e74c3c',
-    medium: '#f39c12',
-    low: '#27ae60'
-  };
-
-  const priorityLabels = {
-    high: '高',
-    medium: '中',
-    low: '低'
-  };
-
-  const statusLabels = {
-    active: '进行中',
-    completed: '已完成',
-    paused: '已暂停',
-    archived: '已归档'
-  };
-
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ margin: 0 }}>🎯 目标管理</h1>
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: 0 }}>🎯 目标管理</h2>
         <button
           onClick={() => {
             setEditingGoal(null);
             setFormData({ title: '', description: '', goal_type: 'learning', priority: 'medium', deadline: '' });
             setShowForm(true);
           }}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
+          style={BTN_PRIMARY}
         >
           + 新建目标
         </button>
       </div>
 
-      {/* Toast 提示 */}
+      {/* Toast */}
       {toast && (
         <div style={{
           position: 'fixed',
           top: '20px',
-          right: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
           padding: '12px 24px',
-          backgroundColor: toast.type === 'error' ? '#e74c3c' : '#27ae60',
+          backgroundColor: toast.type === 'error' ? '#ef4444' : '#10b981',
           color: 'white',
           borderRadius: '8px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          zIndex: 9999,
+          zIndex: 200,
           fontSize: '14px',
-          animation: 'fadeIn 0.3s'
+          maxWidth: '90%',
+          textAlign: 'center'
         }}>
           {toast.message}
         </div>
       )}
 
       {error && (
-        <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '8px', marginBottom: '20px' }}>
-          {error}
-          <button onClick={clearError} style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+        <div style={{
+          ...CARD,
+          backgroundColor: '#fef2f2',
+          color: '#991b1b',
+          fontSize: '14px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>{error}</span>
+          <button onClick={clearError} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b', fontSize: '16px' }}>✕</button>
         </div>
       )}
 
-      {/* 目标表单 */}
+      {/* 目标表单弹窗 */}
       {showForm && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 1000
+          zIndex: 100,
+          padding: '16px'
         }}>
           <div style={{
             backgroundColor: 'white',
-            padding: '30px',
+            padding: '24px',
             borderRadius: '16px',
-            width: '90%',
-            maxWidth: '500px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+            width: '100%',
+            maxWidth: '420px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            maxHeight: '90vh',
+            overflowY: 'auto'
           }}>
-            <h2 style={{ marginTop: 0 }}>{editingGoal ? '编辑目标' : '新建目标'}</h2>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600', color: '#333' }}>
+              {editingGoal ? '编辑目标' : '新建目标'}
+            </h3>
             <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>目标标题 *</label>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#666', fontWeight: '500' }}>目标标题 *</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="输入目标标题"
                   required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    boxSizing: 'border-box'
-                  }}
+                  style={INPUT_STYLE}
+                  onFocus={e => e.target.style.borderColor = '#6366f1'}
+                  onBlur={e => e.target.style.borderColor = '#ddd'}
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>描述</label>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#666', fontWeight: '500' }}>描述</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="输入目标描述"
                   rows="3"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    boxSizing: 'border-box',
-                    resize: 'vertical'
-                  }}
+                  style={{ ...INPUT_STYLE, resize: 'vertical' }}
+                  onFocus={e => e.target.style.borderColor = '#6366f1'}
+                  onBlur={e => e.target.style.borderColor = '#ddd'}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>类型</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#666', fontWeight: '500' }}>类型</label>
                   <select
                     value={formData.goal_type}
                     onChange={(e) => setFormData({ ...formData, goal_type: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '16px'
-                    }}
+                    style={{ ...INPUT_STYLE, backgroundColor: 'white' }}
                   >
                     <option value="learning">学习</option>
                     <option value="career">职业</option>
@@ -235,73 +266,38 @@ export default function Goals() {
                 </div>
 
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>优先级</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#666', fontWeight: '500' }}>优先级</label>
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '16px'
-                    }}
+                    style={{ ...INPUT_STYLE, backgroundColor: 'white' }}
                   >
-                    <option value="high">高</option>
-                    <option value="medium">中</option>
-                    <option value="low">低</option>
+                    <option value="high">🔴 高</option>
+                    <option value="medium">🟡 中</option>
+                    <option value="low">🟢 低</option>
                   </select>
                 </div>
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>截止日期</label>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#666', fontWeight: '500' }}>截止日期</label>
                 <input
                   type="date"
                   value={formData.deadline}
                   onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    boxSizing: 'border-box'
-                  }}
+                  style={INPUT_STYLE}
                 />
               </div>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingGoal(null);
-                  }}
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: '#95a5a6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '16px'
-                  }}
+                  onClick={() => { setShowForm(false); setEditingGoal(null); }}
+                  style={BTN_GHOST}
                 >
                   取消
                 </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: '#3498db',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '16px'
-                  }}
-                >
+                <button type="submit" style={BTN_PRIMARY}>
                   {editingGoal ? '保存' : '创建'}
                 </button>
               </div>
@@ -312,71 +308,80 @@ export default function Goals() {
 
       {/* 目标列表 */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>加载中...</div>
+        <div>
+          {[1, 2, 3].map(i => (
+            <div key={i} style={CARD}>
+              <div style={{ height: 16, width: '60%', backgroundColor: '#f0f0f0', borderRadius: 4, marginBottom: 10 }} />
+              <div style={{ height: 12, width: '40%', backgroundColor: '#f0f0f0', borderRadius: 4, marginBottom: 10 }} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ height: 20, width: 50, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
+                <div style={{ height: 20, width: 50, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : goals.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '60px 20px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '16px'
-        }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎯</div>
-          <h3 style={{ color: '#666', marginBottom: '10px' }}>还没有目标</h3>
-          <p style={{ color: '#999' }}>点击上方"新建目标"按钮开始创建你的第一个目标</p>
+        <div style={{ ...CARD, textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ fontSize: '36px', marginBottom: '12px' }}>🎯</div>
+          <div style={{ color: '#999', fontSize: '14px', marginBottom: '4px' }}>还没有目标</div>
+          <div style={{ color: '#ccc', fontSize: '13px' }}>点击上方"新建目标"按钮开始创建</div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div>
           {goals.map((goal) => (
             <div
               key={goal.id}
               style={{
-                backgroundColor: 'white',
-                borderRadius: '12px',
-                padding: '20px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                borderLeft: `4px solid ${priorityColors[goal.priority]}`,
-                opacity: goal.status === 'completed' ? 0.7 : 1
+                ...CARD,
+                opacity: goal.status === 'completed' ? 0.6 : 1,
+                transition: 'opacity 0.2s',
+                borderLeft: `3px solid ${priorityColors[goal.priority] || '#ddd'}`
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{
-                    margin: '0 0 8px 0',
+                    margin: '0 0 6px 0',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: '#333',
                     textDecoration: goal.status === 'completed' ? 'line-through' : 'none'
                   }}>
                     {goal.title}
                   </h3>
                   {goal.description && (
-                    <p style={{ color: '#666', margin: '0 0 10px 0', fontSize: '14px' }}>
+                    <p style={{ color: '#999', margin: '0 0 10px 0', fontSize: '13px' }}>
                       {goal.description}
                     </p>
                   )}
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <span style={{
-                      padding: '4px 8px',
-                      backgroundColor: priorityColors[goal.priority] + '20',
+                      padding: '2px 8px',
+                      backgroundColor: `${priorityColors[goal.priority]}15`,
                       color: priorityColors[goal.priority],
                       borderRadius: '4px',
-                      fontSize: '12px'
+                      fontSize: '11px',
+                      fontWeight: '500'
                     }}>
                       {priorityLabels[goal.priority]}优先级
                     </span>
                     <span style={{
-                      padding: '4px 8px',
-                      backgroundColor: goal.status === 'completed' ? '#27ae6020' : '#3498db20',
-                      color: goal.status === 'completed' ? '#27ae60' : '#3498db',
+                      padding: '2px 8px',
+                      backgroundColor: goal.status === 'completed' ? '#10b98115' : '#6366f115',
+                      color: goal.status === 'completed' ? '#10b981' : '#6366f1',
                       borderRadius: '4px',
-                      fontSize: '12px'
+                      fontSize: '11px',
+                      fontWeight: '500'
                     }}>
                       {statusLabels[goal.status]}
                     </span>
                     {goal.deadline && (
                       <span style={{
-                        padding: '4px 8px',
-                        backgroundColor: '#9b59b620',
-                        color: '#9b59b6',
+                        padding: '2px 8px',
+                        backgroundColor: '#f5f5f5',
+                        color: '#999',
                         borderRadius: '4px',
-                        fontSize: '12px'
+                        fontSize: '11px'
                       }}>
                         截止: {goal.deadline}
                       </span>
@@ -384,7 +389,7 @@ export default function Goals() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', marginLeft: '15px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                   {goal.status === 'active' && (
                     <>
                       <button
@@ -392,29 +397,32 @@ export default function Goals() {
                         disabled={generatingId === goal.id}
                         title="AI生成任务"
                         style={{
-                          padding: '8px 12px',
-                          backgroundColor: generatingId === goal.id ? '#9b59b680' : '#9b59b6',
+                          padding: '6px 10px',
+                          backgroundColor: generatingId === goal.id ? '#e0e0e0' : '#6366f1',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',
                           cursor: generatingId === goal.id ? 'not-allowed' : 'pointer',
-                          fontSize: '14px',
-                          whiteSpace: 'nowrap'
+                          fontSize: '12px',
+                          minHeight: '36px',
+                          transition: 'background-color 0.2s'
                         }}
                       >
-                        {generatingId === goal.id ? '⏳ 生成中...' : '🤖 AI生成'}
+                        {generatingId === goal.id ? '⏳' : '🤖'}
                       </button>
                       <button
                         onClick={() => handleComplete(goal)}
                         title="完成"
                         style={{
-                          padding: '8px 12px',
-                          backgroundColor: '#27ae60',
+                          padding: '6px 10px',
+                          backgroundColor: '#10b981',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',
                           cursor: 'pointer',
-                          fontSize: '14px'
+                          fontSize: '12px',
+                          minHeight: '36px',
+                          transition: 'background-color 0.2s'
                         }}
                       >
                         ✓
@@ -425,13 +433,15 @@ export default function Goals() {
                     onClick={() => handleEdit(goal)}
                     title="编辑"
                     style={{
-                      padding: '8px 12px',
-                      backgroundColor: '#f39c12',
-                      color: 'white',
+                      padding: '6px 10px',
+                      backgroundColor: '#f5f5f5',
+                      color: '#666',
                       border: 'none',
                       borderRadius: '6px',
                       cursor: 'pointer',
-                      fontSize: '14px'
+                      fontSize: '12px',
+                      minHeight: '36px',
+                      transition: 'background-color 0.2s'
                     }}
                   >
                     ✎
@@ -440,13 +450,15 @@ export default function Goals() {
                     onClick={() => handleDelete(goal.id)}
                     title="删除"
                     style={{
-                      padding: '8px 12px',
-                      backgroundColor: '#e74c3c',
-                      color: 'white',
+                      padding: '6px 10px',
+                      backgroundColor: '#fef2f2',
+                      color: '#ef4444',
                       border: 'none',
                       borderRadius: '6px',
                       cursor: 'pointer',
-                      fontSize: '14px'
+                      fontSize: '12px',
+                      minHeight: '36px',
+                      transition: 'background-color 0.2s'
                     }}
                   >
                     ✕

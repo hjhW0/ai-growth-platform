@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-06T14:30:00+08:00",
+  "title": "Design System: AI 成长平台",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Indigo",
+        "canonical": "#6366f1",
+        "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe"]
+      },
+      "primary-deep": {
+        "role": "primary",
+        "displayName": "Indigo Deep",
+        "canonical": "#4f46e5",
+        "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe"]
+      },
+      "gradient-start": {
+        "role": "primary",
+        "displayName": "Periwinkle",
+        "canonical": "#667eea",
+        "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4f46e5", "#667eea", "#818cf8", "#a5b4fc", "#c7d2fe"]
+      },
+      "gradient-end": {
+        "role": "tertiary",
+        "displayName": "Royal Purple",
+        "canonical": "#764ba2",
+        "tonalRamp": ["#2e1065", "#3b0764", "#581c87", "#764ba2", "#9333ea", "#a855f7", "#c084fc", "#d8b4fe"]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Emerald",
+        "canonical": "#10b981",
+        "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#10b981", "#34d399", "#6ee7b7", "#a7f3d0"]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "Amber",
+        "canonical": "#f59e0b",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#f59e0b", "#fbbf24", "#fcd34d", "#fde68a"]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Red",
+        "canonical": "#ef4444",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#f87171", "#fca5a5", "#fecaca"]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#333333"
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#666666"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#999999"
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Snow",
+        "canonical": "#f5f5f5"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#ffffff"
+      },
+      "surface-alt": {
+        "role": "neutral",
+        "displayName": "Cloud",
+        "canonical": "#f0f0f0"
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Large stat numbers: streak days, goal count, completion rate." },
+      "title": { "displayName": "Title", "purpose": "Page titles in nav bar, section headings." },
+      "headline": { "displayName": "Headline", "purpose": "Card section titles, form labels." },
+      "body": { "displayName": "Body", "purpose": "Default content text, list items, descriptions." },
+      "label": { "displayName": "Label", "purpose": "Timestamps, secondary labels, small badges." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 2px 8px rgba(0,0,0,0.08)", "purpose": "Default card elevation on snow background." },
+      { "name": "nav", "value": "0 -2px 8px rgba(0,0,0,0.1)", "purpose": "Bottom navigation bar floating above content." },
+      { "name": "modal", "value": "0 8px 32px rgba(0,0,0,0.2)", "purpose": "Login card, feedback modal overlays." },
+      { "name": "fab", "value": "0 4px 15px rgba(102,126,234,0.4)", "purpose": "Feedback FAB with tinted brand shadow." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "ease", "purpose": "Default transitions (width, opacity)." },
+      { "name": "blink", "value": "blink 1s infinite", "purpose": "Streaming cursor animation in chat." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "480px" },
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action button. Indigo background, white text, 8px radius.",
+      "html": "<button class=\"ds-btn-primary\">添加任务</button>",
+      "css": ".ds-btn-primary { background: #6366f1; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; } .ds-btn-primary:hover { background: #4f46e5; } .ds-btn-primary:disabled { background: #ccc; cursor: not-allowed; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard content card. White background, 12px radius, soft shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-label\">🎯 当前核心目标</div><div class=\"ds-card-title">通过英语六级考试</div></div>",
+      "css": ".ds-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); } .ds-card-label { font-size: 14px; color: #888; margin-bottom: 12px; } .ds-card-title { font-size: 18px; font-weight: 700; color: #333; }"
+    },
+    {
+      "name": "Hero Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Gradient hero card for dashboard greeting and check-in. White text on purple gradient.",
+      "html": "<div class=\"ds-hero-card\"><div class=\"ds-hero-greeting">☀️ 早上好，小明</div><div class=\"ds-hero-stat">🔥 已连续打卡 7 天</div></div>",
+      "css": ".ds-hero-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 28px; color: #fff; } .ds-hero-greeting { font-size: 15px; opacity: 0.9; margin-bottom: 4px; } .ds-hero-stat { font-size: 13px; opacity: 0.7; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text input. White background, gray border, indigo focus ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"输入新任务...\" />",
+      "css": ".ds-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; background: #fff; transition: border-color 0.2s; } .ds-input:focus { border-color: #6366f1; }"
+    },
+    {
+      "name": "Bottom Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Fixed bottom tab bar with emoji icons and labels.",
+      "html": "<nav class=\"ds-bottom-nav\"><a class=\"ds-nav-item ds-nav-active\"><span class=\"ds-nav-icon">🏠</span><span>首页</span></a><a class=\"ds-nav-item\"><span class=\"ds-nav-icon">🎯</span><span>目标</span></a><a class=\"ds-nav-item\"><span class=\"ds-nav-icon">📋</span><span>任务</span></a></nav>",
+      "css": ".ds-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); } .ds-nav-item { text-decoration: none; color: #666; text-align: center; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; } .ds-nav-active { color: #6366f1; } .ds-nav-icon { font-size: 20px; }"
+    },
+    {
+      "name": "User Chat Bubble",
+      "kind": "custom",
+      "refersTo": "chat-bubble",
+      "description": "Right-aligned user message bubble. Indigo background, white text.",
+      "html": "<div class=\"ds-bubble-user-wrap\"><div class=\"ds-bubble-user\">今天的学习计划是什么？</div></div>",
+      "css": ".ds-bubble-user-wrap { display: flex; justify-content: flex-end; padding: 0 8px; } .ds-bubble-user { max-width: 80%; padding: 12px 16px; border-radius: 16px 16px 4px 16px; background: #6366f1; color: #fff; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }"
+    },
+    {
+      "name": "AI Chat Bubble",
+      "kind": "custom",
+      "refersTo": "chat-bubble",
+      "description": "Left-aligned AI message bubble. Cloud background, dark text.",
+      "html": "<div class=\"ds-bubble-ai-wrap\"><div class=\"ds-bubble-ai\">建议你先复习高数第三章，然后做两篇阅读理解。</div></div>",
+      "css": ".ds-bubble-ai-wrap { display: flex; justify-content: flex-start; padding: 0 8px; } .ds-bubble-ai { max-width: 80%; padding: 12px 16px; border-radius: 16px 16px 16px 4px; background: #f0f0f0; color: #333; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Study Buddy",
+    "overview": "This is a companion, not a tool. The interface should feel like opening a well-organized notebook that also happens to cheer you on. Every surface is clean and uncluttered, but never cold: emoji accents, gentle gradients, and warm feedback make it feel like a friend who's tracking progress alongside you.\n\nThe system rejects corporate productivity software, rejects complexity for its own sake, and rejects visual monotony. It embraces color as emotion: purple for primary actions signals ambition; amber/orange for streaks and check-ins signals warmth; green for completion signals satisfaction.",
+    "keyCharacteristics": [
+      "Emoji as first-class visual language",
+      "Gradient accents reserved for hero moments",
+      "Card-based layout with generous whitespace",
+      "Bottom navigation for mobile-first thumb reach",
+      "Inline styles co-located with components"
+    ],
+    "rules": [
+      { "name": "The Gradient Restraint Rule", "body": "Gradients appear on exactly three surfaces: login background, dashboard greeting card, and check-in hero. Everywhere else, flat color.", "section": "colors" },
+      { "name": "The Emoji-as-Icon Rule", "body": "The project uses emoji in place of icon libraries for navigation, section headers, and feedback. This is a deliberate personality choice.", "section": "colors" },
+      { "name": "The No-Decorative-Type Rule", "body": "The system uses exactly one font family (system-ui). No serif display fonts, no monospace for stats. Personality is carried by emoji, color, and layout.", "section": "typography" },
+      { "name": "The One-Shadow-Per-Element Rule", "body": "Every element gets exactly one shadow treatment. Never combine box-shadow with border for the same decorative purpose.", "section": "elevation" }
+    ],
+    "dos": [
+      "Use emoji liberally in navigation, section headers, and empty states",
+      "Keep shadows consistent: 0 2px 8px rgba(0,0,0,0.08) for cards",
+      "Use indigo (#6366f1) as the single primary accent",
+      "Reserve gradients for hero moments only",
+      "Ensure touch targets are at least 44px",
+      "Use the system font stack"
+    ],
+    "donts": [
+      "Don't use border-left or border-right as colored accent stripes",
+      "Don't apply gradient text (background-clip: text)",
+      "Don't add glassmorphism (backdrop-filter: blur)",
+      "Don't use border-radius above 16px on cards",
+      "Don't mix shadow and border on the same element decoratively",
+      "Don't add a second font family",
+      "Don't use more than 3 different font sizes on a single screen",
+      "Don't add dark mode without redesigning the gradient and color system"
+    ]
+  }
+}

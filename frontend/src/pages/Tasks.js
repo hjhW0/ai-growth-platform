@@ -2,23 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { createTask, getTasks, completeTask, deleteTask, updateTask } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 
+const CARD = {
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '16px',
+  marginBottom: '12px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+};
+
 function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [selectedDate, setSelectedDate] = useState(getToday());
   const [newTask, setNewTask] = useState('');
   const [priority, setPriority] = useState('medium');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTasks();
   }, [selectedDate]);
 
   const loadTasks = async () => {
+    setLoading(true);
     try {
       const data = await getTasks({ date: selectedDate });
       setTasks(data.tasks || []);
     } catch (error) {
       console.error('加载任务失败:', error);
     }
+    setLoading(false);
   };
 
   const handleAddTask = async (e) => {
@@ -75,64 +86,46 @@ function Tasks() {
   };
 
   return (
-    <div style={{ paddingBottom: '80px' }}>
-      <h2 style={{ marginBottom: '24px', color: '#333' }}>📋 每日任务</h2>
+    <div>
+      <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '16px' }}>📋 每日任务</h2>
 
       {/* 日期选择器 */}
       <div style={{
-        backgroundColor: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        marginBottom: '20px',
+        ...CARD,
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        alignItems: 'center'
       }}>
-        <button onClick={() => changeDate(-1)} style={dateBtnStyle}>
-          ← 前一天
-        </button>
+        <button onClick={() => changeDate(-1)} style={dateBtnStyle}>←</button>
         <div style={{ textAlign: 'center' }}>
-          <h3>{formatDateChinese(selectedDate)}</h3>
-          <p style={{ color: '#666', fontSize: '14px' }}>{getWeekday(selectedDate)}</p>
+          <div style={{ fontSize: '16px', fontWeight: '600', color: '#333' }}>{formatDateChinese(selectedDate)}</div>
+          <div style={{ color: '#999', fontSize: '13px' }}>{getWeekday(selectedDate)}</div>
         </div>
-        <button onClick={() => changeDate(1)} style={dateBtnStyle}>
-          后一天 →
-        </button>
+        <button onClick={() => changeDate(1)} style={dateBtnStyle}>→</button>
       </div>
 
       {/* 进度条 */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        marginBottom: '20px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span>今日进度</span>
-          <span>{completedCount}/{totalCount} ({progress}%)</span>
+      {totalCount > 0 && (
+        <div style={CARD}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
+            <span style={{ color: '#666' }}>今日进度</span>
+            <span style={{ color: '#333', fontWeight: '500' }}>{completedCount}/{totalCount} ({progress}%)</span>
+          </div>
+          <div style={{ backgroundColor: '#f0f0f0', borderRadius: '4px', height: '6px' }}>
+            <div style={{
+              backgroundColor: progress >= 80 ? '#10b981' : progress >= 50 ? '#f59e0b' : '#6366f1',
+              borderRadius: '4px',
+              height: '6px',
+              width: `${progress}%`,
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
         </div>
-        <div style={{ backgroundColor: '#f0f0f0', borderRadius: '4px', height: '8px' }}>
-          <div style={{
-            backgroundColor: progress >= 80 ? '#10b981' : progress >= 50 ? '#f59e0b' : '#6366f1',
-            borderRadius: '4px',
-            height: '8px',
-            width: `${progress}%`,
-            transition: 'width 0.3s'
-          }} />
-        </div>
-      </div>
+      )}
 
       {/* 添加任务 */}
-      <form onSubmit={handleAddTask} style={{
-        backgroundColor: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        marginBottom: '20px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ display: 'flex', gap: '12px' }}>
+      <form onSubmit={handleAddTask} style={CARD}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <input
             type="text"
             value={newTask}
@@ -140,18 +133,27 @@ function Tasks() {
             placeholder="输入新任务..."
             style={{
               flex: 1,
-              padding: '12px',
+              minWidth: '120px',
+              padding: '10px 12px',
               border: '1px solid #ddd',
-              borderRadius: '8px'
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'border-color 0.2s'
             }}
+            onFocus={e => e.target.style.borderColor = '#6366f1'}
+            onBlur={e => e.target.style.borderColor = '#ddd'}
           />
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
             style={{
-              padding: '12px',
+              padding: '10px 12px',
               border: '1px solid #ddd',
-              borderRadius: '8px'
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              backgroundColor: 'white'
             }}
           >
             <option value="high">🔴 高</option>
@@ -162,9 +164,12 @@ function Tasks() {
             backgroundColor: '#6366f1',
             color: 'white',
             border: 'none',
-            padding: '12px 24px',
+            padding: '10px 20px',
             borderRadius: '8px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '600',
+            minHeight: '44px'
           }}>
             添加
           </button>
@@ -172,80 +177,96 @@ function Tasks() {
       </form>
 
       {/* 任务列表 */}
-      <div>
-        {tasks.length === 0 ? (
-          <div style={{
-            backgroundColor: 'white',
-            padding: '60px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            color: '#999',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
-            <p>暂无任务</p>
-            <p style={{ fontSize: '14px' }}>添加一个吧</p>
-          </div>
-        ) : (
-          tasks.map(task => (
-            <div key={task.id} style={{
-              backgroundColor: 'white',
-              padding: '16px',
-              borderRadius: '12px',
-              marginBottom: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              opacity: task.status === 'completed' ? 0.7 : 1
-            }}>
-              <input
-                type="checkbox"
-                checked={task.status === 'completed'}
-                onChange={() => task.status !== 'completed' && handleComplete(task.id)}
-                style={{ marginRight: '16px', width: '20px', height: '20px', cursor: 'pointer' }}
-              />
-              <div style={{ flex: 1 }}>
-                <span style={{
-                  textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                  color: task.status === 'completed' ? '#999' : '#333',
-                  fontSize: '16px'
-                }}>
-                  {task.title}
-                </span>
+      {loading ? (
+        <div style={CARD}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {[1, 2, 3].map(i => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: '#f0f0f0' }} />
+                <div style={{ flex: 1, height: 16, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
               </div>
+            ))}
+          </div>
+        </div>
+      ) : tasks.length === 0 ? (
+        <div style={{
+          ...CARD,
+          textAlign: 'center',
+          padding: '40px 20px'
+        }}>
+          <div style={{ fontSize: '36px', marginBottom: '12px' }}>✨</div>
+          <div style={{ color: '#999', fontSize: '14px' }}>暂无任务</div>
+          <div style={{ color: '#ccc', fontSize: '13px', marginTop: '4px' }}>在上方输入框添加一个吧</div>
+        </div>
+      ) : (
+        tasks.map(task => (
+          <div key={task.id} style={{
+            ...CARD,
+            display: 'flex',
+            alignItems: 'center',
+            opacity: task.status === 'completed' ? 0.6 : 1,
+            transition: 'opacity 0.2s'
+          }}>
+            <input
+              type="checkbox"
+              checked={task.status === 'completed'}
+              onChange={() => task.status !== 'completed' && handleComplete(task.id)}
+              style={{ marginRight: '12px', width: '20px', height: '20px', cursor: 'pointer', accentColor: '#10b981' }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
               <span style={{
-                fontSize: '12px',
-                color: priorityColors[task.priority] || '#999',
-                marginRight: '12px'
+                textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                color: task.status === 'completed' ? '#999' : '#333',
+                fontSize: '14px'
               }}>
-                {task.priority === 'high' ? '🔴 高' : task.priority === 'medium' ? '🟡 中' : '🟢 低'}
+                {task.title}
               </span>
-              <button
-                onClick={() => handleDelete(task.id)}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: '#ef4444',
-                  cursor: 'pointer',
-                  fontSize: '16px'
-                }}
-              >
-                ×
-              </button>
             </div>
-          ))
-        )}
-      </div>
+            <span style={{
+              fontSize: '11px',
+              color: priorityColors[task.priority] || '#999',
+              marginLeft: '8px',
+              marginRight: '8px',
+              flexShrink: 0
+            }}>
+              {task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'}
+            </span>
+            <button
+              onClick={() => handleDelete(task.id)}
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#ccc',
+                cursor: 'pointer',
+                fontSize: '18px',
+                padding: '4px 8px',
+                minHeight: '32px',
+                flexShrink: 0,
+                transition: 'color 0.2s'
+              }}
+              onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
+              onMouseOut={e => e.currentTarget.style.color = '#ccc'}
+            >
+              ×
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 }
 
 const dateBtnStyle = {
   backgroundColor: '#f5f5f5',
-  border: '1px solid #ddd',
+  border: '1px solid #eee',
   padding: '8px 16px',
   borderRadius: '8px',
-  cursor: 'pointer'
+  cursor: 'pointer',
+  fontSize: '14px',
+  minHeight: '44px',
+  display: 'flex',
+  alignItems: 'center',
+  transition: 'background-color 0.2s'
 };
 
 export default Tasks;

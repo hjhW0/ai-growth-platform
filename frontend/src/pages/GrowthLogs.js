@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getGrowthLogs } from '../api/apiClient';
 
+const CARD = {
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '16px',
+  marginBottom: '12px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+};
+
 function GrowthLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,60 +28,60 @@ function GrowthLogs() {
   };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>加载中...</div>;
+    return (
+      <div>
+        <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '16px' }}>📚 成长日志</h2>
+        {[1, 2, 3].map(i => (
+          <div key={i} style={CARD}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ height: 14, width: 80, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
+              <div style={{ height: 14, width: 50, backgroundColor: '#f0f0f0', borderRadius: 4 }} />
+            </div>
+            <div style={{ height: 60, backgroundColor: '#f0f0f0', borderRadius: 6 }} />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (
-    <div style={{ paddingBottom: '80px' }}>
-      <h2 style={{ color: '#333', marginBottom: '24px' }}>📚 成长日志</h2>
+    <div>
+      <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '16px' }}>📚 成长日志</h2>
 
       {logs.length === 0 ? (
-        <div style={{
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          padding: '40px',
-          textAlign: 'center',
-          color: '#888',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-          暂无成长记录，去 AI 中心生成复盘后自动记录
+        <div style={{ ...CARD, textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ fontSize: '36px', marginBottom: '12px' }}>📝</div>
+          <div style={{ color: '#999', fontSize: '14px', marginBottom: '4px' }}>暂无成长记录</div>
+          <div style={{ color: '#ccc', fontSize: '13px' }}>去 AI 中心生成复盘后自动记录</div>
         </div>
       ) : (
         logs.map((log, index) => (
-          <div key={log.id || index} style={{
-            backgroundColor: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontWeight: 'bold', color: '#333', fontSize: '16px' }}>{log.log_date}</span>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                {log.mood && (
-                  <span style={{
-                    padding: '4px 10px',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    backgroundColor: log.mood === 'good' ? '#dcfce7' : log.mood === 'bad' ? '#fef2f2' : '#f5f5f5',
-                    color: log.mood === 'good' ? '#22c55e' : log.mood === 'bad' ? '#ef4444' : '#888'
-                  }}>
-                    {log.mood === 'good' ? '😊 不错' : log.mood === 'bad' ? '😔 一般' : '😐 还行'}
-                  </span>
-                )}
-              </div>
+          <div key={log.id || index} style={CARD}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', alignItems: 'center' }}>
+              <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>{log.log_date}</span>
+              {log.mood && (
+                <span style={{
+                  padding: '2px 10px',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                  backgroundColor: log.mood === 'good' ? '#dcfce7' : log.mood === 'bad' ? '#fef2f2' : '#f5f5f5',
+                  color: log.mood === 'good' ? '#10b981' : log.mood === 'bad' ? '#ef4444' : '#999'
+                }}>
+                  {log.mood === 'good' ? '😊 不错' : log.mood === 'bad' ? '😔 一般' : '😐 还行'}
+                </span>
+              )}
             </div>
 
             {log.ai_summary && (
               <div style={{
-                padding: '14px',
-                backgroundColor: '#f0f0ff',
+                padding: '12px',
+                backgroundColor: '#f5f5ff',
                 borderRadius: '8px',
-                marginBottom: '10px',
+                marginBottom: '8px',
                 whiteSpace: 'pre-wrap',
-                lineHeight: '1.6',
-                fontSize: '14px',
-                color: '#444'
+                lineHeight: '1.7',
+                fontSize: '13px',
+                color: '#555'
               }}>
                 {log.ai_summary}
               </div>
@@ -85,9 +93,10 @@ function GrowthLogs() {
                   <span key={i} style={{
                     padding: '2px 10px',
                     borderRadius: '12px',
-                    fontSize: '12px',
+                    fontSize: '11px',
                     backgroundColor: '#eef2ff',
-                    color: '#6366f1'
+                    color: '#6366f1',
+                    fontWeight: '500'
                   }}>
                     {tag}
                   </span>

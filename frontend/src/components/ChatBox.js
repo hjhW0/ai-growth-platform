@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
   const chatEndRef = useRef(null);
 
-  // 自动滚动到底部
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
@@ -15,11 +14,8 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
     }
   };
 
-  // 旧消息在上，新消息在下（数据已经是正序）
-  const sortedHistory = chatHistory;
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', maxWidth: '720px', margin: '0 auto', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 240px)', minHeight: '300px' }}>
       {/* 对话历史 */}
       <div style={{
         flex: 1,
@@ -29,37 +25,37 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
         flexDirection: 'column',
         gap: '12px'
       }}>
-        {sortedHistory.length === 0 && (
+        {chatHistory.length === 0 && (
           <div style={{
             textAlign: 'center',
-            color: '#ccc',
+            color: '#bbb',
             padding: '60px 20px',
             fontSize: '14px'
           }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🤖</div>
-            有什么想和 AI 聊的？试试问一个问题
+            <div style={{ fontSize: '36px', marginBottom: '12px' }}>🤖</div>
+            <div style={{ marginBottom: '4px' }}>有什么想和 AI 聊的？</div>
+            <div style={{ fontSize: '13px', color: '#ccc' }}>试试问一个问题</div>
           </div>
         )}
 
-        {sortedHistory.map((chat, index) => {
+        {chatHistory.map((chat, index) => {
           const isUser = chat.role === 'user';
-          const isLast = index === sortedHistory.length - 1;
+          const isLast = index === chatHistory.length - 1;
           const isStreaming = loading && isLast && !isUser && !chat.content;
 
           return (
             <div key={index} style={{
               display: 'flex',
               justifyContent: isUser ? 'flex-end' : 'flex-start',
-              padding: '0 8px'
+              padding: '0 4px'
             }}>
               <div style={{
                 maxWidth: '80%',
-                minWidth: '60px'
+                minWidth: '48px'
               }}>
-                {/* 角色标签 */}
                 <div style={{
-                  fontSize: '12px',
-                  color: '#999',
+                  fontSize: '11px',
+                  color: '#bbb',
                   marginBottom: '4px',
                   textAlign: isUser ? 'right' : 'left',
                   paddingLeft: isUser ? 0 : '4px',
@@ -68,13 +64,12 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
                   {isUser ? '你' : 'AI'}
                 </div>
 
-                {/* 消息气泡 */}
                 <div style={{
-                  padding: '12px 16px',
-                  borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                  padding: '10px 14px',
+                  borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
                   backgroundColor: isUser ? '#6366f1' : '#f0f0f0',
                   color: isUser ? 'white' : '#333',
-                  fontSize: '15px',
+                  fontSize: '14px',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word'
@@ -83,7 +78,7 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
                   {isStreaming && <span style={{
                     display: 'inline-block',
                     width: '2px',
-                    height: '16px',
+                    height: '14px',
                     backgroundColor: '#6366f1',
                     marginLeft: '2px',
                     verticalAlign: 'middle',
@@ -97,13 +92,13 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
         <div ref={chatEndRef} />
       </div>
 
-      {/* 输入框 - 固定在底部 */}
+      {/* 输入框 */}
       <div style={{
         backgroundColor: 'white',
         borderRadius: '12px',
-        padding: '12px',
-        marginTop: '12px',
-        boxShadow: '0 -2px 8px rgba(0,0,0,0.08)',
+        padding: '10px',
+        marginTop: '10px',
+        boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
         position: 'sticky',
         bottom: 0
       }}>
@@ -116,17 +111,18 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
             rows={1}
             style={{
               flex: 1,
-              padding: '12px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '10px',
-              fontSize: '15px',
+              padding: '10px 12px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              fontSize: '14px',
               resize: 'none',
               outline: 'none',
               fontFamily: 'inherit',
-              maxHeight: '120px'
+              maxHeight: '100px',
+              transition: 'border-color 0.2s'
             }}
             onFocus={e => e.target.style.borderColor = '#6366f1'}
-            onBlur={e => e.target.style.borderColor = '#e0e0e0'}
+            onBlur={e => e.target.style.borderColor = '#ddd'}
           />
           <button
             onClick={onSend}
@@ -135,13 +131,14 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
               backgroundColor: (loading || !message.trim()) ? '#e0e0e0' : '#6366f1',
               color: 'white',
               border: 'none',
-              padding: '12px 20px',
-              borderRadius: '10px',
+              padding: '10px 16px',
+              borderRadius: '8px',
               cursor: (loading || !message.trim()) ? 'not-allowed' : 'pointer',
-              fontSize: '15px',
-              fontWeight: 'bold',
+              fontSize: '14px',
+              fontWeight: '600',
               whiteSpace: 'nowrap',
-              height: '44px'
+              height: '40px',
+              transition: 'background-color 0.2s'
             }}
           >
             {loading ? '...' : '发送'}

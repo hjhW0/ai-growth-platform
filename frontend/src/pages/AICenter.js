@@ -9,21 +9,17 @@ function AICenter() {
   const [activeTab, setActiveTab] = useState('chat');
   const [loading, setLoading] = useState(false);
 
-  // 对话状态
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [conversationId, setConversationId] = useState(null);
 
-  // 规划状态
   const [goal, setGoal] = useState('');
   const [plan, setPlan] = useState('');
 
-  // 复盘状态
   const [review, setReview] = useState('');
   const [reviewData, setReviewData] = useState(null);
   const [growthLogs, setGrowthLogs] = useState([]);
 
-  // 周报状态
   const [weeklyReport, setWeeklyReport] = useState('');
   const [weekData, setWeekData] = useState(null);
 
@@ -35,7 +31,6 @@ function AICenter() {
   const loadHistory = async () => {
     try {
       const data = await getAIHistory();
-      // API 返回倒序（最新在前），反转为正序（旧消息在前，新消息在后）
       const history = (data.history || []).reverse();
       setChatHistory(history);
     } catch (error) {
@@ -58,7 +53,6 @@ function AICenter() {
     setMessage('');
     setLoading(true);
 
-    // 先插入 user 消息和空的 assistant 消息（新消息在末尾，方便流式更新）
     setChatHistory(prev => [
       ...prev,
       { role: 'user', content: userMsg, chat_type: 'general', created_at: new Date().toISOString() },
@@ -67,7 +61,6 @@ function AICenter() {
 
     try {
       await sendAIMessageStream(userMsg, conversationId,
-        // onToken: 逐 token 追加（更新最后一条 assistant 消息）
         (token, isReplace) => {
           setChatHistory(prev => {
             const updated = [...prev];
@@ -80,7 +73,6 @@ function AICenter() {
             return updated;
           });
         },
-        // onDone: 保存 conversationId
         (cid) => {
           if (cid) setConversationId(cid);
         }
@@ -145,40 +137,59 @@ function AICenter() {
   };
 
   const tabs = [
-    { id: 'chat', label: 'AI 对话' },
-    { id: 'plan', label: 'AI 规划师' },
-    { id: 'review', label: 'AI 复盘' },
-    { id: 'report', label: 'AI 周报' }
+    { id: 'chat', label: 'AI 对话', icon: '💬' },
+    { id: 'plan', label: 'AI 规划师', icon: '🎯' },
+    { id: 'review', label: 'AI 复盘', icon: '📝' },
+    { id: 'report', label: 'AI 周报', icon: '📊' }
   ];
 
   return (
-    <div style={{ paddingBottom: '80px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 style={{ color: '#333' }}>🤖 AI 中心</h2>
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: 0 }}>🤖 AI 中心</h2>
         <button onClick={handleGetAdvice} style={{
-          backgroundColor: '#f59e0b', color: 'white', border: 'none',
-          padding: '10px 20px', borderRadius: '8px', cursor: 'pointer'
+          backgroundColor: '#f59e0b',
+          color: 'white',
+          border: 'none',
+          padding: '8px 14px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: '600',
+          minHeight: '36px',
+          transition: 'background-color 0.2s'
         }}>
-          获取成长建议
+          💡 成长建议
         </button>
       </div>
 
       {/* 标签页 */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div style={{
+        display: 'flex',
+        gap: '6px',
+        marginBottom: '16px',
+        overflowX: 'auto',
+        paddingBottom: '4px'
+      }}>
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             style={{
               backgroundColor: activeTab === tab.id ? '#6366f1' : 'white',
-              color: activeTab === tab.id ? 'white' : '#333',
-              border: '1px solid #6366f1',
-              padding: '10px 20px',
+              color: activeTab === tab.id ? 'white' : '#666',
+              border: activeTab === tab.id ? 'none' : '1px solid #eee',
+              padding: '8px 14px',
               borderRadius: '8px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              minHeight: '36px',
+              transition: 'all 0.2s'
             }}
           >
-            {tab.label}
+            {tab.icon} {tab.label}
           </button>
         ))}
       </div>

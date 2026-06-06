@@ -33,47 +33,52 @@ function Login({ onLogin }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '16px'
     }}>
       <div style={{
         backgroundColor: 'white',
         borderRadius: '16px',
-        padding: '40px',
+        padding: '32px 24px',
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '380px',
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
       }}>
-        <h1 style={{
-          textAlign: 'center',
-          marginBottom: '8px',
-          color: '#6366f1'
-        }}>
-          AI 成长平台
-        </h1>
-        <p style={{
-          textAlign: 'center',
-          marginBottom: '32px',
-          color: '#666'
-        }}>
-          基于大语言模型的个人成长与学习规划平台
-        </p>
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ fontSize: '36px', marginBottom: '8px' }}>✨</div>
+          <h1 style={{
+            margin: 0,
+            color: '#6366f1',
+            fontSize: '22px',
+            fontWeight: '700'
+          }}>
+            AI 成长平台
+          </h1>
+          <p style={{
+            margin: '8px 0 0 0',
+            color: '#999',
+            fontSize: '14px'
+          }}>
+            记录成长，遇见更好的自己
+          </p>
+        </div>
 
         {error && (
           <div style={{
-            backgroundColor: '#fee2e2',
-            color: '#dc2626',
-            padding: '12px',
+            backgroundColor: '#fef2f2',
+            color: '#991b1b',
+            padding: '10px 14px',
             borderRadius: '8px',
             marginBottom: '16px',
-            fontSize: '14px'
+            fontSize: '13px'
           }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#666' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <label style={{ display: 'block', marginBottom: '6px', color: '#666', fontSize: '13px', fontWeight: '500' }}>
               用户名
             </label>
             <input
@@ -83,17 +88,22 @@ function Login({ onLogin }) {
               required
               style={{
                 width: '100%',
-                padding: '12px',
+                padding: '10px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '8px',
-                fontSize: '16px'
+                fontSize: '15px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
               placeholder="请输入用户名"
+              onFocus={e => e.target.style.borderColor = '#6366f1'}
+              onBlur={e => e.target.style.borderColor = '#ddd'}
             />
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#666' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '6px', color: '#666', fontSize: '13px', fontWeight: '500' }}>
               密码
             </label>
             <input
@@ -103,12 +113,17 @@ function Login({ onLogin }) {
               required
               style={{
                 width: '100%',
-                padding: '12px',
+                padding: '10px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '8px',
-                fontSize: '16px'
+                fontSize: '15px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
               placeholder="请输入密码"
+              onFocus={e => e.target.style.borderColor = '#6366f1'}
+              onBlur={e => e.target.style.borderColor = '#ddd'}
             />
           </div>
 
@@ -117,14 +132,16 @@ function Login({ onLogin }) {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '14px',
+              padding: '12px',
               backgroundColor: loading ? '#ccc' : '#6366f1',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: loading ? 'not-allowed' : 'pointer'
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              minHeight: '44px',
+              transition: 'background-color 0.2s'
             }}
           >
             {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
@@ -133,8 +150,9 @@ function Login({ onLogin }) {
 
         <div style={{
           textAlign: 'center',
-          marginTop: '24px',
-          color: '#666'
+          marginTop: '20px',
+          color: '#999',
+          fontSize: '14px'
         }}>
           {isRegister ? '已有账号？' : '没有账号？'}
           <button
@@ -147,7 +165,9 @@ function Login({ onLogin }) {
               border: 'none',
               color: '#6366f1',
               cursor: 'pointer',
-              textDecoration: 'underline'
+              textDecoration: 'underline',
+              fontSize: '14px',
+              fontWeight: '500'
             }}
           >
             {isRegister ? '立即登录' : '立即注册'}
