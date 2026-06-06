@@ -19,7 +19,7 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
   const sortedHistory = chatHistory;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', maxWidth: '720px', margin: '0 auto', width: '100%' }}>
       {/* 对话历史 */}
       <div style={{
         flex: 1,
