@@ -10,6 +10,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=sqlite:////app/data/growth_platform.db
+      - FLASK_APP=app:app
     volumes:
       - app-data:/app/data
 
