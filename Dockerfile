@@ -1,8 +1,12 @@
 # ===== 阶段1：构建前端 =====
 FROM node:18-alpine AS frontend-build
+
+# 换阿里云 Alpine 镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --registry=https://registry.npmmirror.com
 COPY frontend/ ./
 RUN npm run build
 
@@ -10,14 +14,17 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 
-# 系统依赖
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 换阿里云 Debian 镜像源
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list 2>/dev/null; \
+    apt-get update && apt-get install -y --no-install-recommends \
     curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Python 依赖
+# Python 依赖（用阿里云 pypi 镜像）
 COPY backend/requirements.txt ./backend/
-RUN pip install --no-cache-dir -r backend/requirements.txt gunicorn
+RUN pip install --no-cache-dir -r backend/requirements.txt gunicorn \
+    -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 
 # 复制后端代码
 COPY backend/ ./backend/
