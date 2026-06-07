@@ -9,6 +9,7 @@ function Tasks() {
   const [newTask, setNewTask] = useState('');
   const [priority, setPriority] = useState('medium');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
 
   useEffect(() => { loadTasks(); }, [selectedDate]);
@@ -18,7 +19,11 @@ function Tasks() {
     try {
       const data = await getTasks({ date: selectedDate });
       setTasks(data.tasks || []);
-    } catch (error) { console.error('加载任务失败:', error); }
+      setError(null);
+    } catch (error) {
+      console.error('加载任务失败:', error);
+      setError('加载任务失败，请稍后重试');
+    }
     setLoading(false);
   };
 
@@ -192,6 +197,16 @@ function Tasks() {
               <div style={{ flex: 1, height: 14, backgroundColor: t.surfaceAlt, borderRadius: t.rSm }} />
             </div>
           ))}
+        </div>
+      ) : error ? (
+        <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
+          <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
+          <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
+          <button onClick={() => { setLoading(true); setError(null); loadTasks(); }} style={{
+            padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
+            backgroundColor: t.primary, color: 'white', cursor: 'pointer',
+            fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+          }}>重试</button>
         </div>
       ) : tasks.length === 0 ? (
         <div className="animate-in" style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>

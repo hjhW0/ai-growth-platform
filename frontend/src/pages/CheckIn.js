@@ -8,6 +8,7 @@ function CheckIn() {
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [mood, setMood] = useState('normal');
   const [justChecked, setJustChecked] = useState(false);
   const today = getToday();
@@ -21,7 +22,11 @@ function CheckIn() {
       ]);
       setCheckedIn(statusData.checked_in);
       setStreak(streakData.streak || 0);
-    } catch (error) { console.error('加载数据失败:', error); }
+      setError(null);
+    } catch (error) {
+      console.error('加载数据失败:', error);
+      setError('加载数据失败，请稍后重试');
+    }
     setInitialLoading(false);
   };
 
@@ -61,6 +66,20 @@ function CheckIn() {
           <div style={{ height: 16, width: '40%', backgroundColor: t.surfaceAlt, borderRadius: t.rSm, margin: `0 auto ${t.sp3}` }} />
           <div style={{ height: 12, width: '25%', backgroundColor: t.surfaceAlt, borderRadius: t.rSm, margin: '0 auto' }} />
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
+        <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
+        <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
+        <button onClick={() => { setInitialLoading(true); setError(null); loadData(); }} style={{
+          padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
+          backgroundColor: t.primary, color: 'white', cursor: 'pointer',
+          fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+        }}>重试</button>
       </div>
     );
   }

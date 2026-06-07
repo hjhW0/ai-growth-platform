@@ -26,6 +26,7 @@ function Dashboard() {
   const [feedbackRating, setFeedbackRating] = useState(5);
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const today = getToday();
 
   useEffect(() => { loadData(); }, []);
@@ -43,7 +44,11 @@ function Dashboard() {
       setActiveGoal(goals.length > 0 ? goals[0] : null);
       const logs = logsData.data || [];
       setLatestLog(logs.length > 0 ? logs[0] : null);
-    } catch (error) { console.error('加载数据失败:', error); }
+      setError(null);
+    } catch (error) {
+      console.error('加载数据失败:', error);
+      setError('加载数据失败，请稍后重试');
+    }
     setLoading(false);
   };
 
@@ -89,6 +94,20 @@ function Dashboard() {
             <Skeleton height={14} width="70%" />
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
+        <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
+        <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
+        <button onClick={() => { setLoading(true); setError(null); loadData(); }} style={{
+          padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
+          backgroundColor: t.primary, color: 'white', cursor: 'pointer',
+          fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+        }}>重试</button>
       </div>
     );
   }
