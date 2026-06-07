@@ -180,4 +180,50 @@ export const submitFeedback = (content, rating = 5) => api.post('/feedback', { c
 
 export const getFeedbacks = (params = {}) => api.get('/feedback', { params });
 
+// ========== 行为埋点 ==========
+
+// 事件缓冲区，减少请求频率
+let _eventBuffer = [];
+let _flushTimer = null;
+
+function flushEvents() {
+  if (_eventBuffer.length === 0) return;
+  const events = [..._eventBuffer];
+  _eventBuffer = [];
+  api.post('/events/batch', { events }).catch(() => {
+    // 失败时放回缓冲区（最多保留 50 条）
+    _eventBuffer = [...events.slice(-50), ..._eventBuffer];
+  });
+}
+
+/**
+ * 记录用户行为事件
+ * @param {string} eventType - 事件类型
+ * @param {string} [eventData] - 附加数据 (JSON 字符串)
+ */
+export const trackEvent = (eventType, eventData = null) => {
+  _eventBuffer.push({ event_type: eventType, event_data: eventData });
+  // 每 5 秒批量上报一次
+  if (!_flushTimer) {
+    _flushTimer = setTimeout(() => {
+      _flushTimer = null;
+      flushEvents();
+    }, 5000);
+  }
+};
+
+// 页面卸载时上报剩余事件
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeflush', flushEvents);
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushEvents();
+  });
+}
+
+/** 获取行为统计（管理员） */
+export const getEventStats = (days = 7) => api.get('/events/stats', { params: { days } });
+
+/** 获取当前用户行为摘要 */
+export const getUserEventSummary = (days = 7) => api.get('/events/user-summary', { params: { days } });
+
 export default api;

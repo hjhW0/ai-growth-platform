@@ -5,5 +5,6 @@ from .checkin import CheckIn
 from .ai_chat import AIChat
 from .growth_log import GrowthLog
 from .feedback import Feedback
+from .user_event import UserEvent
 
-__all__ = ['User', 'Goal', 'DailyTask', 'CheckIn', 'AIChat', 'GrowthLog', 'Feedback']
+__all__ = ['User', 'Goal', 'DailyTask', 'CheckIn', 'AIChat', 'GrowthLog', 'Feedback', 'UserEvent']

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAIPlan, getAIAdvice, sendAIMessageStream, getAIHistory, getDailyReview, getGrowthLogs, getAutoWeeklyReport } from '../api/apiClient';
+import { getAIPlan, getAIAdvice, sendAIMessageStream, getAIHistory, getDailyReview, getGrowthLogs, getAutoWeeklyReport, trackEvent } from '../api/apiClient';
 import ChatBox from '../components/ChatBox';
 import PlanTab from '../components/PlanTab';
 import ReviewTab from '../components/ReviewTab';
@@ -41,6 +41,7 @@ function AICenter() {
     const userMsg = message;
     setMessage('');
     setLoading(true);
+    trackEvent('ai_chat');
     setChatHistory(prev => [...prev, { role: 'user', content: userMsg, chat_type: 'general', created_at: new Date().toISOString() }, { role: 'assistant', content: '', chat_type: 'general', created_at: new Date().toISOString() }]);
     try {
       await sendAIMessageStream(userMsg, conversationId,
@@ -61,6 +62,7 @@ function AICenter() {
   const handleGeneratePlan = async () => {
     if (!goal.trim() || loading) return;
     setLoading(true);
+    trackEvent('ai_plan');
     try { const data = await getAIPlan(goal); setPlan(data.plan); } catch (error) { console.error('生成计划失败:', error); }
     setLoading(false);
   };
@@ -68,6 +70,7 @@ function AICenter() {
   const handleGenerateReview = async () => {
     if (loading) return;
     setLoading(true);
+    trackEvent('ai_review');
     try { const res = await getDailyReview(); setReview(res.data.review); setReviewData(res.data.data); loadGrowthLogs(); } catch (error) { console.error('生成复盘失败:', error); }
     setLoading(false);
   };
@@ -75,6 +78,7 @@ function AICenter() {
   const handleGetAdvice = async () => {
     if (loading) return;
     setLoading(true);
+    trackEvent('ai_advice');
     try { const data = await getAIAdvice(''); setPlan(data.advice); setActiveTab('plan'); } catch (error) { console.error('获取建议失败:', error); }
     setLoading(false);
   };
@@ -82,6 +86,7 @@ function AICenter() {
   const handleGenerateWeeklyReport = async () => {
     if (loading) return;
     setLoading(true);
+    trackEvent('ai_report');
     try { const res = await getAutoWeeklyReport(); setWeeklyReport(res.data.report); setWeekData(res.data.data); loadGrowthLogs(); } catch (error) { console.error('生成周报告失败:', error); }
     setLoading(false);
   };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useGoalsStore from '../store/useGoalsStore';
-import { generateTasks } from '../api/apiClient';
+import { generateTasks, trackEvent } from '../api/apiClient';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 
 const priorityConfig = {
@@ -33,7 +33,12 @@ export default function Goals() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
-    editingGoal ? await updateGoal(editingGoal.id, formData) : await addGoal(formData);
+    if (editingGoal) {
+      await updateGoal(editingGoal.id, formData);
+    } else {
+      await addGoal(formData);
+      trackEvent('create_goal', JSON.stringify({ priority: formData.priority, type: formData.goal_type }));
+    }
     setFormData({ title: '', description: '', goal_type: 'learning', priority: 'medium', deadline: '' });
     setEditingGoal(null);
     setShowForm(false);
@@ -46,13 +51,18 @@ export default function Goals() {
   };
 
   const handleDelete = async (goalId) => { if (window.confirm('确定要删除这个目标吗？')) await deleteGoal(goalId); };
-  const handleComplete = async (goal) => { await updateGoal(goal.id, { status: 'completed' }); };
+  const handleComplete = async (goal) => { await updateGoal(goal.id, { status: 'completed' }); trackEvent('complete_goal'); };
 
   const handleGenerateTasks = async (goal) => {
     setGeneratingId(goal.id);
     try {
       const res = await generateTasks(goal.id);
-      res.code === 0 ? showToast(`AI已生成 ${res.data.tasks_created} 个任务！`) : showToast(res.message || '生成失败', 'error');
+      if (res.code === 0) {
+        trackEvent('ai_generate_tasks', JSON.stringify({ goal_id: goal.id, tasks_created: res.data.tasks_created }));
+        showToast(`AI已生成 ${res.data.tasks_created} 个任务！`);
+      } else {
+        showToast(res.message || '生成失败', 'error');
+      }
       fetchGoals();
     } catch (err) { showToast(err.message || 'AI调用失败', 'error'); }
     finally { setGeneratingId(null); }

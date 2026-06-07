@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { checkIn, getCheckinStatus, getStreak } from '../api/apiClient';
+import { checkIn, getCheckinStatus, getStreak, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday } from '../utils/dateFormatter';
 import { t, card } from '../styles/tokens';
 
@@ -35,6 +35,7 @@ function CheckIn() {
     setLoading(true);
     try {
       await checkIn({ check_date: today, check_type: 'daily', mood, note: '' });
+      trackEvent('checkin', JSON.stringify({ mood }));
       setCheckedIn(true);
       setJustChecked(true);
       loadData();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback } from '../api/apiClient';
+import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback, trackEvent } from '../api/apiClient';
 import { getToday } from '../utils/dateFormatter';
 import { t, card, focusBorder, blurBorder } from '../styles/tokens';
 
@@ -56,6 +56,7 @@ function Dashboard() {
     if (!feedbackContent.trim()) return;
     try {
       await submitFeedback(feedbackContent, feedbackRating);
+      trackEvent('submit_feedback', JSON.stringify({ rating: feedbackRating }));
       setFeedbackSent(true);
       setTimeout(() => {
         setShowFeedback(false);

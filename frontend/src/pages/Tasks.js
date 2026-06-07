@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createTask, getTasks, completeTask, deleteTask, updateTask } from '../api/apiClient';
+import { createTask, getTasks, completeTask, deleteTask, updateTask, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 
@@ -32,6 +32,7 @@ function Tasks() {
     if (!newTask.trim()) return;
     try {
       await createTask({ title: newTask, task_date: selectedDate, priority });
+      trackEvent('create_task', JSON.stringify({ priority }));
       setNewTask('');
       setShowAdd(false);
       loadTasks();
@@ -39,7 +40,7 @@ function Tasks() {
   };
 
   const handleComplete = async (taskId) => {
-    try { await completeTask(taskId); loadTasks(); }
+    try { await completeTask(taskId); trackEvent('complete_task'); loadTasks(); }
     catch (error) { console.error('完成任务失败:', error); }
   };
 

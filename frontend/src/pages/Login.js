@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { login, register } from '../api/apiClient';
+import { login, register, trackEvent } from '../api/apiClient';
 import { t, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 
 function Login({ onLogin }) {
@@ -15,6 +15,7 @@ function Login({ onLogin }) {
     setLoading(true);
     try {
       let data = isRegister ? await register(username, password) : await login(username, password);
+      trackEvent(isRegister ? 'register' : 'login');
       onLogin(data.user);
     } catch (err) {
       setError(err.error || '操作失败');

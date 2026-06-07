@@ -29,6 +29,7 @@ def create_app():
     from routes.stats import stats_bp
     from routes.ai import ai_bp
     from routes.feedback import feedback_bp
+    from routes.events import events_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(goals_bp, url_prefix='/api/goals')
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(stats_bp, url_prefix='/api/stats')
     app.register_blueprint(ai_bp, url_prefix='/api/ai')
     app.register_blueprint(feedback_bp, url_prefix='/api/feedback')
+    app.register_blueprint(events_bp, url_prefix='/api/events')
 
     # 前端路由（SPA catch-all）
     @app.errorhandler(404)
