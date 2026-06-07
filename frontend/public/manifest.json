@@ -1,0 +1,31 @@
+{
+  "short_name": "成长平台",
+  "name": "AI 成长平台",
+  "description": "陪你养成好习惯，让每一天的进步都看得见",
+  "icons": [
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#5b5fef",
+  "background_color": "#f8f9fb",
+  "orientation": "portrait",
+  "categories": ["education", "productivity"],
+  "lang": "zh-CN"
+}
