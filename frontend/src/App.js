@@ -8,14 +8,15 @@ import CheckIn from './pages/CheckIn';
 import Stats from './pages/Stats';
 import AICenter from './pages/AICenter';
 import GrowthLogs from './pages/GrowthLogs';
+import { t } from './styles/tokens';
 
 const NAV_ITEMS = [
   { path: '/', label: '首页', icon: '🏠' },
   { path: '/goals', label: '目标', icon: '🎯' },
-  { path: '/tasks', label: '任务', icon: '📋' },
+  { path: '/tasks', label: '任务', icon: '✅' },
   { path: '/checkin', label: '打卡', icon: '🔥' },
   { path: '/stats', label: '统计', icon: '📊' },
-  { path: '/ai', label: 'AI', icon: '🤖' }
+  { path: '/ai', label: 'AI', icon: '🤖' },
 ];
 
 function BottomNav() {
@@ -28,23 +29,25 @@ function BottomNav() {
       transform: 'translateX(-50%)',
       width: '100%',
       maxWidth: '480px',
-      backgroundColor: '#0a0a0a',
+      backgroundColor: 'rgba(255,255,255,0.92)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
       display: 'flex',
       justifyContent: 'space-around',
-      padding: '8px 0',
-      paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-      borderTop: '1px solid #27272a',
-      zIndex: 50
+      padding: '6px 0',
+      paddingBottom: 'max(6px, env(safe-area-inset-bottom))',
+      borderTop: `1px solid ${t.border}`,
+      zIndex: 50,
     }}>
       {NAV_ITEMS.map(item => {
         const active = location.pathname === item.path;
         return (
           <Link key={item.path} to={item.path} style={{
             textDecoration: 'none',
-            color: active ? '#6366f1' : '#71717a',
+            color: active ? t.primary : t.textMuted,
             textAlign: 'center',
-            fontSize: '11px',
-            fontWeight: active ? '600' : '400',
+            fontSize: '10px',
+            fontWeight: active ? '600' : '500',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -53,11 +56,11 @@ function BottomNav() {
             minWidth: '44px',
             minHeight: '44px',
             justifyContent: 'center',
-            borderRadius: '8px',
-            backgroundColor: active ? 'rgba(99,102,241,0.1)' : 'transparent',
-            transition: 'all 0.2s ease'
+            borderRadius: t.rMd,
+            backgroundColor: active ? t.primaryLight : 'transparent',
+            transition: 'all 0.15s',
           }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
+            <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
             <span>{item.label}</span>
           </Link>
         );
@@ -98,14 +101,12 @@ function App() {
     return (
       <div style={{
         minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#0a0a0a'
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: t.bg,
       }}>
-        <div style={{ textAlign: 'center', color: '#71717a' }}>
-          <div style={{ fontSize: '28px', marginBottom: '12px' }}>✨</div>
-          <div style={{ fontSize: '14px' }}>加载中...</div>
+        <div style={{ textAlign: 'center', color: t.textMuted }}>
+          <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>🌱</div>
+          <div style={{ fontSize: t.base }}>加载中...</div>
         </div>
       </div>
     );
@@ -119,55 +120,69 @@ function App() {
     <Router>
       <div style={{
         minHeight: '100vh',
-        backgroundColor: '#0a0a0a',
+        backgroundColor: t.bg,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
       }}>
-        {/* 顶部导航栏 */}
-        <nav style={{
+        {/* Top bar */}
+        <header style={{
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: '#0a0a0a',
-          color: '#fafafa',
-          padding: '12px 16px',
+          backgroundColor: 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: `${t.sp3} ${t.sp4}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          borderBottom: '1px solid #27272a'
+          borderBottom: `1px solid ${t.border}`,
         }}>
-          <h1 style={{ fontSize: '16px', fontWeight: '600', margin: 0, color: '#fafafa' }}>✨ AI 成长平台</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', color: '#a1a1aa' }}>{user.username}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2 }}>
+            <span style={{ fontSize: '18px' }}>🌱</span>
+            <span style={{
+              fontSize: t.lg, fontWeight: '700', color: t.text,
+              letterSpacing: '-0.02em',
+            }}>成长平台</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.sp3 }}>
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '50%',
+              backgroundColor: t.primaryLight,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '13px', fontWeight: '600', color: t.primary,
+            }}>
+              {user.username?.[0]?.toUpperCase() || '?'}
+            </div>
             <button
               onClick={handleLogout}
               style={{
-                background: '#111111',
-                border: '1px solid #27272a',
-                color: '#a1a1aa',
-                padding: '6px 12px',
-                borderRadius: '6px',
+                background: 'none',
+                border: `1px solid ${t.border}`,
+                color: t.textSecondary,
+                padding: '4px 12px',
+                borderRadius: t.rSm,
                 cursor: 'pointer',
-                fontSize: '12px',
-                minHeight: '32px',
-                transition: 'all 0.2s ease'
+                fontSize: t.sm,
+                fontFamily: 'inherit',
+                transition: 'all 0.15s',
               }}
             >
               退出
             </button>
           </div>
-        </nav>
+        </header>
 
-        {/* 页面内容 */}
+        {/* Page content */}
         <main style={{
           width: '100%',
           maxWidth: '480px',
-          padding: '16px',
+          padding: t.sp4,
           flex: 1,
-          paddingBottom: '80px'
+          paddingBottom: '80px',
         }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />

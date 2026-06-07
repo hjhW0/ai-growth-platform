@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createTask, getTasks, completeTask, deleteTask, updateTask } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
-
-const CARD = {
-  backgroundColor: '#111111',
-  borderRadius: '12px',
-  padding: '16px',
-  marginBottom: '12px',
-  border: '1px solid #27272a'
-};
+import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 
 function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -16,19 +9,16 @@ function Tasks() {
   const [newTask, setNewTask] = useState('');
   const [priority, setPriority] = useState('medium');
   const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
 
-  useEffect(() => {
-    loadTasks();
-  }, [selectedDate]);
+  useEffect(() => { loadTasks(); }, [selectedDate]);
 
   const loadTasks = async () => {
     setLoading(true);
     try {
       const data = await getTasks({ date: selectedDate });
       setTasks(data.tasks || []);
-    } catch (error) {
-      console.error('加载任务失败:', error);
-    }
+    } catch (error) { console.error('加载任务失败:', error); }
     setLoading(false);
   };
 
@@ -38,29 +28,20 @@ function Tasks() {
     try {
       await createTask({ title: newTask, task_date: selectedDate, priority });
       setNewTask('');
+      setShowAdd(false);
       loadTasks();
-    } catch (error) {
-      console.error('添加任务失败:', error);
-    }
+    } catch (error) { console.error('添加任务失败:', error); }
   };
 
   const handleComplete = async (taskId) => {
-    try {
-      await completeTask(taskId);
-      loadTasks();
-    } catch (error) {
-      console.error('完成任务失败:', error);
-    }
+    try { await completeTask(taskId); loadTasks(); }
+    catch (error) { console.error('完成任务失败:', error); }
   };
 
   const handleDelete = async (taskId) => {
     if (window.confirm('确定要删除这个任务吗？')) {
-      try {
-        await deleteTask(taskId);
-        loadTasks();
-      } catch (error) {
-        console.error('删除失败:', error);
-      }
+      try { await deleteTask(taskId); loadTasks(); }
+      catch (error) { console.error('删除失败:', error); }
     }
   };
 
@@ -70,178 +51,239 @@ function Tasks() {
     setSelectedDate(formatDate(date));
   };
 
-  const completedCount = tasks.filter(t => t.status === 'completed').length;
-  const totalCount = tasks.length;
-  const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const isToday = selectedDate === getToday();
+  const completedTasks = tasks.filter(t => t.status === 'completed');
+  const pendingTasks = tasks.filter(t => t.status !== 'completed');
+  const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
+
+  const priorityConfig = {
+    high: { color: t.error, bg: t.errorLight, label: '高' },
+    medium: { color: t.warning, bg: t.warningLight, label: '中' },
+    low: { color: t.success, bg: t.successLight, label: '低' },
+  };
 
   return (
     <div>
-      <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#fafafa', marginBottom: '16px' }}>📋 每日任务</h2>
-
-      {/* 日期选择器 */}
-      <div style={{ ...CARD, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => changeDate(-1)} style={dateBtnStyle}>←</button>
+      {/* Date navigator */}
+      <div className="animate-in" style={{
+        ...card,
+        marginBottom: t.sp4,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: `${t.sp3} ${t.sp4}`,
+      }}>
+        <button onClick={() => changeDate(-1)} style={{
+          background: 'none', border: `1px solid ${t.border}`,
+          padding: '6px 12px', borderRadius: t.rSm,
+          cursor: 'pointer', fontSize: t.base, color: t.textSecondary,
+          fontFamily: 'inherit', minHeight: '36px',
+        }}>←</button>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '15px', fontWeight: '600', color: '#fafafa' }}>{formatDateChinese(selectedDate)}</div>
-          <div style={{ color: '#71717a', fontSize: '12px' }}>{getWeekday(selectedDate)}</div>
+          <div style={{ fontSize: t.md, fontWeight: '600', color: t.text }}>
+            {formatDateChinese(selectedDate)}
+          </div>
+          <div style={{ fontSize: t.xs, color: t.textMuted }}>
+            {getWeekday(selectedDate)} {isToday && '· 今天'}
+          </div>
         </div>
-        <button onClick={() => changeDate(1)} style={dateBtnStyle}>→</button>
+        <button onClick={() => changeDate(1)} style={{
+          background: 'none', border: `1px solid ${t.border}`,
+          padding: '6px 12px', borderRadius: t.rSm,
+          cursor: 'pointer', fontSize: t.base, color: t.textSecondary,
+          fontFamily: 'inherit', minHeight: '36px',
+        }}>→</button>
       </div>
 
-      {/* 进度条 */}
-      {totalCount > 0 && (
-        <div style={CARD}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-            <span style={{ color: '#a1a1aa' }}>今日进度</span>
-            <span style={{ color: '#fafafa', fontWeight: '500' }}>{completedCount}/{totalCount} ({progress}%)</span>
+      {/* Progress summary */}
+      {tasks.length > 0 && (
+        <div className="animate-in animate-in-delay-1" style={{
+          display: 'flex', gap: t.sp3, marginBottom: t.sp4,
+        }}>
+          <div style={{
+            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
+            background: `linear-gradient(135deg, ${t.primaryLight}, #f0f0ff)`,
+            border: `1px solid rgba(91,95,239,0.12)`,
+          }}>
+            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.primary }}>{tasks.length}</div>
+            <div style={{ fontSize: t.xs, color: t.textMuted }}>总计</div>
           </div>
-          <div style={{ backgroundColor: '#1a1a1a', borderRadius: '3px', height: '4px' }}>
-            <div style={{
-              backgroundColor: progress >= 80 ? '#22c55e' : progress >= 50 ? '#f59e0b' : '#6366f1',
-              borderRadius: '3px',
-              height: '4px',
-              width: `${progress}%`,
-              transition: 'width 0.3s ease'
-            }} />
+          <div style={{
+            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
+            background: `linear-gradient(135deg, ${t.successLight}, #ecfdf5)`,
+            border: `1px solid rgba(16,185,129,0.12)`,
+          }}>
+            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.success }}>{completedTasks.length}</div>
+            <div style={{ fontSize: t.xs, color: t.textMuted }}>完成</div>
+          </div>
+          <div style={{
+            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
+            background: progress >= 80
+              ? `linear-gradient(135deg, ${t.successLight}, #ecfdf5)`
+              : `linear-gradient(135deg, ${t.warningLight}, #fffbeb)`,
+            border: `1px solid ${progress >= 80 ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)'}`,
+          }}>
+            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: progress >= 80 ? t.success : t.warning }}>{progress}%</div>
+            <div style={{ fontSize: t.xs, color: t.textMuted }}>完成率</div>
           </div>
         </div>
       )}
 
-      {/* 添加任务 */}
-      <form onSubmit={handleAddTask} style={CARD}>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="输入新任务..."
-            style={{
-              flex: 1,
-              minWidth: '120px',
-              padding: '10px 12px',
-              border: '1px solid #27272a',
-              borderRadius: '8px',
-              fontSize: '14px',
-              outline: 'none',
-              backgroundColor: '#0a0a0a',
-              color: '#fafafa',
-              transition: 'border-color 0.2s'
-            }}
-            onFocus={e => e.target.style.borderColor = '#6366f1'}
-            onBlur={e => e.target.style.borderColor = '#27272a'}
-          />
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            style={{
-              padding: '10px 12px',
-              border: '1px solid #27272a',
-              borderRadius: '8px',
-              fontSize: '13px',
-              outline: 'none',
-              backgroundColor: '#0a0a0a',
-              color: '#fafafa'
-            }}
+      {/* Add task section */}
+      <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp4 }}>
+        {!showAdd ? (
+          <button onClick={() => setShowAdd(true)} style={{
+            width: '100%', padding: `${t.sp3} 0`,
+            background: 'none', border: `1.5px dashed ${t.border}`,
+            borderRadius: t.rMd, cursor: 'pointer',
+            fontSize: t.base, color: t.textMuted,
+            fontFamily: 'inherit', minHeight: '44px',
+            transition: 'all 0.15s',
+          }}
+          onMouseOver={e => { e.currentTarget.style.borderColor = t.primary; e.currentTarget.style.color = t.primary; }}
+          onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.color = t.textMuted; }}
           >
-            <option value="high">🔴 高</option>
-            <option value="medium">🟡 中</option>
-            <option value="low">🟢 低</option>
-          </select>
-          <button type="submit" style={{
-            backgroundColor: '#6366f1',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: '600',
-            minHeight: '44px',
-            transition: 'all 0.2s ease'
-          }}>
-            添加
+            + 添加新任务
           </button>
-        </div>
-      </form>
+        ) : (
+          <form onSubmit={handleAddTask}>
+            <input
+              type="text" value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              placeholder="输入新任务..."
+              autoFocus
+              style={{ ...input, marginBottom: t.sp3 }}
+              onFocus={focusBorder} onBlur={blurBorder}
+            />
+            <div style={{ display: 'flex', gap: t.sp2, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '4px', flex: 1 }}>
+                {Object.entries(priorityConfig).map(([key, cfg]) => (
+                  <button key={key} type="button" onClick={() => setPriority(key)} style={{
+                    padding: '4px 10px', borderRadius: t.rSm, cursor: 'pointer',
+                    fontSize: t.xs, fontWeight: '500', fontFamily: 'inherit',
+                    border: `1.5px solid ${priority === key ? cfg.color : t.border}`,
+                    backgroundColor: priority === key ? cfg.bg : 'transparent',
+                    color: priority === key ? cfg.color : t.textMuted,
+                    transition: 'all 0.15s',
+                  }}>
+                    {cfg.label}
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={() => { setShowAdd(false); setNewTask(''); }} style={{
+                padding: '6px 12px', background: 'none', border: `1px solid ${t.border}`,
+                borderRadius: t.rSm, cursor: 'pointer', fontSize: t.sm,
+                color: t.textSecondary, fontFamily: 'inherit',
+              }}>取消</button>
+              <button type="submit" disabled={!newTask.trim()} style={{
+                ...btnPrimary,
+                padding: '6px 16px', minHeight: '36px', fontSize: t.sm,
+                opacity: newTask.trim() ? 1 : 0.5,
+              }}>添加</button>
+            </div>
+          </form>
+        )}
+      </div>
 
-      {/* 任务列表 */}
+      {/* Task list */}
       {loading ? (
-        <div style={CARD}>
+        <div style={card}>
           {[1, 2, 3].map(i => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #1a1a1a' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', backgroundColor: '#1a1a1a' }} />
-              <div style={{ flex: 1, height: 14, backgroundColor: '#1a1a1a', borderRadius: 4 }} />
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: t.sp3, padding: `${t.sp3} 0`, borderBottom: `1px solid ${t.borderLight}` }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: t.surfaceAlt }} />
+              <div style={{ flex: 1, height: 14, backgroundColor: t.surfaceAlt, borderRadius: t.rSm }} />
             </div>
           ))}
         </div>
       ) : tasks.length === 0 ? (
-        <div style={{ ...CARD, textAlign: 'center', padding: '40px 20px' }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px' }}>✨</div>
-          <div style={{ color: '#71717a', fontSize: '14px' }}>暂无任务</div>
-          <div style={{ color: '#52525b', fontSize: '13px', marginTop: '4px' }}>在上方输入框添加一个吧</div>
+        <div className="animate-in" style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
+          <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>📝</div>
+          <div style={{ color: t.textSecondary, fontSize: t.md, fontWeight: '500', marginBottom: t.sp1 }}>暂无任务</div>
+          <div style={{ color: t.textMuted, fontSize: t.sm }}>点击上方"添加新任务"开始吧</div>
         </div>
       ) : (
-        tasks.map(task => (
-          <div key={task.id} style={{
-            ...CARD,
-            display: 'flex',
-            alignItems: 'center',
-            opacity: task.status === 'completed' ? 0.5 : 1,
-            transition: 'opacity 0.2s'
-          }}>
-            <input
-              type="checkbox"
-              checked={task.status === 'completed'}
-              onChange={() => task.status !== 'completed' && handleComplete(task.id)}
-              style={{ marginRight: '12px', width: '18px', height: '18px', cursor: 'pointer', accentColor: '#22c55e' }}
-            />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <span style={{
-                textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                color: task.status === 'completed' ? '#52525b' : '#fafafa',
-                fontSize: '14px'
-              }}>
-                {task.title}
-              </span>
+        <div>
+          {/* Pending tasks */}
+          {pendingTasks.length > 0 && (
+            <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
+              <div style={{ fontSize: t.xs, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3, letterSpacing: '0.03em' }}>
+                待完成 · {pendingTasks.length}
+              </div>
+              {pendingTasks.map((task, idx) => (
+                <div key={task.id} style={{
+                  display: 'flex', alignItems: 'center', gap: t.sp3,
+                  padding: `${t.sp3} 0`,
+                  borderBottom: idx < pendingTasks.length - 1 ? `1px solid ${t.borderLight}` : 'none',
+                }}>
+                  <button onClick={() => handleComplete(task.id)} style={{
+                    width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                    border: `2px solid ${t.border}`, backgroundColor: 'transparent',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s', padding: 0,
+                  }}
+                  onMouseOver={e => { e.currentTarget.style.borderColor = t.success; e.currentTarget.style.backgroundColor = t.successLight; }}
+                  onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  />
+                  <span style={{ flex: 1, fontSize: t.base, color: t.text, minWidth: 0 }}>{task.title}</span>
+                  <span style={{
+                    padding: '2px 6px', borderRadius: t.rSm, fontSize: t.xs, fontWeight: '500',
+                    backgroundColor: priorityConfig[task.priority]?.bg || t.surfaceAlt,
+                    color: priorityConfig[task.priority]?.color || t.textMuted,
+                    flexShrink: 0,
+                  }}>
+                    {priorityConfig[task.priority]?.label || task.priority}
+                  </span>
+                  <button onClick={() => handleDelete(task.id)} style={{
+                    background: 'none', border: 'none', color: t.textMuted,
+                    cursor: 'pointer', fontSize: '16px', padding: '4px',
+                    flexShrink: 0, transition: 'color 0.15s',
+                  }}
+                  onMouseOver={e => e.currentTarget.style.color = t.error}
+                  onMouseOut={e => e.currentTarget.style.color = t.textMuted}
+                  >×</button>
+                </div>
+              ))}
             </div>
-            <span style={{ fontSize: '11px', color: task.priority === 'high' ? '#ef4444' : task.priority === 'medium' ? '#f59e0b' : '#22c55e', marginLeft: '8px', marginRight: '8px', flexShrink: 0 }}>
-              {task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'}
-            </span>
-            <button
-              onClick={() => handleDelete(task.id)}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: '#3f3f46',
-                cursor: 'pointer',
-                fontSize: '18px',
-                padding: '4px 8px',
-                minHeight: '32px',
-                flexShrink: 0,
-                transition: 'color 0.2s'
-              }}
-              onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
-              onMouseOut={e => e.currentTarget.style.color = '#3f3f46'}
-            >
-              ×
-            </button>
-          </div>
-        ))
+          )}
+
+          {/* Completed tasks */}
+          {completedTasks.length > 0 && (
+            <div className="animate-in animate-in-delay-3" style={{ ...card }}>
+              <div style={{ fontSize: t.xs, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3, letterSpacing: '0.03em' }}>
+                已完成 · {completedTasks.length}
+              </div>
+              {completedTasks.map((task, idx) => (
+                <div key={task.id} style={{
+                  display: 'flex', alignItems: 'center', gap: t.sp3,
+                  padding: `${t.sp3} 0`,
+                  borderBottom: idx < completedTasks.length - 1 ? `1px solid ${t.borderLight}` : 'none',
+                  opacity: 0.6,
+                }}>
+                  <div style={{
+                    width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                    backgroundColor: t.success, border: `2px solid ${t.success}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ color: 'white', fontSize: '11px', fontWeight: '700' }}>✓</span>
+                  </div>
+                  <span style={{
+                    flex: 1, fontSize: t.base, color: t.textMuted,
+                    textDecoration: 'line-through',
+                  }}>{task.title}</span>
+                  <button onClick={() => handleDelete(task.id)} style={{
+                    background: 'none', border: 'none', color: t.textMuted,
+                    cursor: 'pointer', fontSize: '16px', padding: '4px',
+                    flexShrink: 0, transition: 'color 0.15s',
+                  }}
+                  onMouseOver={e => e.currentTarget.style.color = t.error}
+                  onMouseOut={e => e.currentTarget.style.color = t.textMuted}
+                  >×</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
 }
-
-const dateBtnStyle = {
-  backgroundColor: '#1a1a1a',
-  border: '1px solid #27272a',
-  padding: '8px 16px',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  fontSize: '13px',
-  color: '#a1a1aa',
-  minHeight: '40px',
-  transition: 'all 0.2s ease'
-};
 
 export default Tasks;

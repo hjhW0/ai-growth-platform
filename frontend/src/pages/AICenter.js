@@ -4,6 +4,7 @@ import ChatBox from '../components/ChatBox';
 import PlanTab from '../components/PlanTab';
 import ReviewTab from '../components/ReviewTab';
 import WeeklyReportTab from '../components/WeeklyReportTab';
+import { t, card } from '../styles/tokens';
 
 function AICenter() {
   const [activeTab, setActiveTab] = useState('chat');
@@ -86,28 +87,43 @@ function AICenter() {
   };
 
   const tabs = [
-    { id: 'chat', label: 'AI 对话', icon: '💬' },
-    { id: 'plan', label: 'AI 规划师', icon: '🎯' },
-    { id: 'review', label: 'AI 复盘', icon: '📝' },
-    { id: 'report', label: 'AI 周报', icon: '📊' }
+    { id: 'chat', label: '对话', icon: '💬' },
+    { id: 'plan', label: '规划', icon: '🎯' },
+    { id: 'review', label: '复盘', icon: '📝' },
+    { id: 'report', label: '周报', icon: '📊' },
   ];
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#fafafa', margin: 0 }}>🤖 AI 中心</h2>
-        <button onClick={handleGetAdvice} style={{ backgroundColor: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', minHeight: '32px', transition: 'all 0.2s' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp4 }}>
+        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, margin: 0, letterSpacing: '-0.02em' }}>AI 中心</h2>
+        <button onClick={handleGetAdvice} style={{
+          padding: '6px 12px', borderRadius: t.rMd, cursor: 'pointer',
+          fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+          backgroundColor: t.warningLight, color: t.warning,
+          border: `1px solid rgba(245,158,11,0.2)`,
+          transition: 'all 0.15s',
+        }}>
           💡 成长建议
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '4px' }}>
+      {/* Tab bar */}
+      <div style={{
+        display: 'flex', gap: t.sp2, marginBottom: t.sp4,
+        backgroundColor: t.surface, padding: '4px',
+        borderRadius: t.rMd, border: `1px solid ${t.border}`,
+      }}>
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-            backgroundColor: activeTab === tab.id ? 'rgba(99,102,241,0.15)' : '#111111',
-            color: activeTab === tab.id ? '#6366f1' : '#71717a',
-            border: activeTab === tab.id ? '1px solid rgba(99,102,241,0.3)' : '1px solid #27272a',
-            padding: '8px 14px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', whiteSpace: 'nowrap', minHeight: '36px', transition: 'all 0.2s'
+            flex: 1, padding: `${t.sp2} ${t.sp3}`, borderRadius: t.rSm,
+            cursor: 'pointer', fontSize: t.sm, fontWeight: '500',
+            fontFamily: 'inherit', minHeight: '36px',
+            border: 'none',
+            backgroundColor: activeTab === tab.id ? t.primaryLight : 'transparent',
+            color: activeTab === tab.id ? t.primary : t.textMuted,
+            transition: 'all 0.15s',
           }}>
             {tab.icon} {tab.label}
           </button>

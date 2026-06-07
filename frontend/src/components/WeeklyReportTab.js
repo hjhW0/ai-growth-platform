@@ -1,64 +1,114 @@
 import React from 'react';
-
-const CARD = { backgroundColor: '#111111', borderRadius: '12px', padding: '20px', marginBottom: '12px', border: '1px solid #27272a' };
+import { t, card } from '../styles/tokens';
 
 function WeeklyReportTab({ weeklyReport, weekData, loading, onGenerate }) {
   return (
     <div>
+      {/* Week data overview */}
       {weekData && (
-        <div style={CARD}>
-          <div style={{ fontSize: '12px', color: '#71717a', marginBottom: '14px', fontWeight: '500' }}>📊 本周数据概览</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '14px' }}>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(34,197,94,0.08)', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(34,197,94,0.15)' }}>
-              <div style={{ fontSize: '22px', fontWeight: '700', color: '#22c55e' }}>{weekData.completed_count}</div>
-              <div style={{ fontSize: '11px', color: '#71717a' }}>已完成任务</div>
+        <div className="animate-in" style={{ ...card, marginBottom: t.sp3 }}>
+          <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp4, letterSpacing: '0.02em' }}>
+            本周数据概览
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: t.sp3, marginBottom: t.sp4 }}>
+            <div style={{
+              padding: t.sp3, backgroundColor: t.successLight,
+              borderRadius: t.rMd, textAlign: 'center',
+              border: `1px solid rgba(16,185,129,0.12)`,
+            }}>
+              <div style={{ fontSize: t.xl, fontWeight: '700', color: t.success }}>{weekData.completed_count}</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted }}>已完成任务</div>
             </div>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(99,102,241,0.08)', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(99,102,241,0.15)' }}>
-              <div style={{ fontSize: '22px', fontWeight: '700', color: '#6366f1' }}>{weekData.rate}%</div>
-              <div style={{ fontSize: '11px', color: '#71717a' }}>总完成率</div>
+            <div style={{
+              padding: t.sp3, backgroundColor: t.primaryLight,
+              borderRadius: t.rMd, textAlign: 'center',
+              border: `1px solid rgba(91,95,239,0.12)`,
+            }}>
+              <div style={{ fontSize: t.xl, fontWeight: '700', color: t.primary }}>{weekData.rate}%</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted }}>总完成率</div>
             </div>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(245,158,11,0.15)' }}>
-              <div style={{ fontSize: '22px', fontWeight: '700', color: '#f59e0b' }}>{weekData.checkin_count}</div>
-              <div style={{ fontSize: '11px', color: '#71717a' }}>打卡天数</div>
+            <div style={{
+              padding: t.sp3, backgroundColor: t.warningLight,
+              borderRadius: t.rMd, textAlign: 'center',
+              border: `1px solid rgba(245,158,11,0.12)`,
+            }}>
+              <div style={{ fontSize: t.xl, fontWeight: '700', color: t.warning }}>{weekData.checkin_count}</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted }}>打卡天数</div>
             </div>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(236,72,153,0.08)', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(236,72,153,0.15)' }}>
-              <div style={{ fontSize: '22px', fontWeight: '700', color: '#ec4899' }}>{weekData.total_duration_minutes}</div>
-              <div style={{ fontSize: '11px', color: '#71717a' }}>学习时长(分钟)</div>
+            <div style={{
+              padding: t.sp3, backgroundColor: '#fdf2f8',
+              borderRadius: t.rMd, textAlign: 'center',
+              border: `1px solid rgba(236,72,153,0.12)`,
+            }}>
+              <div style={{ fontSize: t.xl, fontWeight: '700', color: '#ec4899' }}>{weekData.total_duration_minutes}</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted }}>学习时长(分钟)</div>
             </div>
           </div>
 
-          <div style={{ fontSize: '11px', color: '#71717a', marginBottom: '8px', fontWeight: '500' }}>每日完成率</div>
-          <div style={{ display: 'flex', gap: '4px', marginBottom: '10px' }}>
+          {/* Daily rate */}
+          <div style={{ fontSize: t.xs, color: t.textMuted, marginBottom: t.sp2, fontWeight: '600' }}>每日完成率</div>
+          <div style={{ display: 'flex', gap: '4px', marginBottom: t.sp3 }}>
             {weekData.daily_data && Object.entries(weekData.daily_data).map(([date, d]) => {
               const weekday = ['一','二','三','四','五','六','日'][new Date(date).getDay() === 0 ? 6 : new Date(date).getDay() - 1];
+              const barColor = d.rate >= 80 ? t.success : d.rate > 0 ? t.warning : t.border;
               return (
-                <div key={date} style={{ flex: 1, textAlign: 'center', padding: '8px 0', backgroundColor: d.rate >= 80 ? 'rgba(34,197,94,0.1)' : d.rate > 0 ? 'rgba(245,158,11,0.1)' : '#1a1a1a', borderRadius: '6px', border: '1px solid #27272a' }}>
-                  <div style={{ fontSize: '10px', color: '#71717a' }}>周{weekday}</div>
-                  <div style={{ fontSize: '12px', fontWeight: '600', color: d.rate >= 80 ? '#22c55e' : d.rate > 0 ? '#f59e0b' : '#3f3f46' }}>{d.rate}%</div>
+                <div key={date} style={{
+                  flex: 1, textAlign: 'center', padding: `${t.sp2} 0`,
+                  backgroundColor: d.rate >= 80 ? t.successLight : d.rate > 0 ? t.warningLight : t.surfaceAlt,
+                  borderRadius: t.rSm, border: `1px solid ${t.border}`,
+                }}>
+                  <div style={{ fontSize: '9px', color: t.textMuted }}>周{weekday}</div>
+                  <div style={{ fontSize: t.sm, fontWeight: '600', color: barColor }}>
+                    {d.rate > 0 ? `${d.rate}%` : '-'}
+                  </div>
                 </div>
               );
             })}
           </div>
 
           {weekData.active_goals && weekData.active_goals.length > 0 && (
-            <div style={{ fontSize: '12px', color: '#71717a' }}>当前目标：{weekData.active_goals.map(g => g.title).join('、')}</div>
+            <div style={{ fontSize: t.sm, color: t.textMuted }}>
+              当前目标：{weekData.active_goals.map(g => g.title).join('、')}
+            </div>
           )}
         </div>
       )}
 
-      <div style={CARD}>
-        <div style={{ fontSize: '12px', color: '#71717a', marginBottom: '10px', fontWeight: '500' }}>📊 AI 周报告</div>
-        <p style={{ color: '#71717a', marginBottom: '14px', fontSize: '13px' }}>AI 将自动读取本周任务、打卡、目标数据，生成深度分析报告</p>
-        <button onClick={onGenerate} disabled={loading}
-          style={{ backgroundColor: loading ? '#1a1a1a' : '#ec4899', color: loading ? '#52525b' : 'white', border: 'none', padding: '12px 24px', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontSize: '13px', fontWeight: '600', minHeight: '44px', width: '100%', transition: 'all 0.2s' }}>
+      {/* Generate button */}
+      <div className="animate-in animate-in-delay-1" style={card}>
+        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3, letterSpacing: '0.02em' }}>
+          AI 周报告
+        </div>
+        <p style={{ color: t.textSecondary, marginBottom: t.sp4, fontSize: t.sm, lineHeight: 1.5 }}>
+          AI 将自动读取本周任务、打卡、目标数据，生成深度分析报告
+        </p>
+        <button onClick={onGenerate} disabled={loading} style={{
+          width: '100%', padding: `${t.sp3} ${t.sp5}`,
+          borderRadius: t.rMd, border: 'none',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+          minHeight: '44px', transition: 'all 0.15s',
+          backgroundColor: loading ? t.border : '#ec4899',
+          color: loading ? t.textMuted : 'white',
+        }}>
           {loading ? '⏳ AI 分析中...' : '🔮 一键生成周报告'}
         </button>
       </div>
 
+      {/* Report result */}
       {weeklyReport && (
-        <div style={CARD}>
-          <div style={{ fontSize: '13px', color: '#ec4899', marginBottom: '14px', fontWeight: '600' }}>🤖 AI 周报告</div>
-          <div style={{ padding: '14px', backgroundColor: '#0a0a0a', borderRadius: '8px', whiteSpace: 'pre-wrap', lineHeight: '1.7', fontSize: '13px', color: '#a1a1aa', border: '1px solid #27272a' }}>{weeklyReport}</div>
+        <div className="animate-in" style={{ ...card, marginTop: t.sp3 }}>
+          <div style={{ fontSize: t.sm, color: '#ec4899', fontWeight: '600', marginBottom: t.sp3 }}>
+            AI 周报告
+          </div>
+          <div style={{
+            padding: t.sp4, backgroundColor: '#fdf2f8',
+            borderRadius: t.rMd, whiteSpace: 'pre-wrap',
+            lineHeight: 1.7, fontSize: t.sm, color: t.textSecondary,
+            border: `1px solid rgba(236,72,153,0.1)`,
+          }}>
+            {weeklyReport}
+          </div>
         </div>
       )}
     </div>

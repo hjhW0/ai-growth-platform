@@ -1,31 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback } from '../api/apiClient';
 import { getToday } from '../utils/dateFormatter';
+import { t, card, focusBorder, blurBorder } from '../styles/tokens';
 
-const CARD = {
-  backgroundColor: '#111111',
-  borderRadius: '12px',
-  padding: '20px',
-  marginBottom: '12px',
-  border: '1px solid #27272a'
-};
-
-const CARD_LABEL = {
-  fontSize: '12px',
-  color: '#71717a',
-  marginBottom: '14px',
-  fontWeight: '500'
-};
-
-function Skeleton({ height = 20, width = '100%', borderRadius = '4px', style = {} }) {
+function Skeleton({ height = 20, width = '100%', borderRadius = t.rSm, style = {} }) {
   return (
     <div style={{
-      height,
-      width,
-      borderRadius,
-      backgroundColor: '#1a1a1a',
-      animation: 'pulse 1.5s ease-in-out infinite',
-      ...style
+      height, width, borderRadius,
+      background: 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)',
+      backgroundSize: '200% 100%',
+      animation: 'shimmer 1.5s infinite',
+      ...style,
     }} />
   );
 }
@@ -43,18 +28,13 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const today = getToday();
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     try {
       const [statsData, tasksData, streakData, goalsData, logsData] = await Promise.all([
-        getTodayStats(),
-        getTasks({ date: today }),
-        getStreak(),
-        getGoals({ status: 'active' }),
-        getGrowthLogs({ limit: 1 })
+        getTodayStats(), getTasks({ date: today }), getStreak(),
+        getGoals({ status: 'active' }), getGrowthLogs({ limit: 1 })
       ]);
       setStats(statsData);
       setTodayTasks(tasksData.tasks || []);
@@ -63,9 +43,7 @@ function Dashboard() {
       setActiveGoal(goals.length > 0 ? goals[0] : null);
       const logs = logsData.data || [];
       setLatestLog(logs.length > 0 ? logs[0] : null);
-    } catch (error) {
-      console.error('加载数据失败:', error);
-    }
+    } catch (error) { console.error('加载数据失败:', error); }
     setLoading(false);
   };
 
@@ -76,13 +54,9 @@ function Dashboard() {
       setFeedbackSent(true);
       setTimeout(() => {
         setShowFeedback(false);
-        setFeedbackContent('');
-        setFeedbackRating(5);
-        setFeedbackSent(false);
+        setFeedbackContent(''); setFeedbackRating(5); setFeedbackSent(false);
       }, 1500);
-    } catch (e) {
-      alert('提交失败，请重试');
-    }
+    } catch (e) { alert('提交失败，请重试'); }
   };
 
   const completedCount = stats?.completed || 0;
@@ -91,10 +65,10 @@ function Dashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 6) return { icon: '🌙', text: '夜深了，注意休息' };
-    if (hour < 12) return { icon: '☀️', text: '早上好' };
-    if (hour < 18) return { icon: '☀️', text: '下午好' };
-    return { icon: '🌅', text: '晚上好' };
+    if (hour < 6) return { text: '夜深了', sub: '早点休息，明天继续加油' };
+    if (hour < 12) return { text: '早上好', sub: '新的一天，从第一个任务开始' };
+    if (hour < 18) return { text: '下午好', sub: '保持专注，你做得很棒' };
+    return { text: '晚上好', sub: '回顾一下今天的收获吧' };
   };
 
   const greeting = getGreeting();
@@ -104,311 +78,301 @@ function Dashboard() {
   if (loading) {
     return (
       <div>
-        <div style={{
-          ...CARD,
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.05) 100%)',
-          borderColor: 'rgba(99,102,241,0.2)'
-        }}>
-          <Skeleton height={16} width="60%" borderRadius="8px" style={{ marginBottom: 8, backgroundColor: 'rgba(99,102,241,0.1)' }} />
-          <Skeleton height={12} width="40%" borderRadius="6px" style={{ marginBottom: 20, backgroundColor: 'rgba(99,102,241,0.08)' }} />
-          <Skeleton height={50} borderRadius="10px" style={{ backgroundColor: 'rgba(99,102,241,0.08)' }} />
+        <div style={{ ...card, marginBottom: t.sp4 }}>
+          <Skeleton height={18} width="50%" style={{ marginBottom: t.sp3 }} />
+          <Skeleton height={12} width="35%" style={{ marginBottom: t.sp5 }} />
+          <Skeleton height={64} borderRadius={t.rMd} />
         </div>
         {[1, 2, 3].map(i => (
-          <div key={i} style={CARD}>
-            <Skeleton height={12} width="30%" style={{ marginBottom: 12 }} />
-            <Skeleton height={16} width="70%" style={{ marginBottom: 8 }} />
-            <Skeleton height={12} width="50%" />
+          <div key={i} style={{ ...card, marginBottom: t.sp3 }}>
+            <Skeleton height={12} width="30%" style={{ marginBottom: t.sp3 }} />
+            <Skeleton height={14} width="70%" />
           </div>
         ))}
-        <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
       </div>
     );
   }
 
   return (
     <div>
-      {/* 问候 + 核心数据 */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.05) 100%)',
-        borderRadius: '12px',
-        padding: '24px',
-        color: '#fafafa',
-        marginBottom: '12px',
-        border: '1px solid rgba(99,102,241,0.2)'
+      {/* Greeting + Today Progress */}
+      <div className="animate-in" style={{
+        ...card,
+        marginBottom: t.sp4,
+        background: `linear-gradient(135deg, ${t.primaryLight} 0%, #f0f0ff 100%)`,
+        border: `1px solid rgba(91,95,239,0.15)`,
       }}>
-        <div style={{ fontSize: '15px', color: '#a1a1aa', marginBottom: '4px' }}>
-          {greeting.icon} {greeting.text}，{username}
-        </div>
-        <div style={{ fontSize: '13px', color: '#71717a', marginBottom: '20px' }}>
-          🔥 已连续打卡 {streak} 天
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: t.sp4 }}>
+          <div>
+            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.text, letterSpacing: '-0.02em' }}>
+              {greeting.text}，{username}
+            </div>
+            <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp1 }}>
+              {greeting.sub}
+            </div>
+          </div>
+          {streak > 0 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              backgroundColor: 'rgba(245,158,11,0.1)',
+              padding: '4px 10px', borderRadius: t.rFull,
+              border: '1px solid rgba(245,158,11,0.2)',
+            }}>
+              <span style={{ fontSize: '14px' }}>🔥</span>
+              <span style={{ fontSize: t.sm, fontWeight: '700', color: t.warning }}>{streak}</span>
+            </div>
+          )}
         </div>
 
+        {/* Today progress card */}
         <div style={{
-          backgroundColor: 'rgba(255,255,255,0.05)',
-          borderRadius: '10px',
-          padding: '14px',
-          border: '1px solid rgba(255,255,255,0.08)'
+          backgroundColor: t.surface,
+          borderRadius: t.rMd,
+          padding: t.sp4,
+          border: `1px solid ${t.border}`,
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ fontSize: '13px', color: '#a1a1aa' }}>今日任务</span>
-            <span style={{ fontSize: '13px', fontWeight: '600', color: '#fafafa' }}>
-              {completedCount}/{totalCount} 完成
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
+            <span style={{ fontSize: t.sm, fontWeight: '600', color: t.text }}>今日进度</span>
+            <span style={{ fontSize: t.sm, color: t.textSecondary }}>
+              {completedCount}/{totalCount}
             </span>
           </div>
           <div style={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            borderRadius: '3px',
-            height: '4px'
+            backgroundColor: t.surfaceAlt,
+            borderRadius: t.rFull,
+            height: '8px',
+            overflow: 'hidden',
           }}>
             <div style={{
-              backgroundColor: '#6366f1',
-              borderRadius: '3px',
-              height: '4px',
+              height: '100%',
+              borderRadius: t.rFull,
               width: `${rate}%`,
-              transition: 'width 0.5s ease'
+              transition: 'width 0.6s ease',
+              background: rate >= 80
+                ? `linear-gradient(90deg, ${t.success}, #34d399)`
+                : rate >= 50
+                  ? `linear-gradient(90deg, ${t.warning}, #fbbf24)`
+                  : `linear-gradient(90deg, ${t.primary}, #818cf8)`,
             }} />
           </div>
-          <div style={{ textAlign: 'right', marginTop: '6px', fontSize: '11px', color: '#71717a' }}>
-            完成率 {rate}%
+          <div style={{ textAlign: 'right', marginTop: t.sp2, fontSize: t.xs, color: t.textMuted }}>
+            {rate >= 80 ? '🎉 太棒了！继续保持' : rate >= 50 ? '💪 过半了，加油' : '🌱 刚刚开始，慢慢来'}
           </div>
         </div>
       </div>
 
-      {/* 当前核心目标 */}
-      <div style={CARD}>
-        <div style={CARD_LABEL}>🎯 当前核心目标</div>
-        {activeGoal ? (
-          <div>
-            <div style={{ fontSize: '15px', fontWeight: '600', color: '#fafafa', marginBottom: '6px' }}>
-              {activeGoal.title}
-            </div>
-            {activeGoal.description && (
-              <div style={{ fontSize: '13px', color: '#71717a', marginBottom: '10px' }}>
-                {activeGoal.description}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#a1a1aa', flexWrap: 'wrap' }}>
-              <span>{activeGoal.goal_type || '未分类'}</span>
-              <span>{activeGoal.priority === 'high' ? '🔴 高优先级' : activeGoal.priority === 'medium' ? '🟡 中优先级' : '🟢 低优先级'}</span>
-              {activeGoal.deadline && <span>截止 {activeGoal.deadline}</span>}
-            </div>
-          </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>
-            <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎯</div>
-            <div style={{ color: '#71717a', fontSize: '14px' }}>暂无活跃目标</div>
-            <div style={{ color: '#52525b', fontSize: '13px', marginTop: '4px' }}>去"目标"页面创建一个吧</div>
-          </div>
-        )}
-      </div>
-
-      {/* 最近 AI 建议 */}
-      <div style={CARD}>
-        <div style={CARD_LABEL}>🤖 最近 AI 建议</div>
-        {latestLog ? (
-          <div>
-            <div style={{
-              fontSize: '13px',
-              color: '#a1a1aa',
-              lineHeight: '1.7',
-              whiteSpace: 'pre-wrap'
-            }}>
-              {latestLog.ai_summary || latestLog.content}
-            </div>
-            <div style={{ fontSize: '11px', color: '#52525b', marginTop: '10px' }}>
-              {latestLog.log_date}
-            </div>
-          </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>
-            <div style={{ fontSize: '28px', marginBottom: '8px' }}>💡</div>
-            <div style={{ color: '#71717a', fontSize: '14px' }}>暂无 AI 建议</div>
-            <div style={{ color: '#52525b', fontSize: '13px', marginTop: '4px' }}>完成今日任务后可生成复盘</div>
-          </div>
-        )}
-      </div>
-
-      {/* 今日任务列表 */}
-      <div style={CARD}>
-        <div style={CARD_LABEL}>📋 今日任务</div>
+      {/* Today Tasks */}
+      <div className="animate-in animate-in-delay-1" style={{ ...card, marginBottom: t.sp3 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
+          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>
+            今日任务
+          </span>
+          {todayTasks.length > 0 && (
+            <span style={{ fontSize: t.xs, color: t.textMuted }}>{todayTasks.length} 项</span>
+          )}
+        </div>
         {todayTasks.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>
-            <div style={{ fontSize: '28px', marginBottom: '8px' }}>✨</div>
-            <div style={{ color: '#71717a', fontSize: '14px' }}>今天还没有任务</div>
-            <div style={{ color: '#52525b', fontSize: '13px', marginTop: '4px' }}>去"任务"页面添加吧</div>
+          <div style={{ textAlign: 'center', padding: `${t.sp6} 0` }}>
+            <div style={{ fontSize: '32px', marginBottom: t.sp2 }}>✨</div>
+            <div style={{ color: t.textSecondary, fontSize: t.base, marginBottom: t.sp1 }}>今天还没有任务</div>
+            <div style={{ color: t.textMuted, fontSize: t.sm }}>去"任务"页面添加吧</div>
           </div>
         ) : (
           <div>
-            {todayTasks.slice(0, 5).map(task => (
+            {todayTasks.slice(0, 5).map((task, idx) => (
               <div key={task.id} style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 0',
-                borderBottom: '1px solid #1a1a1a'
+                display: 'flex', alignItems: 'center', gap: t.sp3,
+                padding: `${t.sp3} 0`,
+                borderBottom: idx < Math.min(todayTasks.length, 5) - 1 ? `1px solid ${t.borderLight}` : 'none',
               }}>
                 <div style={{
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  border: `2px solid ${task.status === 'completed' ? '#22c55e' : '#3f3f46'}`,
-                  backgroundColor: task.status === 'completed' ? '#22c55e' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px',
-                  flexShrink: 0
+                  width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                  border: `2px solid ${task.status === 'completed' ? t.success : t.border}`,
+                  backgroundColor: task.status === 'completed' ? t.success : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {task.status === 'completed' && (
-                    <span style={{ color: 'white', fontSize: '10px' }}>✓</span>
-                  )}
+                  {task.status === 'completed' && <span style={{ color: 'white', fontSize: '10px', fontWeight: '700' }}>✓</span>}
                 </div>
                 <span style={{
-                  flex: 1,
+                  flex: 1, fontSize: t.base,
                   textDecoration: task.status === 'completed' ? 'line-through' : 'none',
-                  color: task.status === 'completed' ? '#52525b' : '#fafafa',
-                  fontSize: '14px'
+                  color: task.status === 'completed' ? t.textMuted : t.text,
                 }}>
                   {task.title}
                 </span>
                 {task.priority === 'high' && (
-                  <span style={{ fontSize: '11px', color: '#ef4444', marginLeft: '8px' }}>高</span>
+                  <span style={{ fontSize: t.xs, color: t.error, flexShrink: 0 }}>高</span>
                 )}
               </div>
             ))}
             {todayTasks.length > 5 && (
               <a href="/tasks" style={{
-                display: 'block',
-                textAlign: 'center',
-                padding: '12px',
-                color: '#6366f1',
-                textDecoration: 'none',
-                fontSize: '13px',
-                fontWeight: '500'
+                display: 'block', textAlign: 'center', padding: t.sp3,
+                color: t.primary, textDecoration: 'none',
+                fontSize: t.sm, fontWeight: '500',
               }}>
-                还有 {todayTasks.length - 5} 项任务 →
+                还有 {todayTasks.length - 5} 项 →
               </a>
             )}
           </div>
         )}
       </div>
 
-      {/* 浮动反馈按钮 */}
+      {/* Active Goal */}
+      <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
+        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em', marginBottom: t.sp3 }}>
+          当前目标
+        </div>
+        {activeGoal ? (
+          <div>
+            <div style={{ fontSize: t.md, fontWeight: '600', color: t.text, marginBottom: t.sp1 }}>
+              {activeGoal.title}
+            </div>
+            {activeGoal.description && (
+              <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp3, lineHeight: 1.5 }}>
+                {activeGoal.description}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: t.sp2, flexWrap: 'wrap' }}>
+              <span style={{
+                padding: '2px 8px', borderRadius: t.rSm,
+                fontSize: t.xs, fontWeight: '500',
+                backgroundColor: activeGoal.priority === 'high' ? t.errorLight : activeGoal.priority === 'medium' ? t.warningLight : t.successLight,
+                color: activeGoal.priority === 'high' ? t.error : activeGoal.priority === 'medium' ? t.warning : t.success,
+              }}>
+                {activeGoal.priority === 'high' ? '高优先' : activeGoal.priority === 'medium' ? '中优先' : '低优先'}
+              </span>
+              {activeGoal.deadline && (
+                <span style={{
+                  padding: '2px 8px', borderRadius: t.rSm,
+                  fontSize: t.xs, backgroundColor: t.surfaceAlt, color: t.textMuted,
+                }}>
+                  截止 {activeGoal.deadline}
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: `${t.sp5} 0` }}>
+            <div style={{ fontSize: '28px', marginBottom: t.sp2 }}>🎯</div>
+            <div style={{ color: t.textSecondary, fontSize: t.sm }}>暂无活跃目标</div>
+          </div>
+        )}
+      </div>
+
+      {/* AI Insight */}
+      <div className="animate-in animate-in-delay-3" style={{ ...card, marginBottom: t.sp3 }}>
+        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em', marginBottom: t.sp3 }}>
+          AI 洞察
+        </div>
+        {latestLog ? (
+          <div>
+            <div style={{
+              fontSize: t.sm, color: t.textSecondary, lineHeight: 1.7,
+              whiteSpace: 'pre-wrap', padding: t.sp3,
+              backgroundColor: t.primaryLight, borderRadius: t.rMd,
+              border: `1px solid rgba(91,95,239,0.1)`,
+            }}>
+              {latestLog.ai_summary || latestLog.content}
+            </div>
+            <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: t.sp2 }}>
+              {latestLog.log_date}
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: `${t.sp5} 0` }}>
+            <div style={{ fontSize: '28px', marginBottom: t.sp2 }}>💡</div>
+            <div style={{ color: t.textSecondary, fontSize: t.sm }}>完成今日任务后可生成复盘</div>
+          </div>
+        )}
+      </div>
+
+      {/* Feedback FAB */}
       <div
         onClick={() => setShowFeedback(true)}
         style={{
-          position: 'fixed',
-          bottom: '90px',
-          right: '20px',
-          width: '44px',
-          height: '44px',
-          borderRadius: '50%',
-          backgroundColor: '#6366f1',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '18px',
-          cursor: 'pointer',
-          zIndex: 40,
-          transition: 'transform 0.2s ease',
-          boxShadow: '0 0 20px rgba(99,102,241,0.3)'
+          position: 'fixed', bottom: '80px', right: '20px',
+          width: '48px', height: '48px', borderRadius: '50%',
+          backgroundColor: t.primary, color: 'white',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '20px', cursor: 'pointer', zIndex: 40,
+          boxShadow: '0 4px 14px rgba(91,95,239,0.35)',
+          transition: 'transform 0.15s',
         }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
         onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
       >
         💬
       </div>
 
-      {/* 反馈弹窗 */}
+      {/* Feedback Modal */}
       {showFeedback && (
         <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '16px'
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 100, padding: t.sp4,
         }} onClick={() => setShowFeedback(false)}>
           <div style={{
-            backgroundColor: '#111111',
-            borderRadius: '16px',
-            padding: '24px',
-            width: '100%',
-            maxWidth: '400px',
-            border: '1px solid #27272a'
+            backgroundColor: t.surface, borderRadius: t.rXl,
+            padding: t.sp6, width: '100%', maxWidth: '400px',
+            border: `1px solid ${t.border}`,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+            animation: 'scaleIn 0.2s ease-out',
           }} onClick={e => e.stopPropagation()}>
             {feedbackSent ? (
-              <div style={{ textAlign: 'center', padding: '30px' }}>
-                <div style={{ fontSize: '36px', marginBottom: '12px' }}>🎉</div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#fafafa' }}>感谢你的反馈！</div>
-                <div style={{ fontSize: '13px', color: '#71717a', marginTop: '8px' }}>我们会认真改进</div>
+              <div style={{ textAlign: 'center', padding: `${t.sp8} 0` }}>
+                <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>🎉</div>
+                <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text }}>感谢你的反馈！</div>
+                <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp2 }}>我们会认真改进</div>
               </div>
             ) : (
               <>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fafafa', marginBottom: '20px' }}>
-                  💬 意见反馈
+                <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text, marginBottom: t.sp5 }}>
+                  意见反馈
                 </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '13px', color: '#a1a1aa', marginBottom: '8px' }}>整体体验</div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ marginBottom: t.sp4 }}>
+                  <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp2 }}>整体体验</div>
+                  <div style={{ display: 'flex', gap: t.sp2 }}>
                     {[1,2,3,4,5].map(i => (
-                      <span
-                        key={i}
-                        onClick={() => setFeedbackRating(i)}
-                        style={{
-                          fontSize: '22px',
-                          cursor: 'pointer',
-                          transition: 'transform 0.15s ease',
-                          transform: i <= feedbackRating ? 'scale(1.1)' : 'scale(1)'
-                        }}
-                      >
+                      <span key={i} onClick={() => setFeedbackRating(i)} style={{
+                        fontSize: '24px', cursor: 'pointer', transition: 'transform 0.1s',
+                        transform: i <= feedbackRating ? 'scale(1.15)' : 'scale(1)',
+                        opacity: i <= feedbackRating ? 1 : 0.3,
+                      }}>
                         {i <= feedbackRating ? '⭐' : '☆'}
                       </span>
                     ))}
                   </div>
                 </div>
-
                 <textarea
                   value={feedbackContent}
                   onChange={e => setFeedbackContent(e.target.value)}
                   placeholder="说说你的使用感受..."
                   style={{
-                    width: '100%',
-                    minHeight: '90px',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: '1px solid #27272a',
-                    fontSize: '14px',
-                    resize: 'vertical',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                    backgroundColor: '#0a0a0a',
-                    color: '#fafafa',
-                    transition: 'border-color 0.2s'
+                    width: '100%', minHeight: '90px',
+                    padding: t.sp3, borderRadius: t.rMd,
+                    border: `1.5px solid ${t.border}`,
+                    fontSize: t.base, resize: 'vertical', outline: 'none',
+                    boxSizing: 'border-box', fontFamily: 'inherit',
+                    backgroundColor: t.bg, color: t.text,
+                    transition: 'border-color 0.15s',
                   }}
-                  onFocus={e => e.target.style.borderColor = '#6366f1'}
-                  onBlur={e => e.target.style.borderColor = '#27272a'}
+                  onFocus={focusBorder}
+                  onBlur={blurBorder}
                 />
-
                 <button
                   onClick={handleSubmitFeedback}
                   disabled={!feedbackContent.trim()}
                   style={{
-                    width: '100%',
-                    marginTop: '16px',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    background: feedbackContent.trim() ? '#6366f1' : '#1a1a1a',
-                    color: feedbackContent.trim() ? 'white' : '#52525b',
-                    fontSize: '14px',
-                    fontWeight: '600',
+                    width: '100%', marginTop: t.sp4,
+                    padding: t.sp3, borderRadius: t.rMd, border: 'none',
+                    background: feedbackContent.trim() ? t.primary : t.border,
+                    color: feedbackContent.trim() ? 'white' : t.textMuted,
+                    fontSize: t.base, fontWeight: '600',
                     cursor: feedbackContent.trim() ? 'pointer' : 'not-allowed',
-                    transition: 'all 0.2s'
+                    fontFamily: 'inherit', minHeight: '44px',
+                    transition: 'all 0.15s',
                   }}
                 >
                   提交反馈

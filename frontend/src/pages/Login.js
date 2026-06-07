@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { login, register } from '../api/apiClient';
+import { t, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 
 function Login({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -25,131 +26,174 @@ function Login({ onLogin }) {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#0a0a0a',
-      padding: '16px'
+      backgroundColor: t.bg,
     }}>
+      {/* Left branding panel - hidden on mobile */}
       <div style={{
-        backgroundColor: '#111111',
-        borderRadius: '16px',
-        padding: '32px 24px',
-        width: '100%',
-        maxWidth: '380px',
-        border: '1px solid #27272a'
+        flex: 1,
+        background: 'linear-gradient(135deg, #5b5fef 0%, #7c3aed 50%, #a855f7 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: t.sp8,
+        position: 'relative',
+        overflow: 'hidden',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ fontSize: '32px', marginBottom: '8px' }}>✨</div>
-          <h1 style={{ margin: 0, color: '#fafafa', fontSize: '20px', fontWeight: '600' }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute', top: '-10%', right: '-10%',
+          width: '400px', height: '400px',
+          borderRadius: '50%',
+          background: 'rgba(255,255,255,0.08)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-15%', left: '-5%',
+          width: '300px', height: '300px',
+          borderRadius: '50%',
+          background: 'rgba(255,255,255,0.05)',
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white' }}>
+          <div style={{ fontSize: '64px', marginBottom: t.sp6 }}>🌱</div>
+          <h1 style={{
+            fontSize: '32px', fontWeight: '700', margin: `0 0 ${t.sp4} 0`,
+            letterSpacing: '-0.03em', lineHeight: 1.2,
+          }}>
             AI 成长平台
           </h1>
-          <p style={{ margin: '8px 0 0 0', color: '#71717a', fontSize: '13px' }}>
-            记录成长，遇见更好的自己
+          <p style={{
+            fontSize: t.lg, opacity: 0.85, margin: 0,
+            lineHeight: 1.6, maxWidth: '320px',
+          }}>
+            陪你养成好习惯<br />让每一天的进步都看得见
           </p>
         </div>
+      </div>
 
-        {error && (
+      {/* Right form panel */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: t.sp6,
+        maxWidth: '480px',
+      }}>
+        <div style={{ width: '100%', maxWidth: '360px' }}>
+          {/* Mobile-only logo */}
           <div style={{
-            backgroundColor: 'rgba(239,68,68,0.1)',
-            color: '#ef4444',
-            padding: '10px 14px',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            fontSize: '13px',
-            border: '1px solid rgba(239,68,68,0.2)'
+            textAlign: 'center', marginBottom: t.sp8,
           }}>
-            {error}
+            <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>🌱</div>
+            <h1 style={{
+              fontSize: t['2xl'], fontWeight: '700',
+              color: t.text, margin: 0,
+              letterSpacing: '-0.02em',
+            }}>
+              AI 成长平台
+            </h1>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '14px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#a1a1aa', fontSize: '13px', fontWeight: '500' }}>用户名</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
+          <h2 style={{
+            fontSize: t.xl, fontWeight: '600', color: t.text,
+            margin: `0 0 ${t.sp2} 0`,
+          }}>
+            {isRegister ? '创建账号' : '欢迎回来'}
+          </h2>
+          <p style={{
+            fontSize: t.base, color: t.textSecondary,
+            margin: `0 0 ${t.sp6} 0`,
+          }}>
+            {isRegister ? '注册后开始记录你的成长' : '登录继续你的成长之旅'}
+          </p>
+
+          {error && (
+            <div style={{
+              backgroundColor: t.errorLight,
+              color: t.error,
+              padding: `${t.sp3} ${t.sp4}`,
+              borderRadius: t.rMd,
+              marginBottom: t.sp4,
+              fontSize: t.base,
+              border: `1px solid rgba(239,68,68,0.2)`,
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: t.sp4 }}>
+              <label style={{
+                fontSize: t.sm, color: t.textSecondary,
+                fontWeight: '500', display: 'block',
+                marginBottom: t.sp2,
+              }}>用户名</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                style={input}
+                placeholder="请输入用户名"
+                onFocus={focusBorder}
+                onBlur={blurBorder}
+              />
+            </div>
+
+            <div style={{ marginBottom: t.sp5 }}>
+              <label style={{
+                fontSize: t.sm, color: t.textSecondary,
+                fontWeight: '500', display: 'block',
+                marginBottom: t.sp2,
+              }}>密码</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={input}
+                placeholder="请输入密码"
+                onFocus={focusBorder}
+                onBlur={blurBorder}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
               style={{
+                ...btnPrimary,
                 width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #27272a',
-                borderRadius: '8px',
-                fontSize: '14px',
-                outline: 'none',
-                boxSizing: 'border-box',
-                backgroundColor: '#0a0a0a',
-                color: '#fafafa',
-                transition: 'border-color 0.2s'
+                backgroundColor: loading ? t.border : t.primary,
+                color: loading ? t.textMuted : 'white',
+                cursor: loading ? 'not-allowed' : 'pointer',
               }}
-              placeholder="请输入用户名"
-              onFocus={e => e.target.style.borderColor = '#6366f1'}
-              onBlur={e => e.target.style.borderColor = '#27272a'}
-            />
-          </div>
+            >
+              {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
+            </button>
+          </form>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#a1a1aa', fontSize: '13px', fontWeight: '500' }}>密码</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+          <p style={{
+            textAlign: 'center',
+            marginTop: t.sp5,
+            color: t.textSecondary,
+            fontSize: t.base,
+          }}>
+            {isRegister ? '已有账号？' : '没有账号？'}
+            <button
+              onClick={() => { setIsRegister(!isRegister); setError(''); }}
               style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #27272a',
-                borderRadius: '8px',
-                fontSize: '14px',
-                outline: 'none',
-                boxSizing: 'border-box',
-                backgroundColor: '#0a0a0a',
-                color: '#fafafa',
-                transition: 'border-color 0.2s'
+                background: 'none', border: 'none',
+                color: t.primary, cursor: 'pointer',
+                fontWeight: '600', fontSize: t.base,
+                fontFamily: 'inherit',
               }}
-              placeholder="请输入密码"
-              onFocus={e => e.target.style.borderColor = '#6366f1'}
-              onBlur={e => e.target.style.borderColor = '#27272a'}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '12px',
-              backgroundColor: loading ? '#1a1a1a' : '#6366f1',
-              color: loading ? '#52525b' : 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              minHeight: '44px',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
-          </button>
-        </form>
-
-        <div style={{ textAlign: 'center', marginTop: '20px', color: '#71717a', fontSize: '13px' }}>
-          {isRegister ? '已有账号？' : '没有账号？'}
-          <button
-            onClick={() => { setIsRegister(!isRegister); setError(''); }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#6366f1',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              fontSize: '13px',
-              fontWeight: '500'
-            }}
-          >
-            {isRegister ? '立即登录' : '立即注册'}
-          </button>
+            >
+              {isRegister ? '立即登录' : '立即注册'}
+            </button>
+          </p>
         </div>
       </div>
     </div>

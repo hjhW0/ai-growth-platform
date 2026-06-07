@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { checkIn, getCheckinStatus, getStreak } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday } from '../utils/dateFormatter';
-
-const CARD = {
-  backgroundColor: '#111111',
-  borderRadius: '12px',
-  padding: '20px',
-  marginBottom: '12px',
-  border: '1px solid #27272a'
-};
+import { t, card } from '../styles/tokens';
 
 function CheckIn() {
   const [checkedIn, setCheckedIn] = useState(false);
@@ -16,23 +9,19 @@ function CheckIn() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [mood, setMood] = useState('normal');
+  const [justChecked, setJustChecked] = useState(false);
   const today = getToday();
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     try {
       const [statusData, streakData] = await Promise.all([
-        getCheckinStatus({ date: today }),
-        getStreak()
+        getCheckinStatus({ date: today }), getStreak()
       ]);
       setCheckedIn(statusData.checked_in);
       setStreak(streakData.streak || 0);
-    } catch (error) {
-      console.error('加载数据失败:', error);
-    }
+    } catch (error) { console.error('加载数据失败:', error); }
     setInitialLoading(false);
   };
 
@@ -42,10 +31,9 @@ function CheckIn() {
     try {
       await checkIn({ check_date: today, check_type: 'daily', mood, note: '' });
       setCheckedIn(true);
+      setJustChecked(true);
       loadData();
-    } catch (error) {
-      console.error('打卡失败:', error);
-    }
+    } catch (error) { console.error('打卡失败:', error); }
     setLoading(false);
   };
 
@@ -63,20 +51,15 @@ function CheckIn() {
   };
 
   const weekDates = getWeekDates();
+  const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日'];
 
   if (initialLoading) {
     return (
       <div>
-        <div style={{ ...CARD, background: 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(239,68,68,0.1) 100%)', borderColor: 'rgba(245,158,11,0.2)' }}>
-          <div style={{ height: 16, width: '50%', backgroundColor: 'rgba(245,158,11,0.1)', borderRadius: 8, margin: '0 auto 20px' }} />
-          <div style={{ height: 100, width: 100, borderRadius: '50%', backgroundColor: 'rgba(245,158,11,0.1)', margin: '0 auto 20px' }} />
-          <div style={{ height: 32, width: '30%', backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: 8, margin: '0 auto' }} />
-        </div>
-        <div style={CARD}>
-          <div style={{ height: 14, width: '40%', backgroundColor: '#1a1a1a', borderRadius: 4, marginBottom: 16 }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {[1,2,3,4,5,6,7].map(i => <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: '#1a1a1a' }} />)}
-          </div>
+        <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
+          <div style={{ width: 120, height: 120, borderRadius: '50%', backgroundColor: t.surfaceAlt, margin: `0 auto ${t.sp5}` }} />
+          <div style={{ height: 16, width: '40%', backgroundColor: t.surfaceAlt, borderRadius: t.rSm, margin: `0 auto ${t.sp3}` }} />
+          <div style={{ height: 12, width: '25%', backgroundColor: t.surfaceAlt, borderRadius: t.rSm, margin: '0 auto' }} />
         </div>
       </div>
     );
@@ -84,109 +67,118 @@ function CheckIn() {
 
   return (
     <div>
-      <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#fafafa', marginBottom: '16px' }}>🔥 每日打卡</h2>
-
-      {/* 打卡卡片 */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(239,68,68,0.1) 100%)',
-        borderRadius: '12px',
-        padding: '32px 24px',
-        color: '#fafafa',
+      {/* Main check-in card */}
+      <div className="animate-in" style={{
+        ...card,
         textAlign: 'center',
-        marginBottom: '12px',
-        border: '1px solid rgba(245,158,11,0.2)'
+        padding: `${t.sp8} ${t.sp5}`,
+        background: checkedIn
+          ? `linear-gradient(135deg, ${t.successLight} 0%, #ecfdf5 100%)`
+          : `linear-gradient(135deg, ${t.primaryLight} 0%, #f0f0ff 100%)`,
+        border: `1px solid ${checkedIn ? 'rgba(16,185,129,0.15)' : 'rgba(91,95,239,0.15)'}`,
+        marginBottom: t.sp4,
       }}>
-        <div style={{ fontSize: '13px', color: '#a1a1aa', marginBottom: '4px' }}>
+        <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp2 }}>
           {formatDateChinese(today)} {getWeekday(today)}
         </div>
 
-        {/* 心情选择 */}
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', fontSize: '12px', color: '#71717a' }}>今日心情</div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
-            {[
-              { value: 'good', icon: '😊' },
-              { value: 'normal', icon: '😐' },
-              { value: 'bad', icon: '😔' }
-            ].map(m => (
-              <button
-                key={m.value}
-                onClick={() => setMood(m.value)}
-                style={{
-                  background: mood === m.value ? 'rgba(245,158,11,0.2)' : 'transparent',
-                  border: `2px solid ${mood === m.value ? 'rgba(245,158,11,0.5)' : '#27272a'}`,
-                  borderRadius: '50%',
-                  width: '44px',
-                  height: '44px',
-                  cursor: 'pointer',
-                  fontSize: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {m.icon}
-              </button>
-            ))}
+        {/* Mood selector */}
+        {!checkedIn && (
+          <div style={{ marginBottom: t.sp5 }}>
+            <div style={{ fontSize: t.xs, color: t.textMuted, marginBottom: t.sp3 }}>今日心情</div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: t.sp3 }}>
+              {[
+                { value: 'good', icon: '😊', label: '不错' },
+                { value: 'normal', icon: '😐', label: '还行' },
+                { value: 'bad', icon: '😔', label: '一般' },
+              ].map(m => (
+                <button key={m.value} onClick={() => setMood(m.value)} style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                  background: mood === m.value ? t.primaryLight : 'transparent',
+                  border: `2px solid ${mood === m.value ? 'rgba(91,95,239,0.3)' : t.border}`,
+                  borderRadius: t.rMd, padding: `${t.sp2} ${t.sp3}`,
+                  cursor: 'pointer', transition: 'all 0.15s',
+                  minWidth: '60px',
+                }}>
+                  <span style={{ fontSize: '24px' }}>{m.icon}</span>
+                  <span style={{ fontSize: t.xs, color: mood === m.value ? t.primary : t.textMuted, fontWeight: '500' }}>{m.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* 打卡按钮 */}
+        {/* Check-in button */}
         <button
           onClick={handleCheckIn}
           disabled={checkedIn || loading}
           style={{
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            border: `3px solid ${checkedIn ? 'rgba(34,197,94,0.5)' : 'rgba(245,158,11,0.5)'}`,
-            backgroundColor: checkedIn ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.1)',
-            color: checkedIn ? '#22c55e' : '#f59e0b',
-            fontSize: '16px',
-            fontWeight: '700',
-            cursor: checkedIn ? 'default' : 'pointer',
-            margin: '16px auto',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease'
+            width: '120px', height: '120px',
+            borderRadius: '50%', border: 'none',
+            backgroundColor: checkedIn ? t.success : t.primary,
+            color: 'white', fontSize: checkedIn ? '32px' : t.lg,
+            fontWeight: '700', cursor: checkedIn ? 'default' : 'pointer',
+            margin: `${t.sp4} auto`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '4px',
+            boxShadow: checkedIn
+              ? `0 8px 30px rgba(16,185,129,0.3)`
+              : `0 8px 30px rgba(91,95,239,0.3)`,
+            transition: 'all 0.3s ease',
+            transform: justChecked ? 'scale(1.05)' : 'scale(1)',
           }}
         >
-          {loading ? '打卡中...' : checkedIn ? '✓ 已打卡' : '打卡'}
+          {loading ? (
+            <span style={{ fontSize: t.base }}>...</span>
+          ) : checkedIn ? (
+            <>✓</>
+          ) : (
+            <>
+              <span style={{ fontSize: '28px' }}>🔥</span>
+              <span style={{ fontSize: t.sm }}>打卡</span>
+            </>
+          )}
         </button>
 
-        <div style={{ marginTop: '16px' }}>
-          <div style={{ fontSize: '28px', fontWeight: '700', color: '#fafafa' }}>{streak}</div>
-          <div style={{ fontSize: '12px', color: '#71717a' }}>连续打卡天数</div>
+        <div style={{ marginTop: t.sp3 }}>
+          <div style={{ fontSize: t['3xl'], fontWeight: '700', color: t.text }}>{streak}</div>
+          <div style={{ fontSize: t.sm, color: t.textMuted }}>连续打卡天数</div>
         </div>
+
+        {checkedIn && (
+          <div style={{
+            marginTop: t.sp4, padding: `${t.sp3} ${t.sp4}`,
+            backgroundColor: 'rgba(16,185,129,0.1)', borderRadius: t.rMd,
+            fontSize: t.sm, color: t.success, fontWeight: '500',
+          }}>
+            {streak >= 7 ? '🎉 太厉害了！已连续一周！' : streak >= 3 ? '💪 坚持就是胜利！' : '✨ 今天也辛苦了！'}
+          </div>
+        )}
       </div>
 
-      {/* 本周打卡记录 */}
-      <div style={CARD}>
-        <div style={{ fontSize: '13px', fontWeight: '600', color: '#fafafa', marginBottom: '16px' }}>📅 本周打卡记录</div>
+      {/* Week view */}
+      <div className="animate-in animate-in-delay-1" style={card}>
+        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp4, letterSpacing: '0.02em' }}>
+          本周打卡
+        </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {weekDates.map((date, index) => {
             const isToday = date === today;
+            const isPast = date < today;
             return (
               <div key={date} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <div style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: isToday ? 'rgba(99,102,241,0.2)' : '#1a1a1a',
-                  color: isToday ? '#6366f1' : '#71717a',
-                  fontSize: '12px',
-                  fontWeight: isToday ? '600' : '400',
-                  border: isToday ? '1px solid rgba(99,102,241,0.3)' : '1px solid #27272a'
+                  width: '36px', height: '36px', borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  backgroundColor: isToday ? t.primary : isPast ? t.successLight : t.surfaceAlt,
+                  color: isToday ? 'white' : isPast ? t.success : t.textMuted,
+                  fontSize: t.sm, fontWeight: isToday ? '700' : '500',
+                  border: isToday ? `2px solid ${t.primary}` : `1px solid ${isPast ? 'rgba(16,185,129,0.2)' : t.border}`,
                 }}>
-                  {['一','二','三','四','五','六','日'][index]}
+                  {weekdayLabels[index]}
                 </div>
-                <div style={{ fontSize: '10px', color: isToday ? '#6366f1' : '#3f3f46' }}>
-                  {isToday ? '今天' : ''}
+                <div style={{ fontSize: '9px', color: isToday ? t.primary : t.textMuted, fontWeight: '500' }}>
+                  {isToday ? '今天' : isPast ? '✓' : ''}
                 </div>
               </div>
             );
@@ -194,14 +186,13 @@ function CheckIn() {
         </div>
       </div>
 
-      {/* 打卡提示 */}
-      <div style={CARD}>
-        <div style={{ fontSize: '13px', fontWeight: '600', color: '#fafafa', marginBottom: '12px' }}>💡 打卡小贴士</div>
-        <div style={{ color: '#71717a', fontSize: '13px', lineHeight: '1.8' }}>
-          <p style={{ margin: '0 0 4px 0' }}>• 每天坚持打卡，养成好习惯</p>
-          <p style={{ margin: '0 0 4px 0' }}>• 连续打卡可以获得更多成就</p>
-          <p style={{ margin: '0 0 4px 0' }}>• 打卡记录会保存在统计页面</p>
-          <p style={{ margin: 0 }}>• 坚持就是胜利！💪</p>
+      {/* Tips */}
+      <div className="animate-in animate-in-delay-2" style={{ ...card, marginTop: t.sp3 }}>
+        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3 }}>打卡小贴士</div>
+        <div style={{ color: t.textSecondary, fontSize: t.sm, lineHeight: 1.8 }}>
+          <div>• 每天坚持打卡，养成好习惯</div>
+          <div>• 连续打卡可以获得更多成就</div>
+          <div>• 打卡记录会保存在统计页面</div>
         </div>
       </div>
     </div>
