@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Target, Sparkles, Check, Edit3, Trash2, Plus } from 'lucide-react';
 import useGoalsStore from '../store/useGoalsStore';
 import { generateTasks, trackEvent } from '../api/apiClient';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
@@ -77,8 +78,8 @@ export default function Goals() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp4 }}>
         <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, margin: 0, letterSpacing: '-0.02em' }}>目标管理</h2>
         <button onClick={() => { setEditingGoal(null); setFormData({ title: '', description: '', goal_type: 'learning', priority: 'medium', deadline: '' }); setShowForm(true); }}
-          style={{ ...btnPrimary, padding: '8px 16px', minHeight: '36px', fontSize: t.sm }}>
-          + 新建
+          style={{ ...btnPrimary, padding: '8px 16px', minHeight: '36px', fontSize: t.sm, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Plus size={14} /> 新建
         </button>
       </div>
 
@@ -178,7 +179,7 @@ export default function Goals() {
         ))}</div>
       ) : goals.length === 0 ? (
         <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
-          <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>🎯</div>
+          <Target size={40} style={{ color: t.textMuted, marginBottom: t.sp3 }} />
           <div style={{ color: t.textSecondary, fontSize: t.md, fontWeight: '500', marginBottom: t.sp1 }}>还没有目标</div>
           <div style={{ color: t.textMuted, fontSize: t.sm }}>点击上方按钮开始创建</div>
         </div>
@@ -210,23 +211,23 @@ export default function Goals() {
                         <button onClick={() => handleGenerateTasks(goal)} disabled={generatingId === goal.id} title="AI生成任务" style={{
                           width: '32px', height: '32px', borderRadius: t.rSm, cursor: generatingId === goal.id ? 'not-allowed' : 'pointer',
                           backgroundColor: t.primaryLight, color: t.primary, border: `1px solid rgba(91,95,239,0.15)`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px',
-                        }}>{generatingId === goal.id ? '⏳' : '🤖'}</button>
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}><Sparkles size={14} /></button>
                         <button onClick={() => handleComplete(goal)} title="完成" style={{
                           width: '32px', height: '32px', borderRadius: t.rSm, cursor: 'pointer',
                           backgroundColor: t.successLight, color: t.success, border: `1px solid rgba(16,185,129,0.15)`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px',
-                        }}>✓</button>
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}><Check size={14} /></button>
                         <button onClick={() => handleEdit(goal)} title="编辑" style={{
                           width: '32px', height: '32px', borderRadius: t.rSm, cursor: 'pointer',
                           backgroundColor: t.surfaceAlt, color: t.textSecondary, border: `1px solid ${t.border}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px',
-                        }}>✎</button>
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}><Edit3 size={14} /></button>
                         <button onClick={() => handleDelete(goal.id)} title="删除" style={{
                           width: '32px', height: '32px', borderRadius: t.rSm, cursor: 'pointer',
                           backgroundColor: t.errorLight, color: t.error, border: `1px solid rgba(239,68,68,0.15)`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px',
-                        }}>✕</button>
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}><Trash2 size={14} /></button>
                       </div>
                     </div>
                   </div>

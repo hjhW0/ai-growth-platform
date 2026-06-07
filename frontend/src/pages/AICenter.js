@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Sparkles, Lightbulb } from 'lucide-react';
 import { getAIPlan, getAIAdvice, sendAIMessageStream, getAIHistory, getDailyReview, getGrowthLogs, getAutoWeeklyReport, trackEvent } from '../api/apiClient';
 import ChatBox from '../components/ChatBox';
 import PlanTab from '../components/PlanTab';
@@ -97,6 +98,7 @@ function AICenter() {
     { id: 'review', label: '复盘', icon: '📝' },
     { id: 'report', label: '周报', icon: '📊' },
   ];
+  // Note: Tab icons kept as emoji for now since they're small inline labels
 
   return (
     <div>
@@ -108,9 +110,10 @@ function AICenter() {
           fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
           backgroundColor: t.warningLight, color: t.warning,
           border: `1px solid rgba(245,158,11,0.2)`,
+          display: 'flex', alignItems: 'center', gap: '4px',
           transition: 'all 0.15s',
         }}>
-          💡 成长建议
+          <Lightbulb size={14} /> 成长建议
         </button>
       </div>
 

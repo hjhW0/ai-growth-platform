@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { Home, Target, ListChecks, Flame, BarChart3, Sparkles, Sprout, LogOut } from 'lucide-react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Goals from './pages/Goals';
@@ -11,12 +12,12 @@ import GrowthLogs from './pages/GrowthLogs';
 import { t } from './styles/tokens';
 
 const NAV_ITEMS = [
-  { path: '/', label: '首页', icon: '🏠' },
-  { path: '/goals', label: '目标', icon: '🎯' },
-  { path: '/tasks', label: '任务', icon: '✅' },
-  { path: '/checkin', label: '打卡', icon: '🔥' },
-  { path: '/stats', label: '统计', icon: '📊' },
-  { path: '/ai', label: 'AI', icon: '🤖' },
+  { path: '/', label: '首页', Icon: Home },
+  { path: '/goals', label: '目标', Icon: Target },
+  { path: '/tasks', label: '任务', Icon: ListChecks },
+  { path: '/checkin', label: '打卡', Icon: Flame },
+  { path: '/stats', label: '统计', Icon: BarChart3 },
+  { path: '/ai', label: 'AI', Icon: Sparkles },
 ];
 
 function BottomNav() {
@@ -41,6 +42,7 @@ function BottomNav() {
     }}>
       {NAV_ITEMS.map(item => {
         const active = location.pathname === item.path;
+        const { Icon } = item;
         return (
           <Link key={item.path} to={item.path} style={{
             textDecoration: 'none',
@@ -51,7 +53,7 @@ function BottomNav() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '2px',
+            gap: '3px',
             padding: '6px 8px',
             minWidth: '44px',
             minHeight: '44px',
@@ -60,7 +62,7 @@ function BottomNav() {
             backgroundColor: active ? t.primaryLight : 'transparent',
             transition: 'all 0.15s',
           }}>
-            <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
+            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
             <span>{item.label}</span>
           </Link>
         );
@@ -105,7 +107,7 @@ function App() {
         backgroundColor: t.bg,
       }}>
         <div style={{ textAlign: 'center', color: t.textMuted }}>
-          <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>🌱</div>
+          <Sprout size={32} style={{ color: t.primary, marginBottom: t.sp3 }} />
           <div style={{ fontSize: t.base }}>加载中...</div>
         </div>
       </div>
@@ -142,7 +144,7 @@ function App() {
           borderBottom: `1px solid ${t.border}`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2 }}>
-            <span style={{ fontSize: '18px' }}>🌱</span>
+            <Sprout size={20} style={{ color: t.primary }} />
             <span style={{
               fontSize: t.lg, fontWeight: '700', color: t.text,
               letterSpacing: '-0.02em',
@@ -163,14 +165,16 @@ function App() {
                 background: 'none',
                 border: `1px solid ${t.border}`,
                 color: t.textSecondary,
-                padding: '4px 12px',
+                padding: '6px 10px',
                 borderRadius: t.rSm,
                 cursor: 'pointer',
                 fontSize: t.sm,
                 fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: '4px',
                 transition: 'all 0.15s',
               }}
             >
+              <LogOut size={14} />
               退出
             </button>
           </div>

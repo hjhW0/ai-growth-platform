@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Flame, Target, Lightbulb, Sparkles, MessageCircle, CheckCircle2, Star, TrendingUp, Sprout } from 'lucide-react';
 import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback, trackEvent } from '../api/apiClient';
 import { getToday } from '../utils/dateFormatter';
 import { t, card, focusBorder, blurBorder } from '../styles/tokens';
@@ -102,7 +103,7 @@ function Dashboard() {
   if (error) {
     return (
       <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
-        <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
+        <Sparkles size={32} style={{ color: t.error, marginBottom: t.sp3 }} />
         <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
         <button onClick={() => { setLoading(true); setError(null); loadData(); }} style={{
           padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
@@ -138,13 +139,12 @@ function Dashboard() {
               padding: '4px 10px', borderRadius: t.rFull,
               border: '1px solid rgba(245,158,11,0.2)',
             }}>
-              <span style={{ fontSize: '14px' }}>🔥</span>
+              <Flame size={14} style={{ color: t.warning }} />
               <span style={{ fontSize: t.sm, fontWeight: '700', color: t.warning }}>{streak}</span>
             </div>
           )}
         </div>
 
-        {/* Today progress card */}
         <div style={{
           backgroundColor: t.surface,
           borderRadius: t.rMd,
@@ -176,7 +176,7 @@ function Dashboard() {
             }} />
           </div>
           <div style={{ textAlign: 'right', marginTop: t.sp2, fontSize: t.xs, color: t.textMuted }}>
-            {rate >= 80 ? '🎉 太棒了！继续保持' : rate >= 50 ? '💪 过半了，加油' : '🌱 刚刚开始，慢慢来'}
+            {rate >= 80 ? '太棒了！继续保持' : rate >= 50 ? '过半了，加油' : '刚刚开始，慢慢来'}
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@ function Dashboard() {
         </div>
         {todayTasks.length === 0 ? (
           <div style={{ textAlign: 'center', padding: `${t.sp6} 0` }}>
-            <div style={{ fontSize: '32px', marginBottom: t.sp2 }}>✨</div>
+            <Sprout size={32} style={{ color: t.textMuted, marginBottom: t.sp2 }} />
             <div style={{ color: t.textSecondary, fontSize: t.base, marginBottom: t.sp1 }}>今天还没有任务</div>
             <div style={{ color: t.textMuted, fontSize: t.sm }}>去"任务"页面添加吧</div>
           </div>
@@ -211,7 +211,7 @@ function Dashboard() {
                   backgroundColor: task.status === 'completed' ? t.success : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {task.status === 'completed' && <span style={{ color: 'white', fontSize: '10px', fontWeight: '700' }}>✓</span>}
+                  {task.status === 'completed' && <CheckCircle2 size={14} style={{ color: 'white' }} />}
                 </div>
                 <span style={{
                   flex: 1, fontSize: t.base,
@@ -240,8 +240,9 @@ function Dashboard() {
 
       {/* Active Goal */}
       <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
-        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em', marginBottom: t.sp3 }}>
-          当前目标
+        <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
+          <Target size={14} style={{ color: t.textMuted }} />
+          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>当前目标</span>
         </div>
         {activeGoal ? (
           <div>
@@ -274,7 +275,7 @@ function Dashboard() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: `${t.sp5} 0` }}>
-            <div style={{ fontSize: '28px', marginBottom: t.sp2 }}>🎯</div>
+            <Target size={28} style={{ color: t.textMuted, marginBottom: t.sp2 }} />
             <div style={{ color: t.textSecondary, fontSize: t.sm }}>暂无活跃目标</div>
           </div>
         )}
@@ -282,8 +283,9 @@ function Dashboard() {
 
       {/* AI Insight */}
       <div className="animate-in animate-in-delay-3" style={{ ...card, marginBottom: t.sp3 }}>
-        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em', marginBottom: t.sp3 }}>
-          AI 洞察
+        <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
+          <Lightbulb size={14} style={{ color: t.textMuted }} />
+          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>AI 洞察</span>
         </div>
         {latestLog ? (
           <div>
@@ -301,7 +303,7 @@ function Dashboard() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: `${t.sp5} 0` }}>
-            <div style={{ fontSize: '28px', marginBottom: t.sp2 }}>💡</div>
+            <Lightbulb size={28} style={{ color: t.textMuted, marginBottom: t.sp2 }} />
             <div style={{ color: t.textSecondary, fontSize: t.sm }}>完成今日任务后可生成复盘</div>
           </div>
         )}
@@ -315,14 +317,14 @@ function Dashboard() {
           width: '48px', height: '48px', borderRadius: '50%',
           backgroundColor: t.primary, color: 'white',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '20px', cursor: 'pointer', zIndex: 40,
+          cursor: 'pointer', zIndex: 40,
           boxShadow: '0 4px 14px rgba(91,95,239,0.35)',
           transition: 'transform 0.15s',
         }}
         onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
         onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
       >
-        💬
+        <MessageCircle size={20} />
       </div>
 
       {/* Feedback Modal */}
@@ -342,7 +344,7 @@ function Dashboard() {
           }} onClick={e => e.stopPropagation()}>
             {feedbackSent ? (
               <div style={{ textAlign: 'center', padding: `${t.sp8} 0` }}>
-                <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>🎉</div>
+                <CheckCircle2 size={40} style={{ color: t.success, marginBottom: t.sp3 }} />
                 <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text }}>感谢你的反馈！</div>
                 <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp2 }}>我们会认真改进</div>
               </div>
@@ -355,13 +357,17 @@ function Dashboard() {
                   <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp2 }}>整体体验</div>
                   <div style={{ display: 'flex', gap: t.sp2 }}>
                     {[1,2,3,4,5].map(i => (
-                      <span key={i} onClick={() => setFeedbackRating(i)} style={{
-                        fontSize: '24px', cursor: 'pointer', transition: 'transform 0.1s',
-                        transform: i <= feedbackRating ? 'scale(1.15)' : 'scale(1)',
-                        opacity: i <= feedbackRating ? 1 : 0.3,
-                      }}>
-                        {i <= feedbackRating ? '⭐' : '☆'}
-                      </span>
+                      <Star
+                        key={i}
+                        size={24}
+                        onClick={() => setFeedbackRating(i)}
+                        style={{
+                          cursor: 'pointer', transition: 'transform 0.1s',
+                          transform: i <= feedbackRating ? 'scale(1.15)' : 'scale(1)',
+                          color: i <= feedbackRating ? t.warning : t.border,
+                          fill: i <= feedbackRating ? t.warning : 'transparent',
+                        }}
+                      />
                     ))}
                   </div>
                 </div>

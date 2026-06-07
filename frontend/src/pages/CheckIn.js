@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Flame, CheckCircle2, Sun, Cloud, CloudRain, Sprout, CalendarDays } from 'lucide-react';
 import { checkIn, getCheckinStatus, getStreak, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday } from '../utils/dateFormatter';
 import { t, card } from '../styles/tokens';
@@ -151,10 +152,10 @@ function CheckIn() {
           {loading ? (
             <span style={{ fontSize: t.base }}>...</span>
           ) : checkedIn ? (
-            <>✓</>
+            <CheckCircle2 size={36} />
           ) : (
             <>
-              <span style={{ fontSize: '28px' }}>🔥</span>
+              <Flame size={32} />
               <span style={{ fontSize: t.sm }}>打卡</span>
             </>
           )}
@@ -171,7 +172,7 @@ function CheckIn() {
             backgroundColor: 'rgba(16,185,129,0.1)', borderRadius: t.rMd,
             fontSize: t.sm, color: t.success, fontWeight: '500',
           }}>
-            {streak >= 7 ? '🎉 太厉害了！已连续一周！' : streak >= 3 ? '💪 坚持就是胜利！' : '✨ 今天也辛苦了！'}
+            {streak >= 7 ? '太厉害了！已连续一周！' : streak >= 3 ? '坚持就是胜利！' : '今天也辛苦了！'}
           </div>
         )}
       </div>
@@ -208,7 +209,10 @@ function CheckIn() {
 
       {/* Tips */}
       <div className="animate-in animate-in-delay-2" style={{ ...card, marginTop: t.sp3 }}>
-        <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3 }}>打卡小贴士</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
+          <Sprout size={14} style={{ color: t.textMuted }} />
+          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600' }}>打卡小贴士</span>
+        </div>
         <div style={{ color: t.textSecondary, fontSize: t.sm, lineHeight: 1.8 }}>
           <div>• 每天坚持打卡，养成好习惯</div>
           <div>• 连续打卡可以获得更多成就</div>

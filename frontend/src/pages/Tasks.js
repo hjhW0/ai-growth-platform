@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, ChevronLeft, ChevronRight, Check, Trash2, ListChecks } from 'lucide-react';
 import { createTask, getTasks, completeTask, deleteTask, updateTask, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
@@ -80,9 +81,10 @@ function Tasks() {
         <button onClick={() => changeDate(-1)} style={{
           background: 'none', border: `1px solid ${t.border}`,
           padding: '6px 12px', borderRadius: t.rSm,
-          cursor: 'pointer', fontSize: t.base, color: t.textSecondary,
+          cursor: 'pointer', color: t.textSecondary,
           fontFamily: 'inherit', minHeight: '36px',
-        }}>←</button>
+          display: 'flex', alignItems: 'center',
+        }}><ChevronLeft size={16} /></button>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: t.md, fontWeight: '600', color: t.text }}>
             {formatDateChinese(selectedDate)}
@@ -94,9 +96,10 @@ function Tasks() {
         <button onClick={() => changeDate(1)} style={{
           background: 'none', border: `1px solid ${t.border}`,
           padding: '6px 12px', borderRadius: t.rSm,
-          cursor: 'pointer', fontSize: t.base, color: t.textSecondary,
+          cursor: 'pointer', color: t.textSecondary,
           fontFamily: 'inherit', minHeight: '36px',
-        }}>→</button>
+          display: 'flex', alignItems: 'center',
+        }}><ChevronRight size={16} /></button>
       </div>
 
       {/* Progress summary */}
@@ -142,12 +145,13 @@ function Tasks() {
             borderRadius: t.rMd, cursor: 'pointer',
             fontSize: t.base, color: t.textMuted,
             fontFamily: 'inherit', minHeight: '44px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: t.sp2,
             transition: 'all 0.15s',
           }}
           onMouseOver={e => { e.currentTarget.style.borderColor = t.primary; e.currentTarget.style.color = t.primary; }}
           onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.color = t.textMuted; }}
           >
-            + 添加新任务
+            <Plus size={16} /> 添加新任务
           </button>
         ) : (
           <form onSubmit={handleAddTask}>
@@ -211,7 +215,7 @@ function Tasks() {
         </div>
       ) : tasks.length === 0 ? (
         <div className="animate-in" style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
-          <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>📝</div>
+          <ListChecks size={40} style={{ color: t.textMuted, marginBottom: t.sp3 }} />
           <div style={{ color: t.textSecondary, fontSize: t.md, fontWeight: '500', marginBottom: t.sp1 }}>暂无任务</div>
           <div style={{ color: t.textMuted, fontSize: t.sm }}>点击上方"添加新任务"开始吧</div>
         </div>
@@ -237,7 +241,9 @@ function Tasks() {
                   }}
                   onMouseOver={e => { e.currentTarget.style.borderColor = t.success; e.currentTarget.style.backgroundColor = t.successLight; }}
                   onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  />
+                  >
+                    <Check size={12} style={{ opacity: 0 }} />
+                  </button>
                   <span style={{ flex: 1, fontSize: t.base, color: t.text, minWidth: 0 }}>{task.title}</span>
                   <span style={{
                     padding: '2px 6px', borderRadius: t.rSm, fontSize: t.xs, fontWeight: '500',
@@ -249,12 +255,12 @@ function Tasks() {
                   </span>
                   <button onClick={() => handleDelete(task.id)} style={{
                     background: 'none', border: 'none', color: t.textMuted,
-                    cursor: 'pointer', fontSize: '16px', padding: '4px',
+                    cursor: 'pointer', padding: '4px',
                     flexShrink: 0, transition: 'color 0.15s',
                   }}
                   onMouseOver={e => e.currentTarget.style.color = t.error}
                   onMouseOut={e => e.currentTarget.style.color = t.textMuted}
-                  >×</button>
+                  ><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
@@ -278,7 +284,7 @@ function Tasks() {
                     backgroundColor: t.success, border: `2px solid ${t.success}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <span style={{ color: 'white', fontSize: '11px', fontWeight: '700' }}>✓</span>
+                    <Check size={12} style={{ color: 'white' }} />
                   </div>
                   <span style={{
                     flex: 1, fontSize: t.base, color: t.textMuted,
@@ -286,12 +292,12 @@ function Tasks() {
                   }}>{task.title}</span>
                   <button onClick={() => handleDelete(task.id)} style={{
                     background: 'none', border: 'none', color: t.textMuted,
-                    cursor: 'pointer', fontSize: '16px', padding: '4px',
+                    cursor: 'pointer', padding: '4px',
                     flexShrink: 0, transition: 'color 0.15s',
                   }}
                   onMouseOver={e => e.currentTarget.style.color = t.error}
                   onMouseOut={e => e.currentTarget.style.color = t.textMuted}
-                  >×</button>
+                  ><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>

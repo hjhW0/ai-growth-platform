@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Target, CheckCircle2, Flame, TrendingUp } from 'lucide-react';
 import { getTodayStats, getWeekStats, getMonthStats, getOverview } from '../api/apiClient';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { t, card } from '../styles/tokens';
@@ -10,7 +11,7 @@ function StatCard({ value, label, color, bgColor, icon }) {
       background: `linear-gradient(135deg, ${bgColor}, ${bgColor})`,
       border: `1px solid ${color}15`,
     }}>
-      <div style={{ fontSize: '20px', marginBottom: t.sp1 }}>{icon}</div>
+      <div style={{ marginBottom: t.sp1, display: 'flex', justifyContent: 'center' }}>{icon}</div>
       <div style={{ fontSize: t['2xl'], fontWeight: '700', color }}>{value}</div>
       <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: '2px' }}>{label}</div>
     </div>
@@ -116,10 +117,10 @@ function Stats() {
 
       {/* Overview grid */}
       <div className="animate-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: t.sp3, marginBottom: t.sp4 }}>
-        <StatCard value={overview?.goals?.total || 0} label="总目标" color={t.primary} bgColor={t.primaryLight} icon="🎯" />
-        <StatCard value={overview?.goals?.completed || 0} label="已完成" color={t.success} bgColor={t.successLight} icon="✅" />
-        <StatCard value={overview?.checkins || 0} label="打卡天数" color={t.warning} bgColor={t.warningLight} icon="🔥" />
-        <StatCard value={`${todayStats?.rate || 0}%`} label="今日完成率" color={todayStats?.rate >= 80 ? t.success : t.primary} bgColor={todayStats?.rate >= 80 ? t.successLight : t.primaryLight} icon="📈" />
+        <StatCard value={overview?.goals?.total || 0} label="总目标" color={t.primary} bgColor={t.primaryLight} icon={<Target size={20} style={{ color: t.primary }} />} />
+        <StatCard value={overview?.goals?.completed || 0} label="已完成" color={t.success} bgColor={t.successLight} icon={<CheckCircle2 size={20} style={{ color: t.success }} />} />
+        <StatCard value={overview?.checkins || 0} label="打卡天数" color={t.warning} bgColor={t.warningLight} icon={<Flame size={20} style={{ color: t.warning }} />} />
+        <StatCard value={`${todayStats?.rate || 0}%`} label="今日完成率" color={todayStats?.rate >= 80 ? t.success : t.primary} bgColor={todayStats?.rate >= 80 ? t.successLight : t.primaryLight} icon={<TrendingUp size={20} style={{ color: todayStats?.rate >= 80 ? t.success : t.primary }} />} />
       </div>
 
       {/* Today detail */}
