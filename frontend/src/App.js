@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { Home, Target, ListChecks, Flame, BarChart3, Sparkles, Sprout, LogOut } from 'lucide-react';
+import { LayoutDashboard, Rocket, ClipboardCheck, Zap, TrendingUp, Brain, Sprout, LogOut } from 'lucide-react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Goals from './pages/Goals';
@@ -12,12 +12,12 @@ import GrowthLogs from './pages/GrowthLogs';
 import { t } from './styles/tokens';
 
 const NAV_ITEMS = [
-  { path: '/', label: '首页', Icon: Home },
-  { path: '/goals', label: '目标', Icon: Target },
-  { path: '/tasks', label: '任务', Icon: ListChecks },
-  { path: '/checkin', label: '打卡', Icon: Flame },
-  { path: '/stats', label: '统计', Icon: BarChart3 },
-  { path: '/ai', label: 'AI', Icon: Sparkles },
+  { path: '/', label: '首页', Icon: LayoutDashboard },
+  { path: '/goals', label: '目标', Icon: Rocket },
+  { path: '/tasks', label: '任务', Icon: ClipboardCheck },
+  { path: '/checkin', label: '打卡', Icon: Zap },
+  { path: '/stats', label: '统计', Icon: TrendingUp },
+  { path: '/ai', label: 'AI', Icon: Brain },
 ];
 
 function BottomNav() {
