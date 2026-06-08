@@ -111,7 +111,6 @@ function AICenter() {
         </div>
         <div style={{
           fontSize: t.sm, color: t.textSecondary, fontWeight: '500',
-          textShadow: '0 0 12px rgba(78, 238, 148, 0.2)',
         }}>
           {loading ? '温室正在思考...' : '有什么想聊的？'}
         </div>
@@ -120,9 +119,10 @@ function AICenter() {
       {/* Tab bar */}
       <div style={{
         display: 'flex', gap: '2px', marginBottom: t.sp4,
-        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+        backgroundColor: '#ffffff',
         padding: '4px', borderRadius: t.rMd,
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        border: `1px solid ${t.border}`,
+        boxShadow: '0 10px 24px rgba(31, 85, 52, 0.07)',
       }}>
         {tabs.map(tab => {
           const { Icon } = tab;
@@ -133,11 +133,11 @@ function AICenter() {
               cursor: 'pointer', fontSize: t.sm, fontWeight: active ? '600' : '500',
               fontFamily: 'inherit', minHeight: '36px',
               border: 'none',
-              backgroundColor: active ? 'rgba(78, 238, 148, 0.12)' : 'transparent',
-              color: active ? t.primary : t.textMuted,
+              backgroundColor: active ? t.primaryLight : 'transparent',
+              color: active ? t.primaryDark : t.textMuted,
               transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-              boxShadow: active ? '0 0 10px rgba(78, 238, 148, 0.1)' : 'none',
+              boxShadow: active ? 'inset 0 0 0 1px rgba(34,197,94,0.12)' : 'none',
               transform: active ? 'scale(1.02)' : 'scale(1)',
             }}>
               <Icon size={14} />
@@ -152,9 +152,9 @@ function AICenter() {
         <button onClick={handleGetAdvice} style={{
           width: '100%', padding: `${t.sp3} ${t.sp4}`, borderRadius: t.rMd,
           cursor: 'pointer', fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05))',
+          background: t.warningLight,
           color: t.warning,
-          border: '1px solid rgba(245, 158, 11, 0.15)',
+          border: '1px solid rgba(245, 158, 11, 0.22)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           transition: 'all 0.2s',
         }}>

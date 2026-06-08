@@ -9,9 +9,8 @@ function StatCard({ value, label, color, icon }) {
   return (
     <div className="card-hover" style={{
       ...card, padding: t.sp4, textAlign: 'center',
-      background: `linear-gradient(135deg, ${color}10, rgba(255, 255, 255, 0.02))`,
+      background: `linear-gradient(135deg, ${color}12, #ffffff)`,
       border: `1px solid ${color}20`,
-      boxShadow: `0 0 20px ${color}10, inset 0 1px 0 rgba(255,255,255,0.05)`,
       cursor: 'default',
     }}>
       <div style={{
@@ -26,7 +25,6 @@ function StatCard({ value, label, color, icon }) {
       </div>
       <div style={{
         fontSize: t['2xl'], fontWeight: '700', color,
-        textShadow: `0 0 16px ${color}30`,
       }}>{value}</div>
       <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: '2px' }}>{label}</div>
     </div>
@@ -37,10 +35,9 @@ function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      backgroundColor: 'rgba(26, 28, 41, 0.95)', padding: `${t.sp2} ${t.sp3}`,
-      borderRadius: t.rSm, border: `1px solid rgba(78, 238, 148, 0.15)`,
-      fontSize: t.sm, boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-      backdropFilter: 'blur(10px)',
+      backgroundColor: '#ffffff', padding: `${t.sp2} ${t.sp3}`,
+      borderRadius: t.rSm, border: `1px solid ${t.border}`,
+      fontSize: t.sm, boxShadow: '0 10px 20px rgba(31, 85, 52, 0.12)',
     }}>
       <div style={{ color: t.text, fontWeight: '600' }}>{label}</div>
       <div style={{ color: t.primary }}>完成率: {payload[0].value}%</div>
@@ -86,9 +83,9 @@ function Stats() {
   })) || [];
 
   const getBarColor = (rate) => {
-    if (rate >= 80) return '#4EEE94';
-    if (rate >= 50) return '#f59e0b';
-    return '#a78bfa';
+    if (rate >= 80) return t.success;
+    if (rate >= 50) return t.warning;
+    return t.accentPurple;
   };
 
   if (loading) {
@@ -101,7 +98,7 @@ function Stats() {
           {[1,2,3,4].map(i => (
             <div key={i} style={{
               ...card, padding: t.sp4, height: 100,
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)',
+              background: 'linear-gradient(90deg, #e6f4eb 25%, #f5fbf7 50%, #e6f4eb 75%)',
               backgroundSize: '200% 100%',
               animation: 'shimmer 1.5s infinite',
               animationDelay: `${i * 0.1}s`,
@@ -147,12 +144,12 @@ function Stats() {
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.primary }}>{todayStats?.total || 0}</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>总任务</div>
           </div>
-          <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
+          <div style={{ width: 1, backgroundColor: t.borderLight }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.success }}>{todayStats?.completed || 0}</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>已完成</div>
           </div>
-          <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
+          <div style={{ width: 1, backgroundColor: t.borderLight }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.warning }}>{todayStats?.rate || 0}%</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>完成率</div>
@@ -167,17 +164,17 @@ function Stats() {
         </div>
         <ResponsiveContainer width="100%" height={160}>
           <BarChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.04)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={t.borderLight} vertical={false} />
             <XAxis dataKey="name" tick={{ fontSize: 11, fill: t.textMuted }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: t.textMuted }} axisLine={false} tickLine={false} />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(78, 238, 148, 0.04)' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(34, 197, 94, 0.06)' }} />
             <Bar dataKey="rate" radius={[6, 6, 0, 0]} maxBarSize={36}>
               {chartData.map((entry, index) => (
                 <Cell
                   key={index}
                   fill={getBarColor(entry.rate)}
                   opacity={0.85}
-                  style={{ filter: `drop-shadow(0 0 6px ${getBarColor(entry.rate)}40)` }}
+                  style={{ filter: 'none' }}
                 />
               ))}
             </Bar>
@@ -195,12 +192,12 @@ function Stats() {
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.primary }}>{monthStats?.total || 0}</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>总任务</div>
           </div>
-          <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
+          <div style={{ width: 1, backgroundColor: t.borderLight }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.success }}>{monthStats?.completed || 0}</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>已完成</div>
           </div>
-          <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
+          <div style={{ width: 1, backgroundColor: t.borderLight }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: t.xl, fontWeight: '700', color: t.warning }}>{monthStats?.rate || 0}%</div>
             <div style={{ fontSize: t.xs, color: t.textMuted }}>完成率</div>

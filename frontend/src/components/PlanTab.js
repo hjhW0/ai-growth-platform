@@ -7,7 +7,7 @@ function PlanTab({ goal, setGoal, plan, loading, onGenerate }) {
     <div>
       <div className="animate-in" style={{
         ...card,
-        background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.04) 0%, rgba(167, 139, 250, 0.04) 100%)',
+        background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp4 }}>
           <Compass size={14} style={{ color: t.primary }} />
@@ -28,10 +28,10 @@ function PlanTab({ goal, setGoal, plan, loading, onGenerate }) {
             fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
             minHeight: '44px', transition: 'all 0.2s',
             background: loading
-              ? 'rgba(255, 255, 255, 0.06)'
-              : 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-            color: loading ? t.textMuted : 'white',
-            boxShadow: loading ? 'none' : '0 2px 12px rgba(78, 238, 148, 0.25)',
+              ? t.surfaceAlt
+              : `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+            color: loading ? t.textMuted : '#ffffff',
+            boxShadow: loading ? 'none' : '0 8px 18px rgba(34, 197, 94, 0.18)',
           }}>
             {loading ? '温室正在规划...' : '生成计划'}
           </button>
@@ -48,10 +48,10 @@ function PlanTab({ goal, setGoal, plan, loading, onGenerate }) {
           </div>
           <div style={{
             padding: t.sp4,
-            background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06), rgba(167, 139, 250, 0.04))',
+            background: t.surfaceAlt,
             borderRadius: t.rMd, whiteSpace: 'pre-wrap',
             lineHeight: 1.8, fontSize: t.sm, color: t.textSecondary,
-            border: '1px solid rgba(78, 238, 148, 0.1)',
+            border: `1px solid ${t.borderLight}`,
           }}>
             {plan}
           </div>

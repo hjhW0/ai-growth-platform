@@ -6,7 +6,7 @@ function ErrorState({ message, onRetry }) {
   return (
     <div style={{
       ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`,
-      backgroundColor: 'rgba(239, 68, 68, 0.06)', border: '1px solid rgba(239,68,68,0.12)',
+      backgroundColor: t.errorLight, border: '1px solid rgba(220,38,38,0.16)',
     }}>
       <div style={{
         width: 48, height: 48, borderRadius: t.rFull,
@@ -23,10 +23,10 @@ function ErrorState({ message, onRetry }) {
       {onRetry && (
         <button onClick={onRetry} style={{
           padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
-          background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.2), rgba(167, 139, 250, 0.2))',
+          background: '#ffffff',
           color: t.primary, cursor: 'pointer',
           fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
-          border: '1px solid rgba(78, 238, 148, 0.2)',
+          border: `1px solid ${t.border}`,
           transition: 'all 0.2s',
         }}><RefreshCw size={14} style={{ marginRight: 6, verticalAlign: '-2px' }} />重新连接</button>
       )}

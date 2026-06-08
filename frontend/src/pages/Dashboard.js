@@ -1,11 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { Flame, Target, Lightbulb, Sparkles, MessageCircle, CheckCircle2, Star, Sprout, Trophy, Droplets } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Award,
+  Bot,
+  CheckCircle2,
+  Flame,
+  Leaf,
+  Lightbulb,
+  MessageCircle,
+  Plus,
+  Sparkles,
+  Sprout,
+  Star,
+  Target,
+  Trophy,
+} from 'lucide-react';
 import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback, trackEvent } from '../api/apiClient';
 import { getToday } from '../utils/dateFormatter';
-import { t, card, focusBorder, blurBorder } from '../styles/tokens';
+import { t, card, cardGlow, focusBorder, blurBorder } from '../styles/tokens';
 import EmptyPot from '../components/EmptyPot';
 import ErrorState from '../components/ErrorState';
 import { SkeletonCard } from '../components/Skeleton';
+
+const badgeCatalog = [
+  { id: 'first-task', label: '第一片叶', desc: '完成 1 个任务', Icon: Leaf },
+  { id: 'three-streak', label: '三日晨光', desc: '连续打卡 3 天', Icon: Flame },
+  { id: 'full-day', label: '满格收获', desc: '今日任务全完成', Icon: Trophy },
+  { id: 'goal-seed', label: '播种者', desc: '拥有进行中目标', Icon: Sprout },
+  { id: 'task-pack', label: '小森林', desc: '今日安排 5 个任务', Icon: Target },
+  { id: 'week-streak', label: '一周绿意', desc: '连续打卡 7 天', Icon: Award },
+];
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 6) return { text: '夜深了', sub: '早点休息，明天的小苗还会等你。' };
+  if (hour < 9) return { text: '早安', sub: '先做一个小任务，温室就会亮起来。' };
+  if (hour < 12) return { text: '上午好', sub: '阳光正好，适合专注推进一点。' };
+  if (hour < 14) return { text: '中午好', sub: '休息也是成长的一部分。' };
+  if (hour < 18) return { text: '下午好', sub: '节奏已经起来了，继续稳稳往前。' };
+  if (hour < 21) return { text: '晚上好', sub: '回收今天的成果，给自己一点反馈。' };
+  return { text: '夜晚好', sub: '今天辛苦了，把剩下的事轻轻收个尾。' };
+}
+
+function ProgressRing({ rate }) {
+  const safeRate = Math.max(0, Math.min(100, rate || 0));
+  return (
+    <div style={{
+      width: 112,
+      height: 112,
+      borderRadius: '50%',
+      background: `conic-gradient(${t.primary} ${safeRate * 3.6}deg, #dceee2 0deg)`,
+      padding: 9,
+      boxShadow: 'inset 0 0 0 1px rgba(34, 197, 94, 0.12)',
+      flexShrink: 0,
+    }}>
+      <div style={{
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        background: '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 8px 18px rgba(31, 85, 52, 0.08)',
+      }}>
+        <strong style={{ fontSize: t['2xl'], color: t.text, lineHeight: 1 }}>{safeRate}%</strong>
+        <span style={{ fontSize: t.xs, color: t.textMuted, marginTop: 3 }}>今日绿意</span>
+      </div>
+    </div>
+  );
+}
+
+function AchievementShelf({ badges }) {
+  return (
+    <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: t.sp4 }}>
+        <div>
+          <div style={{ fontSize: t.md, fontWeight: 700, color: t.text }}>成就徽章</div>
+          <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: 2 }}>先放 6 枚核心徽章，后续可扩展成完整徽章墙</div>
+        </div>
+        <span style={{
+          fontSize: t.xs,
+          fontWeight: 700,
+          color: t.primaryDark,
+          background: t.primaryLight,
+          borderRadius: t.rFull,
+          padding: '5px 9px',
+        }}>
+          {badges.filter(b => b.unlocked).length}/{badges.length}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: t.sp3 }}>
+        {badges.map(({ Icon, unlocked, label, desc }) => (
+          <div key={label} style={{
+            minHeight: 104,
+            borderRadius: t.rLg,
+            padding: t.sp3,
+            background: unlocked ? 'linear-gradient(145deg, #f0fdf4, #ffffff)' : '#f5f8f6',
+            border: `1px solid ${unlocked ? 'rgba(34, 197, 94, 0.22)' : t.borderLight}`,
+            textAlign: 'center',
+            opacity: unlocked ? 1 : 0.58,
+          }}>
+            <div style={{
+              width: 34,
+              height: 34,
+              borderRadius: t.rMd,
+              margin: `0 auto ${t.sp2}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: unlocked ? t.primaryLight : '#e8eee9',
+              color: unlocked ? t.primaryDark : t.textMuted,
+            }}>
+              <Icon size={17} />
+            </div>
+            <div style={{ fontSize: t.xs, fontWeight: 700, color: t.text }}>{label}</div>
+            <div style={{ fontSize: 10, color: t.textMuted, marginTop: 3, lineHeight: 1.35 }}>{desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -26,19 +144,22 @@ function Dashboard() {
   const loadData = async () => {
     try {
       const [statsData, tasksData, streakData, goalsData, logsData] = await Promise.all([
-        getTodayStats(), getTasks({ date: today }), getStreak(),
-        getGoals({ status: 'active' }), getGrowthLogs({ limit: 1 })
+        getTodayStats(),
+        getTasks({ date: today }),
+        getStreak(),
+        getGoals({ status: 'active' }),
+        getGrowthLogs({ limit: 1 }),
       ]);
+      const goals = goalsData.data || goalsData.goals || [];
+      const logs = logsData.data || [];
       setStats(statsData);
       setTodayTasks(tasksData.tasks || []);
       setStreak(streakData.streak || 0);
-      const goals = goalsData.data || goalsData.goals || [];
-      setActiveGoal(goals.length > 0 ? goals[0] : null);
-      const logs = logsData.data || [];
-      setLatestLog(logs.length > 0 ? logs[0] : null);
+      setActiveGoal(goals[0] || null);
+      setLatestLog(logs[0] || null);
       setError(null);
-    } catch (error) {
-      console.error('加载数据失败:', error);
+    } catch (err) {
+      console.error('加载数据失败:', err);
       setError('温室的信号有点弱，数据没加载到');
     }
     setLoading(false);
@@ -52,36 +173,40 @@ function Dashboard() {
       setFeedbackSent(true);
       setTimeout(() => {
         setShowFeedback(false);
-        setFeedbackContent(''); setFeedbackRating(5); setFeedbackSent(false);
-      }, 1500);
-    } catch (e) { alert('提交失败，请重试'); }
+        setFeedbackContent('');
+        setFeedbackRating(5);
+        setFeedbackSent(false);
+      }, 1400);
+    } catch (e) {
+      setFeedbackSent(false);
+    }
   };
 
   const completedCount = stats?.completed || 0;
   const totalCount = stats?.total || 0;
   const rate = stats?.rate || 0;
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 6) return { text: '夜深了', sub: '早点休息，明天的种子等你来浇灌' };
-    if (hour < 9) return { text: '早安', sub: '新的一天，温室里的小苗在等你' };
-    if (hour < 12) return { text: '上午好', sub: '阳光正好，适合专注做事' };
-    if (hour < 14) return { text: '中午好', sub: '休息一下，下午继续发光' };
-    if (hour < 18) return { text: '下午好', sub: '保持节奏，你今天做得很棒' };
-    if (hour < 21) return { text: '晚上好', sub: '回顾一下今天的收获吧' };
-    return { text: '夜晚好', sub: '今天辛苦了，给自己一个拥抱' };
-  };
-
+  const allDone = totalCount > 0 && completedCount === totalCount;
   const greeting = getGreeting();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const username = user.username || '用户';
+  const username = user.username || '同学';
+
+  const badges = useMemo(() => badgeCatalog.map((badge) => ({
+    ...badge,
+    unlocked:
+      (badge.id === 'first-task' && completedCount > 0) ||
+      (badge.id === 'three-streak' && streak >= 3) ||
+      (badge.id === 'full-day' && allDone) ||
+      (badge.id === 'goal-seed' && Boolean(activeGoal)) ||
+      (badge.id === 'task-pack' && totalCount >= 5) ||
+      (badge.id === 'week-streak' && streak >= 7),
+  })), [activeGoal, allDone, completedCount, streak, totalCount]);
 
   if (loading) {
     return (
       <div>
-        <SkeletonCard lines={2} height={140} />
-        <SkeletonCard lines={1} height={80} />
-        <SkeletonCard lines={1} height={80} />
+        <SkeletonCard lines={2} height={152} />
+        <SkeletonCard lines={3} height={168} />
+        <SkeletonCard lines={2} height={120} />
       </div>
     );
   }
@@ -90,336 +215,340 @@ function Dashboard() {
     return <ErrorState message={error} onRetry={() => { setLoading(true); setError(null); loadData(); }} />;
   }
 
-  const allDone = totalCount > 0 && completedCount === totalCount;
-
   return (
     <div>
-      {/* Greeting + Today Progress */}
-      <div className="animate-in" style={{
-        ...card,
+      <section className="animate-in" style={{
+        ...cardGlow,
         marginBottom: t.sp4,
-        background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.08) 0%, rgba(167, 139, 250, 0.06) 100%)',
-        border: '1px solid rgba(78, 238, 148, 0.12)',
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* 装饰光晕 */}
         <div style={{
-          position: 'absolute', top: -20, right: -20,
-          width: 100, height: 100, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(78, 238, 148, 0.1) 0%, transparent 70%)',
+          position: 'absolute',
+          right: -28,
+          top: -30,
+          width: 130,
+          height: 130,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(34,197,94,0.18), transparent 68%)',
           pointerEvents: 'none',
         }} />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: t.sp4 }}>
-          <div>
-            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.text, letterSpacing: '-0.02em' }}>
-              {greeting.text}，{username}
-              <Sparkles size={18} style={{ color: t.primary, marginLeft: 6, verticalAlign: '-2px' }} />
-            </div>
-            <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp1 }}>
-              {greeting.sub}
-            </div>
-          </div>
-          {streak > 0 && (
+        <div style={{ display: 'flex', gap: t.sp4, alignItems: 'center' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              backgroundColor: 'rgba(245,158,11,0.12)',
-              padding: '6px 12px', borderRadius: t.rFull,
-              border: '1px solid rgba(245,158,11,0.2)',
-              boxShadow: '0 0 12px rgba(245,158,11,0.15)',
-              animation: 'breathe 3s ease-in-out infinite',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 9px',
+              borderRadius: t.rFull,
+              background: '#ffffff',
+              color: t.primaryDark,
+              border: `1px solid ${t.border}`,
+              fontSize: t.xs,
+              fontWeight: 700,
+              marginBottom: t.sp3,
             }}>
-              <Flame size={14} style={{ color: t.warning }} />
-              <span style={{ fontSize: t.sm, fontWeight: '700', color: t.warning }}>{streak}</span>
+              <Sprout size={13} />
+              清新温室
             </div>
-          )}
+            <h1 style={{
+              margin: 0,
+              color: t.text,
+              fontSize: t['2xl'],
+              lineHeight: 1.25,
+              letterSpacing: '-0.02em',
+            }}>
+              {greeting.text}，{username}
+            </h1>
+            <p style={{
+              margin: `${t.sp2} 0 0`,
+              color: t.textSecondary,
+              fontSize: t.sm,
+              lineHeight: 1.7,
+              maxWidth: 240,
+            }}>
+              {greeting.sub}
+            </p>
+          </div>
+          <ProgressRing rate={rate} />
         </div>
 
         <div style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-          borderRadius: t.rMd,
-          padding: t.sp4,
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: t.sp2,
+          marginTop: t.sp5,
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
-            <span style={{ fontSize: t.sm, fontWeight: '600', color: t.text }}>
-              {allDone ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <Trophy size={15} style={{ color: t.warning }} /> 今日全部完成！
-                </span>
-              ) : '今日进度'}
-            </span>
-            <span style={{ fontSize: t.sm, color: t.textSecondary }}>
-              {completedCount}/{totalCount}
-            </span>
-          </div>
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
-            borderRadius: t.rFull,
-            height: '10px',
-            overflow: 'hidden',
-            position: 'relative',
-          }}>
-            <div style={{
-              height: '100%',
-              borderRadius: t.rFull,
-              width: `${rate}%`,
-              transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              background: rate >= 80
-                ? 'linear-gradient(90deg, #4EEE94, #34d399)'
-                : rate >= 50
-                  ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
-                  : 'linear-gradient(90deg, #4EEE94, #a78bfa)',
-              boxShadow: rate >= 80
-                ? '0 0 14px rgba(78, 238, 148, 0.5)'
-                : rate >= 50
-                  ? '0 0 14px rgba(245, 158, 11, 0.4)'
-                  : '0 0 10px rgba(78, 238, 148, 0.3)',
-            }} />
-          </div>
-          <div style={{ textAlign: 'right', marginTop: t.sp2, fontSize: t.xs, color: t.textMuted }}>
-            {allDone ? '太厉害了，今天全部搞定了！' : rate >= 80 ? '快完成了，冲刺一下！' : rate >= 50 ? '过半了，节奏很好' : rate > 0 ? '刚刚起步，慢慢来' : '今天还没开始，等你出发'}
-          </div>
+          {[
+            { label: '完成', value: `${completedCount}/${totalCount}`, color: t.primaryDark },
+            { label: '连续', value: `${streak}天`, color: t.warning },
+            { label: '状态', value: allDone ? '收获' : rate > 0 ? '生长' : '待浇水', color: allDone ? t.success : t.textSecondary },
+          ].map(item => (
+            <div key={item.label} style={{
+              padding: `${t.sp3} ${t.sp2}`,
+              borderRadius: t.rMd,
+              background: 'rgba(255,255,255,0.72)',
+              border: `1px solid ${t.borderLight}`,
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: t.md, fontWeight: 800, color: item.color }}>{item.value}</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: 2 }}>{item.label}</div>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* Today Tasks */}
-      <div className="animate-in animate-in-delay-1" style={{ ...card, marginBottom: t.sp3 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
-          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>
-            今日待办
-          </span>
-          {todayTasks.length > 0 && (
-            <span style={{ fontSize: t.xs, color: t.textMuted }}>{todayTasks.length} 项</span>
-          )}
+      <section className="animate-in animate-in-delay-1" style={{ ...card, marginBottom: t.sp3 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: t.sp4 }}>
+          <div>
+            <div style={{ fontSize: t.md, color: t.text, fontWeight: 700 }}>今日任务</div>
+            <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: 2 }}>
+              完成任务会让桌宠变开心
+            </div>
+          </div>
+          <Link to="/tasks" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            color: t.primaryDark,
+            fontSize: t.sm,
+            fontWeight: 700,
+          }}>
+            <Plus size={14} />
+            添加
+          </Link>
         </div>
+
         {todayTasks.length === 0 ? (
-          <EmptyPot text="今天是一张白纸" sub="等你去填满它" />
+          <EmptyPot text="今天是一张白纸" sub="去种下第一件小任务吧" />
         ) : (
           <div>
-            {todayTasks.slice(0, 5).map((task, idx) => (
-              <div key={task.id} className="card-hover" style={{
-                display: 'flex', alignItems: 'center', gap: t.sp3,
-                padding: `${t.sp3} ${t.sp4}`,
-                marginBottom: t.sp2,
-                backgroundColor: task.status === 'completed' ? 'rgba(78, 238, 148, 0.04)' : 'rgba(255, 255, 255, 0.03)',
-                borderRadius: t.rMd,
-                border: `1px solid ${task.status === 'completed' ? 'rgba(78, 238, 148, 0.1)' : 'rgba(255, 255, 255, 0.05)'}`,
-                cursor: 'default',
+            {todayTasks.slice(0, 4).map((task) => (
+              <div key={task.id} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: t.sp3,
+                padding: `${t.sp3} 0`,
+                borderBottom: `1px solid ${t.borderLight}`,
               }}>
                 <div style={{
-                  width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-                  border: `2px solid ${task.status === 'completed' ? t.success : 'rgba(78, 238, 148, 0.25)'}`,
-                  backgroundColor: task.status === 'completed' ? t.success : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: task.status === 'completed' ? '0 0 10px rgba(78, 238, 148, 0.3)' : 'none',
-                  transition: 'all 0.3s ease',
+                  width: 24,
+                  height: 24,
+                  borderRadius: t.rFull,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: `2px solid ${task.status === 'completed' ? t.success : '#b9d8c4'}`,
+                  background: task.status === 'completed' ? t.success : '#ffffff',
+                  color: '#ffffff',
+                  flexShrink: 0,
                 }}>
-                  {task.status === 'completed' && <CheckCircle2 size={14} style={{ color: 'white' }} />}
+                  {task.status === 'completed' && <CheckCircle2 size={15} />}
                 </div>
                 <span style={{
-                  flex: 1, fontSize: t.base,
-                  textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                  flex: 1,
                   color: task.status === 'completed' ? t.textMuted : t.text,
-                  transition: 'all 0.2s',
+                  textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                  fontSize: t.base,
+                  minWidth: 0,
                 }}>
                   {task.title}
                 </span>
                 {task.priority === 'high' && (
                   <span style={{
-                    fontSize: t.xs, color: t.error, flexShrink: 0,
-                    padding: '2px 6px', borderRadius: t.rSm,
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.15)',
-                  }}>紧急</span>
+                    padding: '3px 7px',
+                    borderRadius: t.rSm,
+                    background: t.errorLight,
+                    color: t.error,
+                    fontSize: t.xs,
+                    fontWeight: 700,
+                  }}>
+                    紧急
+                  </span>
                 )}
               </div>
             ))}
-            {todayTasks.length > 5 && (
-              <a href="/tasks" style={{
-                display: 'block', textAlign: 'center', padding: t.sp3,
-                color: t.primary, textDecoration: 'none',
-                fontSize: t.sm, fontWeight: '500',
-                filter: 'drop-shadow(0 0 6px rgba(78, 238, 148, 0.3))',
-              }}>
-                还有 {todayTasks.length - 5} 项 →
-              </a>
+            {todayTasks.length > 4 && (
+              <Link to="/tasks" style={{ display: 'block', textAlign: 'center', paddingTop: t.sp3, color: t.primaryDark, fontSize: t.sm, fontWeight: 700 }}>
+                查看剩余 {todayTasks.length - 4} 项
+              </Link>
             )}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Active Goal */}
-      <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
-          <div style={{
-            width: '24px', height: '24px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(78, 238, 148, 0.2), rgba(167, 139, 250, 0.1))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '1px solid rgba(78, 238, 148, 0.2)',
-          }}>
-            <Target size={14} style={{ color: t.primary }} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: t.sp3, marginBottom: t.sp3 }}>
+        <section className="animate-in animate-in-delay-2" style={{
+          ...card,
+          background: activeGoal ? '#ffffff' : 'linear-gradient(145deg, #ffffff, #f0fdf4)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
+            <Target size={17} style={{ color: t.primaryDark }} />
+            <strong style={{ color: t.text, fontSize: t.md }}>当前目标</strong>
           </div>
-          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>当前目标</span>
-        </div>
-        {activeGoal ? (
-          <div>
-            <div style={{ fontSize: t.md, fontWeight: '600', color: t.text, marginBottom: t.sp1 }}>
-              {activeGoal.title}
-            </div>
-            {activeGoal.description && (
-              <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp3, lineHeight: 1.6 }}>
-                {activeGoal.description}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: t.sp2, flexWrap: 'wrap' }}>
-              <span style={{
-                padding: '4px 10px', borderRadius: t.rSm,
-                fontSize: t.xs, fontWeight: '500',
-                backgroundColor: activeGoal.priority === 'high' ? 'rgba(239, 68, 68, 0.12)' : activeGoal.priority === 'medium' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(78, 238, 148, 0.12)',
-                color: activeGoal.priority === 'high' ? t.error : activeGoal.priority === 'medium' ? t.warning : t.success,
-                border: `1px solid ${activeGoal.priority === 'high' ? 'rgba(239, 68, 68, 0.2)' : activeGoal.priority === 'medium' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(78, 238, 148, 0.2)'}`,
-              }}>
-                {activeGoal.priority === 'high' ? '高优先' : activeGoal.priority === 'medium' ? '中优先' : '低优先'}
-              </span>
-              {activeGoal.deadline && (
-                <span style={{
-                  padding: '4px 10px', borderRadius: t.rSm,
-                  fontSize: t.xs, backgroundColor: 'rgba(255, 255, 255, 0.05)', color: t.textMuted,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                }}>
-                  截止 {activeGoal.deadline}
-                </span>
+          {activeGoal ? (
+            <>
+              <div style={{ color: t.text, fontWeight: 700, fontSize: t.base }}>{activeGoal.title}</div>
+              {activeGoal.description && (
+                <p style={{ margin: `${t.sp2} 0 ${t.sp3}`, color: t.textSecondary, fontSize: t.sm, lineHeight: 1.65 }}>
+                  {activeGoal.description}
+                </p>
               )}
-            </div>
+              <div style={{ display: 'flex', gap: t.sp2, flexWrap: 'wrap' }}>
+                <span style={{ padding: '4px 9px', borderRadius: t.rSm, background: t.primaryLight, color: t.primaryDark, fontSize: t.xs, fontWeight: 700 }}>
+                  生长中
+                </span>
+                {activeGoal.deadline && (
+                  <span style={{ padding: '4px 9px', borderRadius: t.rSm, background: t.surfaceAlt, color: t.textMuted, fontSize: t.xs }}>
+                    截止 {activeGoal.deadline}
+                  </span>
+                )}
+              </div>
+            </>
+          ) : (
+            <EmptyPot text="还没有种下目标" sub="去目标页播下第一颗种子" />
+          )}
+        </section>
+
+        <section className="animate-in animate-in-delay-3" style={{
+          ...card,
+          background: 'linear-gradient(145deg, #ffffff 0%, #f7f5ff 100%)',
+          border: '1px solid #ded9ff',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
+            <Bot size={17} style={{ color: t.accentPurple }} />
+            <strong style={{ color: t.text, fontSize: t.md }}>AI 教练预热</strong>
           </div>
-        ) : (
-          <EmptyPot text="还没有种下目标" sub="去目标页播下第一颗种子吧" />
-        )}
+          <p style={{ margin: `0 0 ${t.sp3}`, color: t.textSecondary, fontSize: t.sm, lineHeight: 1.7 }}>
+            先把 AI 中心作为教练入口：根据目标、今日完成率和复盘记录，给你下一步建议。
+          </p>
+          <Link to="/ai" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: t.sm,
+            color: t.accentPurple,
+            fontWeight: 800,
+          }}>
+            <Sparkles size={15} />
+            去找 AI 教练
+          </Link>
+        </section>
       </div>
 
-      {/* AI Insight */}
-      <div className="animate-in animate-in-delay-3" style={{ ...card, marginBottom: t.sp3 }}>
+      <AchievementShelf badges={badges} />
+
+      <section className="animate-in animate-in-delay-3" style={{ ...card, marginBottom: t.sp3 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp3 }}>
-          <div className="ai-orb" style={{ width: 28, height: 28, border: '1px solid rgba(78, 238, 148, 0.2)' }}>
-            <Lightbulb size={14} style={{ color: t.primary }} />
-          </div>
-          <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', letterSpacing: '0.02em' }}>温室寄语</span>
+          <Lightbulb size={17} style={{ color: t.warning }} />
+          <strong style={{ color: t.text, fontSize: t.md }}>温室寄语</strong>
         </div>
         {latestLog ? (
-          <div>
+          <>
             <div style={{
-              fontSize: t.sm, color: t.textSecondary, lineHeight: 1.8,
-              whiteSpace: 'pre-wrap', padding: t.sp4,
-              background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06), rgba(167, 139, 250, 0.04))',
+              fontSize: t.sm,
+              color: t.textSecondary,
+              lineHeight: 1.8,
+              whiteSpace: 'pre-wrap',
+              padding: t.sp4,
+              background: t.surfaceAlt,
               borderRadius: t.rMd,
-              border: '1px solid rgba(78, 238, 148, 0.1)',
+              border: `1px solid ${t.borderLight}`,
             }}>
               {latestLog.ai_summary || latestLog.content}
             </div>
-            <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: t.sp2 }}>
-              {latestLog.log_date}
-            </div>
-          </div>
+            <div style={{ fontSize: t.xs, color: t.textMuted, marginTop: t.sp2 }}>{latestLog.log_date}</div>
+          </>
         ) : (
-          <div style={{ textAlign: 'center', padding: `${t.sp5} 0` }}>
-            <div className="ai-orb" style={{ margin: `0 auto ${t.sp3}`, width: 48, height: 48 }}>
-              <Sparkles size={20} style={{ color: t.primary }} />
-            </div>
-            <div style={{ color: t.textSecondary, fontSize: t.sm }}>完成今日任务后，温室会给你一份成长寄语</div>
+          <div style={{ color: t.textSecondary, fontSize: t.sm, lineHeight: 1.7 }}>
+            完成今日任务后，温室会给你一份成长寄语。
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Feedback FAB */}
-      <div
+      <button
         onClick={() => setShowFeedback(true)}
+        aria-label="提交反馈"
         style={{
-          position: 'fixed', bottom: '80px', right: '20px',
-          width: '48px', height: '48px', borderRadius: '50%',
-          background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-          color: 'white',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', zIndex: 40,
-          boxShadow: '0 4px 20px rgba(78, 238, 148, 0.35)',
-          transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          animation: 'breathe 4s ease-in-out infinite',
+          position: 'fixed',
+          bottom: '88px',
+          left: '20px',
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          background: `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+          color: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 40,
+          border: 'none',
+          boxShadow: '0 12px 24px rgba(34, 197, 94, 0.24)',
         }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.12)'}
-        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
       >
         <MessageCircle size={20} />
-      </div>
+      </button>
 
-      {/* Feedback Modal */}
       {showFeedback && (
         <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(22, 49, 36, 0.28)',
           backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 100, padding: t.sp4,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+          padding: t.sp4,
         }} onClick={() => setShowFeedback(false)}>
           <div style={{
-            backgroundColor: 'rgba(26, 28, 41, 0.95)', borderRadius: t.rXl,
-            padding: t.sp6, width: '100%', maxWidth: '400px',
-            border: `1px solid rgba(78, 238, 148, 0.15)`,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(78, 238, 148, 0.05)',
-            backdropFilter: 'blur(20px)',
-            animation: 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            ...card,
+            width: '100%',
+            maxWidth: 400,
+            animation: 'scaleIn 0.2s ease-out',
           }} onClick={e => e.stopPropagation()}>
             {feedbackSent ? (
-              <div style={{ textAlign: 'center', padding: `${t.sp8} 0` }}>
-                <div style={{
-                  width: 52, height: 52, borderRadius: t.rFull,
-                  margin: `0 auto ${t.sp3}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.18), rgba(167, 139, 250, 0.1))',
-                  border: '1px solid rgba(74, 222, 128, 0.2)',
-                }}>
-                  <Sprout size={24} style={{ color: t.primary }} />
-                </div>
-                <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text }}>感谢你的浇灌！</div>
-                <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp2 }}>你的反馈会让温室变得更好</div>
+              <div style={{ textAlign: 'center', padding: `${t.sp6} 0` }}>
+                <Sprout size={38} style={{ color: t.primary, marginBottom: t.sp3 }} />
+                <div style={{ fontSize: t.lg, fontWeight: 700, color: t.text }}>收到反馈了</div>
+                <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp2 }}>温室会继续变好。</div>
               </div>
             ) : (
               <>
-                <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text, marginBottom: t.sp5 }}>
-                  <Droplets size={18} style={{ color: t.primary, marginRight: 6, verticalAlign: '-3px' }} />
-                  给温室浇浇水
-                </div>
-                <div style={{ marginBottom: t.sp4 }}>
-                  <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp2 }}>今天的体验如何？</div>
-                  <div style={{ display: 'flex', gap: t.sp2 }}>
-                    {[1,2,3,4,5].map(i => (
-                      <Star
-                        key={i}
-                        size={24}
-                        onClick={() => setFeedbackRating(i)}
-                        style={{
-                          cursor: 'pointer',
-                          transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                          transform: i <= feedbackRating ? 'scale(1.2)' : 'scale(1)',
-                          color: i <= feedbackRating ? t.warning : 'rgba(255,255,255,0.15)',
-                          fill: i <= feedbackRating ? t.warning : 'transparent',
-                        }}
-                      />
-                    ))}
-                  </div>
+                <div style={{ fontSize: t.lg, fontWeight: 700, color: t.text, marginBottom: t.sp4 }}>给温室浇浇水</div>
+                <div style={{ display: 'flex', gap: t.sp2, marginBottom: t.sp4 }}>
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <Star
+                      key={i}
+                      size={24}
+                      onClick={() => setFeedbackRating(i)}
+                      style={{
+                        cursor: 'pointer',
+                        color: i <= feedbackRating ? t.warning : '#cbd5cf',
+                        fill: i <= feedbackRating ? t.warning : 'transparent',
+                      }}
+                    />
+                  ))}
                 </div>
                 <textarea
                   value={feedbackContent}
                   onChange={e => setFeedbackContent(e.target.value)}
-                  placeholder="说说你的感受，好的坏的都行..."
+                  placeholder="说说哪里还可以更好..."
                   style={{
-                    width: '100%', minHeight: '90px',
-                    padding: t.sp3, borderRadius: t.rMd,
-                    border: `1.5px solid rgba(255, 255, 255, 0.08)`,
-                    fontSize: t.base, resize: 'vertical', outline: 'none',
-                    boxSizing: 'border-box', fontFamily: 'inherit',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)', color: t.text,
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    width: '100%',
+                    minHeight: 96,
+                    padding: t.sp3,
+                    borderRadius: t.rMd,
+                    border: `1.5px solid ${t.border}`,
+                    fontSize: t.base,
+                    resize: 'vertical',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit',
+                    backgroundColor: '#ffffff',
+                    color: t.text,
                   }}
                   onFocus={focusBorder}
                   onBlur={blurBorder}
@@ -428,17 +557,18 @@ function Dashboard() {
                   onClick={handleSubmitFeedback}
                   disabled={!feedbackContent.trim()}
                   style={{
-                    width: '100%', marginTop: t.sp4,
-                    padding: t.sp3, borderRadius: t.rMd, border: 'none',
-                    background: feedbackContent.trim()
-                      ? 'linear-gradient(135deg, #4EEE94, #3cc07a)'
-                      : 'rgba(255, 255, 255, 0.08)',
-                    color: feedbackContent.trim() ? 'white' : t.textMuted,
-                    fontSize: t.base, fontWeight: '600',
+                    width: '100%',
+                    marginTop: t.sp4,
+                    padding: t.sp3,
+                    borderRadius: t.rMd,
+                    border: 'none',
+                    background: feedbackContent.trim() ? `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})` : t.surfaceAlt,
+                    color: feedbackContent.trim() ? '#ffffff' : t.textMuted,
+                    fontSize: t.base,
+                    fontWeight: 700,
                     cursor: feedbackContent.trim() ? 'pointer' : 'not-allowed',
-                    fontFamily: 'inherit', minHeight: '44px',
-                    transition: 'all 0.2s',
-                    boxShadow: feedbackContent.trim() ? '0 4px 14px rgba(78, 238, 148, 0.3)' : 'none',
+                    fontFamily: 'inherit',
+                    minHeight: 44,
                   }}
                 >
                   提交反馈

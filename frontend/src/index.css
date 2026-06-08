@@ -3,26 +3,25 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  background: #12131A;
-  color: #e8e8f0;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(34, 197, 94, 0.12), transparent 28rem),
+    radial-gradient(circle at 100% 15%, rgba(14, 165, 233, 0.09), transparent 24rem),
+    linear-gradient(180deg, #f7fdf8 0%, #eef8f2 100%);
+  color: #163124;
   overflow-x: hidden;
 }
 
-/* 赛博温室动态背景 - 极光效果 */
+/* 清新温室背景层 */
 body::before {
   content: '';
   position: fixed;
-  top: -50%;
-  left: -50%;
-  right: -50%;
-  bottom: -50%;
+  inset: 0;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(78, 238, 148, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(167, 139, 250, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(78, 238, 148, 0.03) 0%, transparent 70%);
+    linear-gradient(120deg, rgba(34, 197, 94, 0.04) 0 1px, transparent 1px 36px),
+    linear-gradient(30deg, rgba(20, 83, 45, 0.025) 0 1px, transparent 1px 42px);
   pointer-events: none;
   z-index: -1;
-  animation: auroraFloat 25s ease-in-out infinite alternate;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.85), transparent 72%);
 }
 
 @keyframes auroraFloat {
@@ -74,10 +73,10 @@ body::before {
 /* 霓虹发光 */
 @keyframes neonGlow {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(78, 238, 148, 0.3), 0 0 16px rgba(78, 238, 148, 0.1);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.08);
   }
   50% {
-    box-shadow: 0 0 16px rgba(78, 238, 148, 0.5), 0 0 32px rgba(78, 238, 148, 0.2);
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.04);
   }
 }
 
@@ -113,10 +112,10 @@ body::before {
 
 @keyframes orbPulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(78, 238, 148, 0.3), 0 0 40px rgba(78, 238, 148, 0.1);
+    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.16);
   }
   50% {
-    box-shadow: 0 0 30px rgba(78, 238, 148, 0.5), 0 0 60px rgba(78, 238, 148, 0.2), 0 0 80px rgba(167, 139, 250, 0.1);
+    box-shadow: 0 14px 30px rgba(34, 197, 94, 0.22);
   }
 }
 
@@ -150,22 +149,21 @@ body::before {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
-::-webkit-scrollbar-thumb { background: rgba(78, 238, 148, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(78, 238, 148, 0.4); }
+::-webkit-scrollbar-track { background: rgba(34, 197, 94, 0.06); }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.32); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34, 197, 94, 0.48); }
 
 /* Selection */
-::selection { background: rgba(78, 238, 148, 0.25); color: #e8e8f0; }
+::selection { background: rgba(34, 197, 94, 0.22); color: #163124; }
 
 /* 链接 */
 a {
-  color: #4EEE94;
+  color: #15803d;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 a:hover {
-  color: #3cc07a;
-  text-shadow: 0 0 10px rgba(78, 238, 148, 0.5);
+  color: #166534;
 }
 
 /* 底部导航弹性动画 */
@@ -202,8 +200,8 @@ a:hover {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(78, 238, 148, 0.4), rgba(78, 238, 148, 0.1) 50%, transparent 70%);
-  border: 2px solid rgba(78, 238, 148, 0.3);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #dcfce7 42%, #bbf7d0 72%, #86efac 100%);
+  border: 2px solid rgba(34, 197, 94, 0.22);
   animation: orbPulse 3s ease-in-out infinite;
   position: relative;
   display: flex;
@@ -219,7 +217,7 @@ a:hover {
   right: -4px;
   bottom: -4px;
   border-radius: 50%;
-  border: 1px solid rgba(78, 238, 148, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.12);
   animation: orbRotate 8s linear infinite;
 }
 
@@ -231,7 +229,7 @@ a:hover {
   right: -8px;
   bottom: -8px;
   border-radius: 50%;
-  border: 1px dashed rgba(167, 139, 250, 0.15);
+  border: 1px dashed rgba(21, 128, 61, 0.16);
   animation: orbRotate 12s linear infinite reverse;
 }
 
@@ -255,9 +253,9 @@ a:hover {
   transform: translateX(-50%);
   width: 40px;
   height: 30px;
-  background: linear-gradient(135deg, rgba(78, 238, 148, 0.2), rgba(167, 139, 250, 0.2));
+  background: linear-gradient(135deg, #dcfce7, #dbeafe);
   border-radius: 0 0 12px 12px;
-  border: 1px solid rgba(78, 238, 148, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .empty-sprout {
@@ -267,7 +265,7 @@ a:hover {
   transform: translateX(-50%);
   width: 4px;
   height: 20px;
-  background: linear-gradient(to top, rgba(78, 238, 148, 0.6), rgba(78, 238, 148, 0.3));
+  background: linear-gradient(to top, #16a34a, #86efac);
   border-radius: 2px;
   animation: breathe 3s ease-in-out infinite;
 }
@@ -276,7 +274,7 @@ a:hover {
   position: absolute;
   width: 12px;
   height: 8px;
-  background: rgba(78, 238, 148, 0.4);
+  background: rgba(34, 197, 94, 0.42);
   border-radius: 50% 0 50% 0;
 }
 
@@ -296,7 +294,7 @@ a:hover {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(78, 238, 148, 0.6);
+  background: rgba(34, 197, 94, 0.6);
   border-radius: 50%;
   animation: breathe 2s ease-in-out infinite;
 }
@@ -307,8 +305,8 @@ a:hover {
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(78, 238, 148, 0.08);
-  border-color: rgba(78, 238, 148, 0.2);
+  box-shadow: 0 14px 30px rgba(31, 85, 52, 0.12);
+  border-color: rgba(34, 197, 94, 0.28);
 }
 
 /* 按钮 hover */
@@ -320,6 +318,15 @@ button:hover {
 }
 button:active {
   transform: translateY(0) scale(0.98);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(34, 197, 94, 0.24);
+  outline-offset: 2px;
 }
 
 /* 移动端键盘弹出时确保输入框可见 */

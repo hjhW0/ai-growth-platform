@@ -57,8 +57,8 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
                   }}>
                     <div style={{
                       width: 14, height: 14, borderRadius: '50%',
-                      background: 'radial-gradient(circle, rgba(78, 238, 148, 0.3), rgba(78, 238, 148, 0.1))',
-                      border: '1px solid rgba(78, 238, 148, 0.2)',
+                      background: t.primaryLight,
+                      border: `1px solid ${t.borderGlow}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <Sparkles size={8} style={{ color: t.primary }} />
@@ -70,15 +70,15 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
                   padding: `${t.sp3} ${t.sp4}`,
                   borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
                   background: isUser
-                    ? 'linear-gradient(135deg, #4EEE94, #3cc07a)'
-                    : 'rgba(255, 255, 255, 0.04)',
-                  color: isUser ? 'white' : t.text,
+                    ? `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`
+                    : '#ffffff',
+                  color: isUser ? '#ffffff' : t.text,
                   fontSize: t.base, lineHeight: 1.7,
                   whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                  border: isUser ? 'none' : '1px solid rgba(255, 255, 255, 0.06)',
+                  border: isUser ? 'none' : `1px solid ${t.border}`,
                   boxShadow: isUser
-                    ? '0 2px 12px rgba(78, 238, 148, 0.2)'
-                    : 'none',
+                    ? '0 8px 18px rgba(34, 197, 94, 0.18)'
+                    : '0 8px 18px rgba(31, 85, 52, 0.06)',
                 }}>
                   {chat.content || (isStreaming ? '' : '...')}
                   {isStreaming && (
@@ -86,7 +86,6 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
                       display: 'inline-block', width: '2px', height: '14px',
                       backgroundColor: t.primary, marginLeft: '2px',
                       verticalAlign: 'middle', animation: 'blink 1s infinite',
-                      boxShadow: '0 0 6px rgba(78, 238, 148, 0.5)',
                     }} />
                   )}
                 </div>
@@ -99,11 +98,11 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
 
       {/* Input bar */}
       <div className="chat-input-bar" style={{
-        backgroundColor: 'rgba(26, 28, 41, 0.9)',
-        backdropFilter: 'blur(16px)',
+        backgroundColor: '#ffffff',
         borderRadius: t.rMd,
         padding: t.sp3, marginTop: t.sp3,
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        border: `1px solid ${t.border}`,
+        boxShadow: '0 12px 24px rgba(31, 85, 52, 0.08)',
         position: 'sticky', bottom: 0,
       }}>
         <div style={{ display: 'flex', gap: t.sp2, alignItems: 'flex-end' }}>
@@ -116,10 +115,10 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
             rows={1}
             style={{
               flex: 1, padding: `${t.sp3} ${t.sp3}`,
-              border: `1.5px solid rgba(255, 255, 255, 0.06)`, borderRadius: t.rMd,
+              border: `1.5px solid ${t.border}`, borderRadius: t.rMd,
               fontSize: t.base, resize: 'none', outline: 'none',
               fontFamily: 'inherit', maxHeight: '100px',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)', color: t.text,
+              backgroundColor: t.surfaceAlt, color: t.text,
               transition: 'border-color 0.2s, box-shadow 0.2s',
             }}
             onFocus={(e) => { focusBorder(e); handleInputFocus(); }}
@@ -130,15 +129,15 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
             disabled={loading || !message.trim()}
             style={{
               background: (loading || !message.trim())
-                ? 'rgba(255, 255, 255, 0.06)'
-                : 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-              color: (loading || !message.trim()) ? t.textMuted : 'white',
+                ? t.surfaceAlt
+                : `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+              color: (loading || !message.trim()) ? t.textMuted : '#ffffff',
               border: 'none', padding: `${t.sp3} ${t.sp4}`,
               borderRadius: t.rMd, cursor: (loading || !message.trim()) ? 'not-allowed' : 'pointer',
               fontSize: t.sm, fontWeight: '600', whiteSpace: 'nowrap',
               height: '40px', fontFamily: 'inherit',
               transition: 'all 0.2s',
-              boxShadow: (loading || !message.trim()) ? 'none' : '0 2px 10px rgba(78, 238, 148, 0.25)',
+              boxShadow: (loading || !message.trim()) ? 'none' : '0 8px 18px rgba(34, 197, 94, 0.18)',
             }}
           >
             {loading ? '...' : '发送'}

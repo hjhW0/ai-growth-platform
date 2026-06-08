@@ -7,7 +7,7 @@ import ErrorState from '../components/ErrorState';
 
 function Confetti({ show }) {
   if (!show) return null;
-  const colors = ['#4EEE94', '#a78bfa', '#fbbf24', '#f472b6', '#38bdf8', '#4EEE94'];
+  const colors = [t.primary, t.accentPurple, t.warning, '#f472b6', t.accentSky, t.success];
   return (
     <div className="confetti-container">
       {Array.from({ length: 30 }).map((_, i) => (
@@ -110,14 +110,14 @@ function CheckIn() {
       <div>
         <div style={{
           ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`,
-          background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)',
+          background: 'linear-gradient(90deg, #e6f4eb 25%, #f5fbf7 50%, #e6f4eb 75%)',
           backgroundSize: '200% 100%',
           animation: 'shimmer 1.5s infinite',
           height: 280, marginBottom: t.sp4,
         }} />
         <div style={{
           ...card,
-          background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)',
+          background: 'linear-gradient(90deg, #e6f4eb 25%, #f5fbf7 50%, #e6f4eb 75%)',
           backgroundSize: '200% 100%',
           animation: 'shimmer 1.5s infinite',
           height: 100,
@@ -140,11 +140,11 @@ function CheckIn() {
         textAlign: 'center',
         padding: `${t.sp8} ${t.sp5}`,
         background: checkedIn
-          ? 'linear-gradient(135deg, rgba(78, 238, 148, 0.1) 0%, rgba(167, 139, 250, 0.06) 100%)'
-          : 'linear-gradient(135deg, rgba(78, 238, 148, 0.06) 0%, rgba(167, 139, 250, 0.04) 100%)',
-        border: `1px solid ${checkedIn ? 'rgba(78, 238, 148, 0.2)' : 'rgba(78, 238, 148, 0.1)'}`,
+          ? 'linear-gradient(135deg, #ecfdf5 0%, #ffffff 58%, #eef2ff 100%)'
+          : 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
+        border: `1px solid ${checkedIn ? t.borderGlow : t.border}`,
         marginBottom: t.sp4,
-        boxShadow: checkedIn ? '0 0 40px rgba(78, 238, 148, 0.1)' : 'none',
+        boxShadow: checkedIn ? '0 16px 34px rgba(34, 197, 94, 0.14)' : card.boxShadow,
         transition: 'all 0.5s ease',
         position: 'relative',
         overflow: 'hidden',
@@ -154,7 +154,7 @@ function CheckIn() {
           <div style={{
             position: 'absolute', top: -40, right: -40,
             width: 160, height: 160, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(78, 238, 148, 0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(34, 197, 94, 0.14) 0%, transparent 70%)',
             pointerEvents: 'none',
             animation: 'breathe 4s ease-in-out infinite',
           }} />
@@ -174,12 +174,12 @@ function CheckIn() {
                 return (
                 <button key={m.value} onClick={() => setMood(m.value)} style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                  background: mood === m.value ? 'rgba(78, 238, 148, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                  border: `2px solid ${mood === m.value ? 'rgba(78, 238, 148, 0.25)' : 'rgba(255, 255, 255, 0.06)'}`,
+                  background: mood === m.value ? t.primaryLight : '#ffffff',
+                  border: `2px solid ${mood === m.value ? t.borderGlow : t.border}`,
                   borderRadius: t.rMd, padding: `${t.sp2} ${t.sp3}`,
                   cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   minWidth: '60px', fontFamily: 'inherit',
-                  boxShadow: mood === m.value ? '0 0 14px rgba(78, 238, 148, 0.15)' : 'none',
+                  boxShadow: mood === m.value ? '0 10px 18px rgba(34,197,94,0.12)' : 'none',
                   transform: mood === m.value ? 'scale(1.05)' : 'scale(1)',
                 }}>
                   <Icon size={22} style={{ color: mood === m.value ? t.primary : t.textMuted }} />
@@ -198,19 +198,19 @@ function CheckIn() {
             width: '130px', height: '130px',
             borderRadius: '50%', border: 'none',
             background: checkedIn
-              ? 'linear-gradient(135deg, #4EEE94, #3cc07a)'
-              : 'linear-gradient(135deg, rgba(78, 238, 148, 0.15), rgba(167, 139, 250, 0.15))',
-            color: 'white', fontSize: checkedIn ? '36px' : t.lg,
+              ? `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`
+              : 'linear-gradient(135deg, #ffffff, #dcfce7)',
+            color: checkedIn ? '#ffffff' : t.primaryDark, fontSize: checkedIn ? '36px' : t.lg,
             fontWeight: '700', cursor: checkedIn ? 'default' : 'pointer',
             margin: `${t.sp4} auto`,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center', gap: '6px',
             boxShadow: checkedIn
-              ? '0 8px 40px rgba(78, 238, 148, 0.4), 0 0 60px rgba(78, 238, 148, 0.15)'
-              : '0 8px 30px rgba(78, 238, 148, 0.15), 0 0 20px rgba(78, 238, 148, 0.08)',
+              ? '0 16px 34px rgba(34, 197, 94, 0.24)'
+              : '0 12px 28px rgba(31, 85, 52, 0.12)',
             transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
             transform: justChecked ? 'scale(1.1)' : 'scale(1)',
-            border: `2px solid ${checkedIn ? 'rgba(78, 238, 148, 0.4)' : 'rgba(78, 238, 148, 0.2)'}`,
+            border: `2px solid ${checkedIn ? t.primary : t.borderGlow}`,
             animation: checkedIn ? 'none' : 'breathe 4s ease-in-out infinite',
             fontFamily: 'inherit',
           }}
@@ -230,7 +230,6 @@ function CheckIn() {
         <div style={{ marginTop: t.sp3 }}>
           <div style={{
             fontSize: t['3xl'], fontWeight: '700', color: t.primary,
-            textShadow: '0 0 20px rgba(78, 238, 148, 0.3)',
           }}>{streak}</div>
           <div style={{ fontSize: t.sm, color: t.textMuted }}>连续打卡天数</div>
         </div>
@@ -238,10 +237,10 @@ function CheckIn() {
         {checkedIn && (
           <div style={{
             marginTop: t.sp4, padding: `${t.sp3} ${t.sp4}`,
-            background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.1), rgba(167, 139, 250, 0.06))',
+            background: t.primaryLight,
             borderRadius: t.rMd,
             fontSize: t.sm, color: t.primary, fontWeight: '500',
-            border: '1px solid rgba(78, 238, 148, 0.15)',
+            border: `1px solid ${t.borderGlow}`,
           }}>
             {getEncouragement()}
           </div>
@@ -265,18 +264,17 @@ function CheckIn() {
                 <div style={{
                   width: '38px', height: '38px', borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  backgroundColor: isToday ? t.primary : isPast ? 'rgba(78, 238, 148, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                  color: isToday ? 'white' : isPast ? t.success : t.textMuted,
+                  backgroundColor: isToday ? t.primary : isPast ? t.primaryLight : t.surfaceAlt,
+                  color: isToday ? '#ffffff' : isPast ? t.success : t.textMuted,
                   fontSize: t.sm, fontWeight: isToday ? '700' : '500',
-                  border: isToday ? `2px solid ${t.primary}` : `1px solid ${isPast ? 'rgba(78, 238, 148, 0.15)' : 'rgba(255, 255, 255, 0.06)'}`,
-                  boxShadow: isToday ? '0 0 16px rgba(78, 238, 148, 0.3)' : 'none',
+                  border: isToday ? `2px solid ${t.primary}` : `1px solid ${isPast ? t.borderGlow : t.border}`,
+                  boxShadow: isToday ? '0 10px 18px rgba(34,197,94,0.18)' : 'none',
                   transition: 'all 0.3s ease',
                 }}>
                   {weekdayLabels[index]}
                 </div>
                 <div style={{
                   fontSize: '9px', color: isToday ? t.primary : t.textMuted, fontWeight: '500',
-                  textShadow: isToday ? '0 0 8px rgba(78, 238, 148, 0.4)' : 'none',
                 }}>
                   {isToday ? '今天' : isPast ? <Check size={10} /> : ''}
                 </div>

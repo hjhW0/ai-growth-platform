@@ -1,36 +1,38 @@
-// Design tokens - 赛博温室主题
+// Design tokens - 清新绿色成长主题
 export const t = {
-  // Colors - 深夜温室色系
-  bg: '#11151A',
-  bgAlt: '#18201F',
-  surface: 'rgba(28, 34, 36, 0.92)',
-  surfaceAlt: 'rgba(255, 255, 255, 0.045)',
-  surfaceHover: 'rgba(255, 255, 255, 0.075)',
-  border: 'rgba(226, 244, 234, 0.09)',
-  borderLight: 'rgba(226, 244, 234, 0.05)',
-  borderGlow: 'rgba(78, 238, 148, 0.16)',
+  // Colors - 白天温室色系
+  bg: '#F4FBF6',
+  bgAlt: '#EAF7EF',
+  surface: '#FFFFFF',
+  surfaceAlt: '#EEF8F1',
+  surfaceHover: '#E3F3E8',
+  border: '#D7E8DC',
+  borderLight: '#E9F2EC',
+  borderGlow: 'rgba(34, 197, 94, 0.22)',
 
-  text: '#e8e8f0',
-  textSecondary: '#a0a0b8',
-  textMuted: '#6b6b80',
+  text: '#163124',
+  textSecondary: '#4E6658',
+  textMuted: '#7F9588',
 
-  // 主品牌色：清新薄荷绿
-  primary: '#4ADE80',
-  primaryLight: 'rgba(74, 222, 128, 0.14)',
-  primaryDark: '#35B86C',
+  // 主品牌色：清新叶绿
+  primary: '#22C55E',
+  primaryLight: '#DDFBE7',
+  primaryDark: '#15803D',
 
   // 辅助氛围色
-  accentPurple: '#a78bfa',
-  accentPurpleLight: 'rgba(167, 139, 250, 0.15)',
-  accentGold: '#fbbf24',
-  accentGoldLight: 'rgba(251, 191, 36, 0.15)',
+  accentPurple: '#7C6CE8',
+  accentPurpleLight: '#EEECFF',
+  accentGold: '#F59E0B',
+  accentGoldLight: '#FFF4D8',
+  accentSky: '#0EA5E9',
+  accentSkyLight: '#E0F2FE',
 
-  success: '#4ADE80',
-  successLight: 'rgba(74, 222, 128, 0.14)',
+  success: '#16A34A',
+  successLight: '#DCFCE7',
   warning: '#f59e0b',
-  warningLight: 'rgba(245, 158, 11, 0.15)',
-  error: '#ef4444',
-  errorLight: 'rgba(239, 68, 68, 0.15)',
+  warningLight: '#FEF3C7',
+  error: '#DC2626',
+  errorLight: '#FEE2E2',
 
   // Typography
   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
@@ -66,17 +68,16 @@ export const card = {
   borderRadius: t.rLg,
   padding: t.sp5,
   border: `1px solid ${t.border}`,
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)',
-  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.16)',
+  boxShadow: '0 10px 24px rgba(31, 85, 52, 0.08)',
   transition: 'background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease',
 };
 
-// 发光卡片
+// 重点卡片
 export const cardGlow = {
   ...card,
   border: `1px solid ${t.borderGlow}`,
-  boxShadow: `0 8px 22px rgba(0, 0, 0, 0.18), 0 0 12px rgba(74, 222, 128, 0.06)`,
+  background: 'linear-gradient(135deg, #ffffff 0%, #f0fff5 100%)',
+  boxShadow: '0 14px 28px rgba(34, 197, 94, 0.13)',
 };
 
 export const cardCompact = {
@@ -93,7 +94,7 @@ export const input = {
   outline: 'none',
   boxSizing: 'border-box',
   fontFamily: 'inherit',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  backgroundColor: '#ffffff',
   color: t.text,
   transition: 'border-color 0.2s, box-shadow 0.2s',
 };
@@ -114,7 +115,7 @@ export const btnPrimary = {
   ...btn,
   background: `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
   color: '#ffffff',
-  boxShadow: '0 3px 10px rgba(74, 222, 128, 0.24)',
+  boxShadow: '0 8px 18px rgba(34, 197, 94, 0.22)',
 };
 
 export const btnGhost = {
@@ -150,7 +151,7 @@ export const sectionTitle = {
 // Helpers
 export const focusBorder = (e) => {
   e.target.style.borderColor = t.primary;
-  e.target.style.boxShadow = `0 0 0 3px rgba(74, 222, 128, 0.14)`;
+  e.target.style.boxShadow = `0 0 0 3px rgba(34, 197, 94, 0.14)`;
 };
 export const blurBorder = (e) => {
   e.target.style.borderColor = t.border;

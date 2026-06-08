@@ -91,10 +91,10 @@ function GrowthLogs() {
                   <div style={{
                     position: 'absolute', left: `-${t.sp5}`, top: '8px',
                     width: '12px', height: '12px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
+                    background: `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
                     border: `2px solid ${t.bg}`,
                     zIndex: 1,
-                    boxShadow: '0 0 8px rgba(78, 238, 148, 0.3)',
+                    boxShadow: '0 8px 16px rgba(34, 197, 94, 0.16)',
                   }} />
 
                   <div className="card-hover" style={{ ...card, padding: t.sp4, cursor: 'default' }}>
@@ -115,10 +115,10 @@ function GrowthLogs() {
                     {log.ai_summary && (
                       <div style={{
                         padding: t.sp3,
-                        background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06), rgba(167, 139, 250, 0.04))',
+                        background: t.surfaceAlt,
                         borderRadius: t.rMd, whiteSpace: 'pre-wrap',
                         lineHeight: 1.8, fontSize: t.sm, color: t.textSecondary,
-                        border: '1px solid rgba(78, 238, 148, 0.08)',
+                        border: `1px solid ${t.borderLight}`,
                       }}>
                         {log.ai_summary}
                       </div>

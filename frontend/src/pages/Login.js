@@ -204,10 +204,10 @@ function Login({ onLogin }) {
                 fontFamily: 'inherit',
                 minHeight: '44px',
                 background: loading
-                  ? 'rgba(255, 255, 255, 0.06)'
-                  : 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-                color: loading ? t.textMuted : 'white',
-                boxShadow: loading ? 'none' : '0 4px 20px rgba(78, 238, 148, 0.3)',
+                  ? t.surfaceAlt
+                  : `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+                color: loading ? t.textMuted : '#ffffff',
+                boxShadow: loading ? 'none' : '0 10px 22px rgba(34, 197, 94, 0.18)',
                 transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >

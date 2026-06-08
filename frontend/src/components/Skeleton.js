@@ -6,7 +6,7 @@ export function SkeletonLine({ height = 14, width = '100%', style = {} }) {
   return (
     <div style={{
       height, width, borderRadius: t.rSm,
-      background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)',
+      background: 'linear-gradient(90deg, #e6f4eb 25%, #f5fbf7 50%, #e6f4eb 75%)',
       backgroundSize: '200% 100%',
       animation: 'shimmer 1.5s infinite',
       ...style,
@@ -38,7 +38,7 @@ export function SkeletonList({ count = 3 }) {
         <div key={i} style={{
           display: 'flex', alignItems: 'center', gap: t.sp3,
           padding: `${t.sp3} 0`,
-          borderBottom: i < count - 1 ? `1px solid rgba(255, 255, 255, 0.04)` : 'none',
+          borderBottom: i < count - 1 ? `1px solid ${t.borderLight}` : 'none',
         }}>
           <SkeletonLine height={20} width={20} style={{ borderRadius: '50%', flexShrink: 0 }} />
           <SkeletonLine height={14} width={`${60 + Math.random() * 30}%`} />

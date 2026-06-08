@@ -98,11 +98,11 @@ export default function Goals() {
           fontSize: t.sm, maxWidth: '90%', textAlign: 'center',
           background: toast.type === 'error'
             ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-            : 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-          color: 'white',
+            : `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+          color: '#ffffff',
           boxShadow: toast.type === 'error'
             ? '0 4px 20px rgba(239, 68, 68, 0.3)'
-            : '0 4px 20px rgba(78, 238, 148, 0.3)',
+            : '0 10px 22px rgba(34, 197, 94, 0.18)',
           animation: 'scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}>
           {toast.message}
@@ -113,8 +113,8 @@ export default function Goals() {
       {goals.length > 0 && (
         <div className="animate-in" style={{
           ...card, marginBottom: t.sp4,
-          background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06) 0%, rgba(167, 139, 250, 0.04) 100%)',
-          border: '1px solid rgba(78, 238, 148, 0.1)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
+          border: `1px solid ${t.borderGlow}`,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
             <span style={{ fontSize: t.sm, fontWeight: '600', color: t.text }}>
@@ -129,7 +129,7 @@ export default function Goals() {
             </span>
           </div>
           <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
+            backgroundColor: t.surfaceAlt,
             borderRadius: t.rFull,
             height: '8px',
             overflow: 'hidden',
@@ -140,15 +140,10 @@ export default function Goals() {
               width: `${goalProgress}%`,
               transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
               background: goalProgress >= 80
-                ? 'linear-gradient(90deg, #4EEE94, #34d399)'
+                ? `linear-gradient(90deg, ${t.primary}, ${t.success})`
                 : goalProgress >= 50
                   ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
-                  : 'linear-gradient(90deg, #4EEE94, #a78bfa)',
-              boxShadow: goalProgress >= 80
-                ? '0 0 12px rgba(78, 238, 148, 0.4)'
-                : goalProgress >= 50
-                  ? '0 0 12px rgba(245, 158, 11, 0.3)'
-                  : '0 0 8px rgba(78, 238, 148, 0.2)',
+                  : `linear-gradient(90deg, ${t.primary}, ${t.accentPurple})`,
             }} />
           </div>
           <div style={{ textAlign: 'right', marginTop: t.sp2, fontSize: t.xs, color: t.textMuted }}>
@@ -173,17 +168,16 @@ export default function Goals() {
       {showForm && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'rgba(22, 49, 36, 0.28)',
           backdropFilter: 'blur(4px)',
           display: 'flex', justifyContent: 'center', alignItems: 'center',
           zIndex: 100, padding: t.sp4,
         }}>
           <div style={{
-            backgroundColor: 'rgba(26, 28, 41, 0.95)', padding: t.sp6, borderRadius: t.rXl,
-            width: '100%', maxWidth: '420px', border: '1px solid rgba(78, 238, 148, 0.15)',
+            backgroundColor: '#ffffff', padding: t.sp6, borderRadius: t.rXl,
+            width: '100%', maxWidth: '420px', border: `1px solid ${t.border}`,
             maxHeight: '90vh', overflowY: 'auto',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(78, 238, 148, 0.05)',
-            backdropFilter: 'blur(20px)',
+            boxShadow: '0 20px 60px rgba(31,85,52,0.16)',
             animation: 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}>
             <h3 style={{ margin: `0 0 ${t.sp5} 0`, fontSize: t.lg, fontWeight: '600', color: t.text }}>

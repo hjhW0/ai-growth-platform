@@ -9,7 +9,7 @@ function WeeklyReportTab({ weeklyReport, weekData, loading, onGenerate }) {
       {weekData && (
         <div className="animate-in" style={{
           ...card, marginBottom: t.sp3,
-          background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.04) 0%, rgba(167, 139, 250, 0.04) 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2, marginBottom: t.sp4 }}>
             <BarChart3 size={14} style={{ color: t.primary }} />
@@ -26,13 +26,12 @@ function WeeklyReportTab({ weeklyReport, weekData, loading, onGenerate }) {
             ].map((item, idx) => (
               <div key={idx} style={{
                 padding: t.sp3,
-                background: `linear-gradient(135deg, ${item.color}10, rgba(255, 255, 255, 0.02))`,
+                background: `linear-gradient(135deg, ${item.color}12, #ffffff)`,
                 borderRadius: t.rMd, textAlign: 'center',
                 border: `1px solid ${item.color}15`,
               }}>
                 <div style={{
                   fontSize: t.xl, fontWeight: '700', color: item.color,
-                  textShadow: `0 0 12px ${item.color}25`,
                 }}>{item.value}</div>
                 <div style={{ fontSize: t.xs, color: t.textMuted }}>{item.label}</div>
               </div>
@@ -49,12 +48,12 @@ function WeeklyReportTab({ weeklyReport, weekData, loading, onGenerate }) {
                 <div key={date} style={{
                   flex: 1, textAlign: 'center', padding: `${t.sp2} 0`,
                   background: d.rate >= 80
-                    ? 'rgba(78, 238, 148, 0.1)'
+                    ? t.primaryLight
                     : d.rate > 0
-                      ? 'rgba(245, 158, 11, 0.08)'
-                      : 'rgba(255, 255, 255, 0.03)',
+                      ? t.warningLight
+                      : t.surfaceAlt,
                   borderRadius: t.rSm,
-                  border: `1px solid ${d.rate >= 80 ? 'rgba(78, 238, 148, 0.15)' : 'rgba(255, 255, 255, 0.06)'}`,
+                  border: `1px solid ${d.rate >= 80 ? t.borderGlow : t.border}`,
                 }}>
                   <div style={{ fontSize: '9px', color: t.textMuted }}>周{weekday}</div>
                   <div style={{ fontSize: t.sm, fontWeight: '600', color: barColor }}>
@@ -91,7 +90,7 @@ function WeeklyReportTab({ weeklyReport, weekData, loading, onGenerate }) {
           fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
           minHeight: '44px', transition: 'all 0.2s',
           background: loading
-            ? 'rgba(255, 255, 255, 0.06)'
+            ? t.surfaceAlt
             : 'linear-gradient(135deg, #ec4899, #db2777)',
           color: loading ? t.textMuted : 'white',
           boxShadow: loading ? 'none' : '0 2px 12px rgba(236, 72, 153, 0.25)',

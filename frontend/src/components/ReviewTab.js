@@ -10,7 +10,7 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
       {reviewData && (
         <div className="animate-in" style={{
           ...card, marginBottom: t.sp3,
-          background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.04) 0%, rgba(167, 139, 250, 0.04) 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
         }}>
           <div style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600', marginBottom: t.sp4, letterSpacing: '0.02em' }}>
             今日数据
@@ -23,13 +23,12 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
             ].map((item, idx) => (
               <div key={idx} style={{
                 flex: 1, textAlign: 'center', padding: `${t.sp3} 0`,
-                background: `linear-gradient(135deg, ${item.color}10, rgba(255, 255, 255, 0.02))`,
+                background: `linear-gradient(135deg, ${item.color}12, #ffffff)`,
                 borderRadius: t.rMd,
                 border: `1px solid ${item.color}15`,
               }}>
                 <div style={{
                   fontSize: t.xl, fontWeight: '700', color: item.color,
-                  textShadow: `0 0 12px ${item.color}25`,
                 }}>{item.value}</div>
                 <div style={{ fontSize: t.xs, color: t.textMuted }}>{item.label}</div>
               </div>
@@ -71,10 +70,10 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
           fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
           minHeight: '44px', transition: 'all 0.2s',
           background: loading
-            ? 'rgba(255, 255, 255, 0.06)'
-            : 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-          color: loading ? t.textMuted : 'white',
-          boxShadow: loading ? 'none' : '0 2px 12px rgba(78, 238, 148, 0.25)',
+            ? t.surfaceAlt
+            : `linear-gradient(135deg, ${t.primary}, ${t.primaryDark})`,
+          color: loading ? t.textMuted : '#ffffff',
+          boxShadow: loading ? 'none' : '0 8px 18px rgba(34, 197, 94, 0.18)',
         }}>
           {loading ? '温室正在回顾...' : '生成今日复盘'}
         </button>
@@ -91,10 +90,10 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
           </div>
           <div style={{
             padding: t.sp4,
-            background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06), rgba(167, 139, 250, 0.04))',
+            background: t.surfaceAlt,
             borderRadius: t.rMd, whiteSpace: 'pre-wrap',
             lineHeight: 1.8, fontSize: t.sm, color: t.textSecondary,
-            border: '1px solid rgba(78, 238, 148, 0.1)',
+            border: `1px solid ${t.borderLight}`,
           }}>
             {review}
           </div>
@@ -118,7 +117,7 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
           {growthLogs.map((log, index) => (
             <div key={log.id || index} style={{
               padding: `${t.sp3} 0`,
-              borderBottom: index < growthLogs.length - 1 ? `1px solid rgba(255, 255, 255, 0.04)` : 'none',
+              borderBottom: index < growthLogs.length - 1 ? `1px solid ${t.borderLight}` : 'none',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: t.sp2 }}>
                 <span style={{ fontWeight: '600', color: t.text, fontSize: t.sm }}>{log.log_date}</span>
