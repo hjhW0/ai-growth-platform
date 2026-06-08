@@ -321,3 +321,17 @@ button:hover {
 button:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* 移动端键盘弹出时确保输入框可见 */
+@supports (padding: max(0px)) {
+  .chat-input-bar {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* 移动端 viewport 适配 */
+@supports (height: 100dvh) {
+  .chat-container {
+    height: calc(100dvh - 320px);
+  }
+}

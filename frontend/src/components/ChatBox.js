@@ -1,18 +1,27 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
 import { t, card, focusBorder, blurBorder } from '../styles/tokens';
 
 function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatHistory]);
+
+  // 移动端键盘弹出时滚动到输入框
+  const handleInputFocus = useCallback(() => {
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 300);
+  }, []);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(); }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 320px)', minHeight: '300px' }}>
+    <div ref={containerRef} className="chat-container" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 320px)', minHeight: '300px' }}>
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: `0 ${t.sp1}`, display: 'flex', flexDirection: 'column', gap: t.sp3 }}>
         {chatHistory.length === 0 && (
@@ -89,7 +98,7 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
       </div>
 
       {/* Input bar */}
-      <div style={{
+      <div className="chat-input-bar" style={{
         backgroundColor: 'rgba(26, 28, 41, 0.9)',
         backdropFilter: 'blur(16px)',
         borderRadius: t.rMd,
@@ -99,6 +108,7 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
       }}>
         <div style={{ display: 'flex', gap: t.sp2, alignItems: 'flex-end' }}>
           <textarea
+            ref={inputRef}
             value={message}
             onChange={e => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -112,7 +122,7 @@ function ChatBox({ message, setMessage, chatHistory, loading, onSend }) {
               backgroundColor: 'rgba(255, 255, 255, 0.04)', color: t.text,
               transition: 'border-color 0.2s, box-shadow 0.2s',
             }}
-            onFocus={focusBorder}
+            onFocus={(e) => { focusBorder(e); handleInputFocus(); }}
             onBlur={blurBorder}
           />
           <button
