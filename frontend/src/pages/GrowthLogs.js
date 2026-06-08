@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getGrowthLogs } from '../api/apiClient';
 import { t, card } from '../styles/tokens';
+import EmptyPot from '../components/EmptyPot';
+import ErrorState from '../components/ErrorState';
+import { SkeletonCard } from '../components/Skeleton';
 
 const moodConfig = {
-  good: { icon: '😊', label: '不错', color: t.success, bg: t.successLight },
-  bad: { icon: '😔', label: '一般', color: t.error, bg: t.errorLight },
-  normal: { icon: '😐', label: '还行', color: t.textMuted, bg: t.surfaceAlt },
+  good: { icon: '😊', label: '不错', color: t.success, bg: 'rgba(78, 238, 148, 0.1)' },
+  bad: { icon: '😔', label: '一般', color: t.error, bg: 'rgba(239, 68, 68, 0.08)' },
+  normal: { icon: '😐', label: '还行', color: t.textMuted, bg: 'rgba(255, 255, 255, 0.04)' },
 };
 
 function GrowthLogs() {
@@ -22,7 +25,7 @@ function GrowthLogs() {
       setError(null);
     } catch (error) {
       console.error('加载成长日志失败:', error);
-      setError('加载成长日志失败，请稍后重试');
+      setError('温室的记忆库暂时打不开');
     }
     setLoading(false);
   };
@@ -30,16 +33,12 @@ function GrowthLogs() {
   if (loading) {
     return (
       <div>
-        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>成长日志</h2>
-        {[1,2,3].map(i => (
-          <div key={i} style={{ ...card, marginBottom: t.sp3 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: t.sp3 }}>
-              <div style={{ height: 14, width: 80, backgroundColor: t.surfaceAlt, borderRadius: t.rSm }} />
-              <div style={{ height: 14, width: 50, backgroundColor: t.surfaceAlt, borderRadius: t.rSm }} />
-            </div>
-            <div style={{ height: 60, backgroundColor: t.surfaceAlt, borderRadius: t.rMd }} />
-          </div>
-        ))}
+        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>
+          成长足迹
+        </h2>
+        <SkeletonCard lines={2} height={100} />
+        <SkeletonCard lines={2} height={100} />
+        <SkeletonCard lines={2} height={100} />
       </div>
     );
   }
@@ -47,29 +46,23 @@ function GrowthLogs() {
   if (error) {
     return (
       <div>
-        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>成长日志</h2>
-        <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
-          <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
-          <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
-          <button onClick={() => { setLoading(true); setError(null); loadLogs(); }} style={{
-            padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
-            backgroundColor: t.primary, color: 'white', cursor: 'pointer',
-            fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
-          }}>重试</button>
-        </div>
+        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>
+          成长足迹
+        </h2>
+        <ErrorState message={error} onRetry={() => { setLoading(true); setError(null); loadLogs(); }} />
       </div>
     );
   }
 
   return (
     <div>
-      <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>成长日志</h2>
+      <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, marginBottom: t.sp4, letterSpacing: '-0.02em' }}>
+        成长足迹
+      </h2>
 
       {logs.length === 0 ? (
-        <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
-          <div style={{ fontSize: '40px', marginBottom: t.sp3 }}>📝</div>
-          <div style={{ color: t.textSecondary, fontSize: t.md, fontWeight: '500', marginBottom: t.sp1 }}>暂无成长记录</div>
-          <div style={{ color: t.textMuted, fontSize: t.sm }}>去 AI 中心生成复盘后自动记录</div>
+        <div style={{ ...card }}>
+          <EmptyPot text="还没有成长记录" sub="去 AI 中心生成复盘，温室会帮你记录每一天" />
         </div>
       ) : (
         <div>
@@ -78,7 +71,9 @@ function GrowthLogs() {
             {/* Timeline line */}
             <div style={{
               position: 'absolute', left: '7px', top: '8px', bottom: '8px',
-              width: '2px', backgroundColor: t.border, borderRadius: '1px',
+              width: '2px',
+              background: 'linear-gradient(to bottom, rgba(78, 238, 148, 0.3), rgba(167, 139, 250, 0.15))',
+              borderRadius: '1px',
             }} />
 
             {logs.map((log, index) => {
@@ -88,16 +83,19 @@ function GrowthLogs() {
                   position: 'relative',
                   marginBottom: index < logs.length - 1 ? t.sp4 : 0,
                   paddingLeft: t.sp4,
+                  animationDelay: `${index * 0.05}s`,
                 }}>
                   {/* Timeline dot */}
                   <div style={{
                     position: 'absolute', left: `-${t.sp5}`, top: '8px',
                     width: '12px', height: '12px', borderRadius: '50%',
-                    backgroundColor: t.primary, border: `2px solid ${t.surface}`,
+                    background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
+                    border: `2px solid ${t.bg}`,
                     zIndex: 1,
+                    boxShadow: '0 0 8px rgba(78, 238, 148, 0.3)',
                   }} />
 
-                  <div style={{ ...card, padding: t.sp4 }}>
+                  <div className="card-hover" style={{ ...card, padding: t.sp4, cursor: 'default' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
                       <span style={{ fontWeight: '600', color: t.text, fontSize: t.sm }}>{log.log_date}</span>
                       {log.mood && (
@@ -106,6 +104,7 @@ function GrowthLogs() {
                           fontSize: t.xs, fontWeight: '500',
                           backgroundColor: mood.bg, color: mood.color,
                           display: 'flex', alignItems: 'center', gap: '4px',
+                          border: `1px solid ${mood.color}20`,
                         }}>
                           {mood.icon} {mood.label}
                         </span>
@@ -113,10 +112,11 @@ function GrowthLogs() {
                     </div>
                     {log.ai_summary && (
                       <div style={{
-                        padding: t.sp3, backgroundColor: t.primaryLight,
+                        padding: t.sp3,
+                        background: 'linear-gradient(135deg, rgba(78, 238, 148, 0.06), rgba(167, 139, 250, 0.04))',
                         borderRadius: t.rMd, whiteSpace: 'pre-wrap',
-                        lineHeight: 1.7, fontSize: t.sm, color: t.textSecondary,
-                        border: `1px solid rgba(91,95,239,0.08)`,
+                        lineHeight: 1.8, fontSize: t.sm, color: t.textSecondary,
+                        border: '1px solid rgba(78, 238, 148, 0.08)',
                       }}>
                         {log.ai_summary}
                       </div>
@@ -127,7 +127,8 @@ function GrowthLogs() {
                           <span key={i} style={{
                             padding: '2px 8px', borderRadius: t.rFull,
                             fontSize: t.xs, fontWeight: '500',
-                            backgroundColor: t.primaryLight, color: t.primary,
+                            backgroundColor: 'rgba(78, 238, 148, 0.08)', color: t.primary,
+                            border: '1px solid rgba(78, 238, 148, 0.12)',
                           }}>{tag}</span>
                         ))}
                       </div>

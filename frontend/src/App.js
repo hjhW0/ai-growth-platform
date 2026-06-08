@@ -30,14 +30,14 @@ function BottomNav() {
       transform: 'translateX(-50%)',
       width: '100%',
       maxWidth: '480px',
-      backgroundColor: 'rgba(255,255,255,0.92)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
+      backgroundColor: 'rgba(18, 19, 26, 0.88)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
       display: 'flex',
       justifyContent: 'space-around',
       padding: '6px 0',
       paddingBottom: 'max(6px, env(safe-area-inset-bottom))',
-      borderTop: `1px solid ${t.border}`,
+      borderTop: '1px solid rgba(78, 238, 148, 0.1)',
       zIndex: 50,
     }}>
       {NAV_ITEMS.map(item => {
@@ -54,16 +54,26 @@ function BottomNav() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '3px',
-            padding: '6px 8px',
-            minWidth: '44px',
-            minHeight: '44px',
+            padding: '6px 10px',
+            minWidth: '48px',
+            minHeight: '48px',
             justifyContent: 'center',
             borderRadius: t.rMd,
-            backgroundColor: active ? t.primaryLight : 'transparent',
-            transition: 'all 0.15s',
+            backgroundColor: active ? 'rgba(78, 238, 148, 0.1)' : 'transparent',
+            transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            filter: active ? 'drop-shadow(0 0 8px rgba(78, 238, 148, 0.4))' : 'none',
+            transform: active ? 'scale(1.05)' : 'scale(1)',
           }}>
-            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
-            <span>{item.label}</span>
+            <div className="nav-icon" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transform: active ? 'scale(1.15)' : 'scale(1)',
+            }}>
+              <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
+            </div>
+            <span style={{ marginTop: '1px' }}>{item.label}</span>
           </Link>
         );
       })}
@@ -106,9 +116,13 @@ function App() {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         backgroundColor: t.bg,
       }}>
-        <div style={{ textAlign: 'center', color: t.textMuted }}>
-          <Sprout size={32} style={{ color: t.primary, marginBottom: t.sp3 }} />
-          <div style={{ fontSize: t.base }}>加载中...</div>
+        <div style={{ textAlign: 'center' }}>
+          <div className="ai-orb" style={{ margin: '0 auto 16px', width: 56, height: 56 }}>
+            <Sprout size={24} style={{ color: t.primary }} />
+          </div>
+          <div style={{ color: t.textMuted, fontSize: t.sm, animation: 'pulse 1.5s infinite' }}>
+            正在唤醒温室...
+          </div>
         </div>
       </div>
     );
@@ -131,9 +145,9 @@ function App() {
         <header style={{
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: 'rgba(255,255,255,0.92)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(18, 19, 26, 0.88)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           padding: `${t.sp3} ${t.sp4}`,
           display: 'flex',
           justifyContent: 'space-between',
@@ -141,29 +155,40 @@ function App() {
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          borderBottom: `1px solid ${t.border}`,
+          borderBottom: '1px solid rgba(78, 238, 148, 0.1)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: t.sp2 }}>
-            <Sprout size={20} style={{ color: t.primary }} />
+            <div style={{
+              width: '30px', height: '30px', borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, rgba(78, 238, 148, 0.3), rgba(78, 238, 148, 0.1) 60%, transparent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '1px solid rgba(78, 238, 148, 0.25)',
+              boxShadow: '0 0 12px rgba(78, 238, 148, 0.15)',
+              animation: 'breathe 4s ease-in-out infinite',
+            }}>
+              <Sprout size={16} style={{ color: t.primary }} />
+            </div>
             <span style={{
               fontSize: t.lg, fontWeight: '700', color: t.text,
               letterSpacing: '-0.02em',
-            }}>成长平台</span>
+            }}>赛博温室</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: t.sp3 }}>
             <div style={{
-              width: '28px', height: '28px', borderRadius: '50%',
-              backgroundColor: t.primaryLight,
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 35%, rgba(78, 238, 148, 0.25), rgba(167, 139, 250, 0.15))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '13px', fontWeight: '600', color: t.primary,
+              border: '1px solid rgba(78, 238, 148, 0.25)',
+              boxShadow: '0 0 10px rgba(78, 238, 148, 0.15)',
             }}>
               {user.username?.[0]?.toUpperCase() || '?'}
             </div>
             <button
               onClick={handleLogout}
               style={{
-                background: 'none',
-                border: `1px solid ${t.border}`,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 color: t.textSecondary,
                 padding: '6px 10px',
                 borderRadius: t.rSm,
@@ -171,7 +196,7 @@ function App() {
                 fontSize: t.sm,
                 fontFamily: 'inherit',
                 display: 'flex', alignItems: 'center', gap: '4px',
-                transition: 'all 0.15s',
+                transition: 'all 0.2s',
               }}
             >
               <LogOut size={14} />

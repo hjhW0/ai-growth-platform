@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, ChevronLeft, ChevronRight, Check, Trash2, ListChecks } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Check, Trash2, ListChecks, Sprout } from 'lucide-react';
 import { createTask, getTasks, completeTask, deleteTask, updateTask, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
+import EmptyPot from '../components/EmptyPot';
+import ErrorState from '../components/ErrorState';
+import { SkeletonList } from '../components/Skeleton';
 
 function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -23,7 +26,7 @@ function Tasks() {
       setError(null);
     } catch (error) {
       console.error('加载任务失败:', error);
-      setError('加载任务失败，请稍后重试');
+      setError('温室信号有点弱，任务没加载到');
     }
     setLoading(false);
   };
@@ -46,7 +49,7 @@ function Tasks() {
   };
 
   const handleDelete = async (taskId) => {
-    if (window.confirm('确定要删除这个任务吗？')) {
+    if (window.confirm('确定要移除这个任务吗？')) {
       try { await deleteTask(taskId); loadTasks(); }
       catch (error) { console.error('删除失败:', error); }
     }
@@ -64,9 +67,17 @@ function Tasks() {
   const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
 
   const priorityConfig = {
-    high: { color: t.error, bg: t.errorLight, label: '高' },
-    medium: { color: t.warning, bg: t.warningLight, label: '中' },
-    low: { color: t.success, bg: t.successLight, label: '低' },
+    high: { color: t.error, bg: t.errorLight, label: '紧急' },
+    medium: { color: t.warning, bg: t.warningLight, label: '普通' },
+    low: { color: t.success, bg: t.successLight, label: '轻松' },
+  };
+
+  const getProgressText = () => {
+    if (progress === 100) return '🎉 全部搞定！';
+    if (progress >= 80) return '快完成了，冲刺！';
+    if (progress >= 50) return '过半了，节奏很好';
+    if (progress > 0) return '刚刚起步，加油';
+    return '今天还没开始';
   };
 
   return (
@@ -79,7 +90,7 @@ function Tasks() {
         padding: `${t.sp3} ${t.sp4}`,
       }}>
         <button onClick={() => changeDate(-1)} style={{
-          background: 'none', border: `1px solid ${t.border}`,
+          background: 'rgba(255, 255, 255, 0.04)', border: `1px solid rgba(255, 255, 255, 0.08)`,
           padding: '6px 12px', borderRadius: t.rSm,
           cursor: 'pointer', color: t.textSecondary,
           fontFamily: 'inherit', minHeight: '36px',
@@ -94,7 +105,7 @@ function Tasks() {
           </div>
         </div>
         <button onClick={() => changeDate(1)} style={{
-          background: 'none', border: `1px solid ${t.border}`,
+          background: 'rgba(255, 255, 255, 0.04)', border: `1px solid rgba(255, 255, 255, 0.08)`,
           padding: '6px 12px', borderRadius: t.rSm,
           cursor: 'pointer', color: t.textSecondary,
           fontFamily: 'inherit', minHeight: '36px',
@@ -107,32 +118,24 @@ function Tasks() {
         <div className="animate-in animate-in-delay-1" style={{
           display: 'flex', gap: t.sp3, marginBottom: t.sp4,
         }}>
-          <div style={{
-            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
-            background: `linear-gradient(135deg, ${t.primaryLight}, #f0f0ff)`,
-            border: `1px solid rgba(91,95,239,0.12)`,
-          }}>
-            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.primary }}>{tasks.length}</div>
-            <div style={{ fontSize: t.xs, color: t.textMuted }}>总计</div>
-          </div>
-          <div style={{
-            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
-            background: `linear-gradient(135deg, ${t.successLight}, #ecfdf5)`,
-            border: `1px solid rgba(16,185,129,0.12)`,
-          }}>
-            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.success }}>{completedTasks.length}</div>
-            <div style={{ fontSize: t.xs, color: t.textMuted }}>完成</div>
-          </div>
-          <div style={{
-            ...card, flex: 1, padding: t.sp4, textAlign: 'center',
-            background: progress >= 80
-              ? `linear-gradient(135deg, ${t.successLight}, #ecfdf5)`
-              : `linear-gradient(135deg, ${t.warningLight}, #fffbeb)`,
-            border: `1px solid ${progress >= 80 ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)'}`,
-          }}>
-            <div style={{ fontSize: t['2xl'], fontWeight: '700', color: progress >= 80 ? t.success : t.warning }}>{progress}%</div>
-            <div style={{ fontSize: t.xs, color: t.textMuted }}>完成率</div>
-          </div>
+          {[
+            { value: tasks.length, label: '总计', color: t.primary },
+            { value: completedTasks.length, label: '完成', color: t.success },
+            { value: `${progress}%`, label: '完成率', color: progress >= 80 ? t.success : progress >= 50 ? t.warning : t.primary },
+          ].map((item, idx) => (
+            <div key={idx} className="card-hover" style={{
+              ...card, flex: 1, padding: t.sp4, textAlign: 'center',
+              background: `linear-gradient(135deg, ${item.color}10, rgba(255, 255, 255, 0.02))`,
+              border: `1px solid ${item.color}18`,
+              cursor: 'default',
+            }}>
+              <div style={{
+                fontSize: t['2xl'], fontWeight: '700', color: item.color,
+                textShadow: `0 0 12px ${item.color}25`,
+              }}>{item.value}</div>
+              <div style={{ fontSize: t.xs, color: t.textMuted }}>{item.label}</div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -141,24 +144,24 @@ function Tasks() {
         {!showAdd ? (
           <button onClick={() => setShowAdd(true)} style={{
             width: '100%', padding: `${t.sp3} 0`,
-            background: 'none', border: `1.5px dashed ${t.border}`,
+            background: 'none', border: `1.5px dashed rgba(78, 238, 148, 0.2)`,
             borderRadius: t.rMd, cursor: 'pointer',
             fontSize: t.base, color: t.textMuted,
             fontFamily: 'inherit', minHeight: '44px',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: t.sp2,
-            transition: 'all 0.15s',
+            transition: 'all 0.2s',
           }}
-          onMouseOver={e => { e.currentTarget.style.borderColor = t.primary; e.currentTarget.style.color = t.primary; }}
-          onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.color = t.textMuted; }}
+          onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(78, 238, 148, 0.4)'; e.currentTarget.style.color = t.primary; }}
+          onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(78, 238, 148, 0.2)'; e.currentTarget.style.color = t.textMuted; }}
           >
-            <Plus size={16} /> 添加新任务
+            <Plus size={16} /> 播下一颗新种子
           </button>
         ) : (
           <form onSubmit={handleAddTask}>
             <input
               type="text" value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
-              placeholder="输入新任务..."
+              placeholder="今天想完成什么呢..."
               autoFocus
               style={{ ...input, marginBottom: t.sp3 }}
               onFocus={focusBorder} onBlur={blurBorder}
@@ -169,17 +172,17 @@ function Tasks() {
                   <button key={key} type="button" onClick={() => setPriority(key)} style={{
                     padding: '4px 10px', borderRadius: t.rSm, cursor: 'pointer',
                     fontSize: t.xs, fontWeight: '500', fontFamily: 'inherit',
-                    border: `1.5px solid ${priority === key ? cfg.color : t.border}`,
+                    border: `1.5px solid ${priority === key ? cfg.color : 'rgba(255, 255, 255, 0.08)'}`,
                     backgroundColor: priority === key ? cfg.bg : 'transparent',
                     color: priority === key ? cfg.color : t.textMuted,
-                    transition: 'all 0.15s',
+                    transition: 'all 0.2s',
                   }}>
                     {cfg.label}
                   </button>
                 ))}
               </div>
               <button type="button" onClick={() => { setShowAdd(false); setNewTask(''); }} style={{
-                padding: '6px 12px', background: 'none', border: `1px solid ${t.border}`,
+                padding: '6px 12px', background: 'none', border: `1px solid rgba(255, 255, 255, 0.08)`,
                 borderRadius: t.rSm, cursor: 'pointer', fontSize: t.sm,
                 color: t.textSecondary, fontFamily: 'inherit',
               }}>取消</button>
@@ -187,37 +190,30 @@ function Tasks() {
                 ...btnPrimary,
                 padding: '6px 16px', minHeight: '36px', fontSize: t.sm,
                 opacity: newTask.trim() ? 1 : 0.5,
-              }}>添加</button>
+              }}>种下</button>
             </div>
           </form>
         )}
       </div>
 
+      {/* Progress hint */}
+      {tasks.length > 0 && (
+        <div style={{
+          fontSize: t.xs, color: t.textMuted, textAlign: 'center',
+          marginBottom: t.sp3, padding: `0 ${t.sp2}`,
+        }}>
+          {getProgressText()}
+        </div>
+      )}
+
       {/* Task list */}
       {loading ? (
-        <div style={card}>
-          {[1, 2, 3].map(i => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: t.sp3, padding: `${t.sp3} 0`, borderBottom: `1px solid ${t.borderLight}` }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: t.surfaceAlt }} />
-              <div style={{ flex: 1, height: 14, backgroundColor: t.surfaceAlt, borderRadius: t.rSm }} />
-            </div>
-          ))}
-        </div>
+        <SkeletonList count={3} />
       ) : error ? (
-        <div style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}`, backgroundColor: t.errorLight, border: `1px solid rgba(239,68,68,0.15)` }}>
-          <div style={{ fontSize: '32px', marginBottom: t.sp3 }}>😵</div>
-          <div style={{ color: t.error, fontSize: t.md, fontWeight: '500', marginBottom: t.sp2 }}>{error}</div>
-          <button onClick={() => { setLoading(true); setError(null); loadTasks(); }} style={{
-            padding: `${t.sp3} ${t.sp5}`, borderRadius: t.rMd, border: 'none',
-            backgroundColor: t.primary, color: 'white', cursor: 'pointer',
-            fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
-          }}>重试</button>
-        </div>
+        <ErrorState message={error} onRetry={() => { setLoading(true); setError(null); loadTasks(); }} />
       ) : tasks.length === 0 ? (
-        <div className="animate-in" style={{ ...card, textAlign: 'center', padding: `${t.sp8} ${t.sp5}` }}>
-          <ListChecks size={40} style={{ color: t.textMuted, marginBottom: t.sp3 }} />
-          <div style={{ color: t.textSecondary, fontSize: t.md, fontWeight: '500', marginBottom: t.sp1 }}>暂无任务</div>
-          <div style={{ color: t.textMuted, fontSize: t.sm }}>点击上方"添加新任务"开始吧</div>
+        <div className="animate-in" style={{ ...card }}>
+          <EmptyPot text="这片土壤还空着" sub="播下第一颗种子吧" />
         </div>
       ) : (
         <div>
@@ -225,30 +221,32 @@ function Tasks() {
           {pendingTasks.length > 0 && (
             <div className="animate-in animate-in-delay-2" style={{ ...card, marginBottom: t.sp3 }}>
               <div style={{ fontSize: t.xs, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3, letterSpacing: '0.03em' }}>
-                待完成 · {pendingTasks.length}
+                待浇灌 · {pendingTasks.length}
               </div>
               {pendingTasks.map((task, idx) => (
-                <div key={task.id} style={{
+                <div key={task.id} className="card-hover" style={{
                   display: 'flex', alignItems: 'center', gap: t.sp3,
                   padding: `${t.sp3} 0`,
-                  borderBottom: idx < pendingTasks.length - 1 ? `1px solid ${t.borderLight}` : 'none',
+                  borderBottom: idx < pendingTasks.length - 1 ? `1px solid rgba(255, 255, 255, 0.04)` : 'none',
+                  cursor: 'default',
                 }}>
                   <button onClick={() => handleComplete(task.id)} style={{
                     width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-                    border: `2px solid ${t.border}`, backgroundColor: 'transparent',
+                    border: `2px solid rgba(78, 238, 148, 0.25)`, backgroundColor: 'transparent',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.15s', padding: 0,
+                    transition: 'all 0.2s', padding: 0,
                   }}
-                  onMouseOver={e => { e.currentTarget.style.borderColor = t.success; e.currentTarget.style.backgroundColor = t.successLight; }}
-                  onMouseOut={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  onMouseOver={e => { e.currentTarget.style.borderColor = t.success; e.currentTarget.style.backgroundColor = 'rgba(78, 238, 148, 0.1)'; e.currentTarget.style.boxShadow = '0 0 8px rgba(78, 238, 148, 0.2)'; }}
+                  onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(78, 238, 148, 0.25)'; e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <Check size={12} style={{ opacity: 0 }} />
                   </button>
                   <span style={{ flex: 1, fontSize: t.base, color: t.text, minWidth: 0 }}>{task.title}</span>
                   <span style={{
-                    padding: '2px 6px', borderRadius: t.rSm, fontSize: t.xs, fontWeight: '500',
-                    backgroundColor: priorityConfig[task.priority]?.bg || t.surfaceAlt,
+                    padding: '2px 8px', borderRadius: t.rSm, fontSize: t.xs, fontWeight: '500',
+                    backgroundColor: priorityConfig[task.priority]?.bg || 'rgba(255, 255, 255, 0.05)',
                     color: priorityConfig[task.priority]?.color || t.textMuted,
+                    border: `1px solid ${priorityConfig[task.priority]?.color || t.border}20`,
                     flexShrink: 0,
                   }}>
                     {priorityConfig[task.priority]?.label || task.priority}
@@ -256,7 +254,7 @@ function Tasks() {
                   <button onClick={() => handleDelete(task.id)} style={{
                     background: 'none', border: 'none', color: t.textMuted,
                     cursor: 'pointer', padding: '4px',
-                    flexShrink: 0, transition: 'color 0.15s',
+                    flexShrink: 0, transition: 'color 0.2s',
                   }}
                   onMouseOver={e => e.currentTarget.style.color = t.error}
                   onMouseOut={e => e.currentTarget.style.color = t.textMuted}
@@ -270,19 +268,21 @@ function Tasks() {
           {completedTasks.length > 0 && (
             <div className="animate-in animate-in-delay-3" style={{ ...card }}>
               <div style={{ fontSize: t.xs, color: t.textMuted, fontWeight: '600', marginBottom: t.sp3, letterSpacing: '0.03em' }}>
-                已完成 · {completedTasks.length}
+                已收获 · {completedTasks.length}
               </div>
               {completedTasks.map((task, idx) => (
                 <div key={task.id} style={{
                   display: 'flex', alignItems: 'center', gap: t.sp3,
                   padding: `${t.sp3} 0`,
-                  borderBottom: idx < completedTasks.length - 1 ? `1px solid ${t.borderLight}` : 'none',
+                  borderBottom: idx < completedTasks.length - 1 ? `1px solid rgba(255, 255, 255, 0.04)` : 'none',
                   opacity: 0.6,
                 }}>
                   <div style={{
                     width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-                    backgroundColor: t.success, border: `2px solid ${t.success}`,
+                    background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
+                    border: `2px solid ${t.success}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 8px rgba(78, 238, 148, 0.25)',
                   }}>
                     <Check size={12} style={{ color: 'white' }} />
                   </div>
@@ -293,7 +293,7 @@ function Tasks() {
                   <button onClick={() => handleDelete(task.id)} style={{
                     background: 'none', border: 'none', color: t.textMuted,
                     cursor: 'pointer', padding: '4px',
-                    flexShrink: 0, transition: 'color 0.15s',
+                    flexShrink: 0, transition: 'color 0.2s',
                   }}
                   onMouseOver={e => e.currentTarget.style.color = t.error}
                   onMouseOut={e => e.currentTarget.style.color = t.textMuted}

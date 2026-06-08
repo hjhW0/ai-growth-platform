@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Lightbulb } from 'lucide-react';
+import { Sparkles, Lightbulb, MessageCircle, Compass, RefreshCw, BarChart3 } from 'lucide-react';
 import { getAIPlan, getAIAdvice, sendAIMessageStream, getAIHistory, getDailyReview, getGrowthLogs, getAutoWeeklyReport, trackEvent } from '../api/apiClient';
 import ChatBox from '../components/ChatBox';
 import PlanTab from '../components/PlanTab';
@@ -93,49 +93,73 @@ function AICenter() {
   };
 
   const tabs = [
-    { id: 'chat', label: '对话', icon: '💬' },
-    { id: 'plan', label: '规划', icon: '🎯' },
-    { id: 'review', label: '复盘', icon: '📝' },
-    { id: 'report', label: '周报', icon: '📊' },
+    { id: 'chat', label: '对话', Icon: MessageCircle },
+    { id: 'plan', label: '规划', Icon: Compass },
+    { id: 'review', label: '复盘', Icon: RefreshCw },
+    { id: 'report', label: '周报', Icon: BarChart3 },
   ];
-  // Note: Tab icons kept as emoji for now since they're small inline labels
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp4 }}>
-        <h2 style={{ fontSize: t.xl, fontWeight: '700', color: t.text, margin: 0, letterSpacing: '-0.02em' }}>AI 中心</h2>
-        <button onClick={handleGetAdvice} style={{
-          padding: '6px 12px', borderRadius: t.rMd, cursor: 'pointer',
-          fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
-          backgroundColor: t.warningLight, color: t.warning,
-          border: `1px solid rgba(245,158,11,0.2)`,
-          display: 'flex', alignItems: 'center', gap: '4px',
-          transition: 'all 0.15s',
+      {/* AI 光球形象 */}
+      <div className="animate-in" style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        marginBottom: t.sp4, paddingTop: t.sp2,
+      }}>
+        <div className={`ai-orb ${loading ? 'ai-orb-thinking' : ''}`} style={{ width: 56, height: 56, marginBottom: t.sp2 }}>
+          <Sparkles size={22} style={{ color: t.primary }} />
+        </div>
+        <div style={{
+          fontSize: t.sm, color: t.textSecondary, fontWeight: '500',
+          textShadow: '0 0 12px rgba(78, 238, 148, 0.2)',
         }}>
-          <Lightbulb size={14} /> 成长建议
-        </button>
+          {loading ? '温室正在思考...' : '有什么想聊的？'}
+        </div>
       </div>
 
       {/* Tab bar */}
       <div style={{
-        display: 'flex', gap: t.sp2, marginBottom: t.sp4,
-        backgroundColor: t.surface, padding: '4px',
-        borderRadius: t.rMd, border: `1px solid ${t.border}`,
+        display: 'flex', gap: '2px', marginBottom: t.sp4,
+        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+        padding: '4px', borderRadius: t.rMd,
+        border: '1px solid rgba(255, 255, 255, 0.06)',
       }}>
-        {tabs.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-            flex: 1, padding: `${t.sp2} ${t.sp3}`, borderRadius: t.rSm,
-            cursor: 'pointer', fontSize: t.sm, fontWeight: '500',
-            fontFamily: 'inherit', minHeight: '36px',
-            border: 'none',
-            backgroundColor: activeTab === tab.id ? t.primaryLight : 'transparent',
-            color: activeTab === tab.id ? t.primary : t.textMuted,
-            transition: 'all 0.15s',
-          }}>
-            {tab.icon} {tab.label}
-          </button>
-        ))}
+        {tabs.map(tab => {
+          const { Icon } = tab;
+          const active = activeTab === tab.id;
+          return (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+              flex: 1, padding: `${t.sp2} ${t.sp3}`, borderRadius: t.rSm,
+              cursor: 'pointer', fontSize: t.sm, fontWeight: active ? '600' : '500',
+              fontFamily: 'inherit', minHeight: '36px',
+              border: 'none',
+              backgroundColor: active ? 'rgba(78, 238, 148, 0.12)' : 'transparent',
+              color: active ? t.primary : t.textMuted,
+              transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+              boxShadow: active ? '0 0 10px rgba(78, 238, 148, 0.1)' : 'none',
+              transform: active ? 'scale(1.02)' : 'scale(1)',
+            }}>
+              <Icon size={14} />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 成长建议按钮 */}
+      <div style={{ marginBottom: t.sp3 }}>
+        <button onClick={handleGetAdvice} style={{
+          width: '100%', padding: `${t.sp3} ${t.sp4}`, borderRadius: t.rMd,
+          cursor: 'pointer', fontSize: t.sm, fontWeight: '600', fontFamily: 'inherit',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05))',
+          color: t.warning,
+          border: '1px solid rgba(245, 158, 11, 0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+          transition: 'all 0.2s',
+        }}>
+          <Lightbulb size={15} /> 获取成长建议
+        </button>
       </div>
 
       {activeTab === 'chat' && <ChatBox message={message} setMessage={setMessage} chatHistory={chatHistory} loading={loading} onSend={handleSendMessage} />}
