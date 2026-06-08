@@ -329,6 +329,457 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
+/* Q版荣耀女武神桌宠 */
+.valkyrie-bubble {
+  position: absolute;
+  right: 2px;
+  bottom: 100px;
+  width: 170px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #d7e8dc;
+  color: #4e6658;
+  font-size: 11px;
+  line-height: 1.5;
+  box-shadow: 0 14px 28px rgba(31, 85, 52, 0.12);
+  transform-origin: right bottom;
+  animation: valkyrieBubbleIn 0.22s ease-out both;
+}
+
+.valkyrie-bubble::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border-right: 1px solid #d7e8dc;
+  border-bottom: 1px solid #d7e8dc;
+  transform: rotate(45deg);
+}
+
+.valkyrie-pet {
+  position: relative;
+  width: 92px;
+  height: 96px;
+  border: 1px solid rgba(34, 197, 94, 0.24);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,0.95), transparent 30%),
+    linear-gradient(145deg, #ffffff 0%, #f0fdf4 62%, #e0f2fe 100%);
+  box-shadow: 0 14px 28px rgba(31, 85, 52, 0.14);
+  cursor: grab;
+  overflow: visible;
+  font-family: inherit;
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.valkyrie-pet:active {
+  cursor: grabbing;
+}
+
+.valkyrie-aura,
+.valkyrie-ring {
+  position: absolute;
+  pointer-events: none;
+}
+
+.valkyrie-aura {
+  inset: 7px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 74% 18%, rgba(245, 158, 11, 0.22), transparent 24%),
+    radial-gradient(circle at 20% 84%, rgba(124, 108, 232, 0.16), transparent 25%);
+}
+
+.valkyrie-ring {
+  left: 14px;
+  right: 14px;
+  bottom: 9px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.16);
+  filter: blur(0.2px);
+}
+
+.valkyrie-cape {
+  position: absolute;
+  left: 18px;
+  top: 42px;
+  width: 58px;
+  height: 39px;
+  border-radius: 20px 20px 24px 24px;
+  background: linear-gradient(135deg, #7c6ce8, #4f46e5 58%, #22c55e);
+  clip-path: polygon(8% 0, 92% 0, 78% 100%, 18% 88%);
+  opacity: 0.9;
+  transform-origin: top center;
+  box-shadow: inset 0 1px rgba(255,255,255,0.28);
+}
+
+.valkyrie-pony {
+  position: absolute;
+  left: 58px;
+  top: 8px;
+  width: 28px;
+  height: 44px;
+  border-radius: 70% 30% 70% 30%;
+  background: linear-gradient(160deg, #f8fafc, #dbeafe 52%, #86efac);
+  transform: rotate(24deg);
+  transform-origin: 4px 6px;
+  box-shadow: inset -4px -2px rgba(21, 128, 61, 0.08);
+}
+
+.valkyrie-hair {
+  position: absolute;
+  left: 26px;
+  top: 8px;
+  width: 40px;
+  height: 31px;
+  border-radius: 18px 18px 13px 13px;
+  background: linear-gradient(145deg, #ffffff 0%, #e8eef8 58%, #c7d2fe 100%);
+  box-shadow: inset 0 -3px rgba(22, 49, 36, 0.05);
+}
+
+.valkyrie-head {
+  position: absolute;
+  left: 28px;
+  top: 18px;
+  width: 36px;
+  height: 34px;
+  border-radius: 48% 48% 46% 46%;
+  background: #ffe7d6;
+  border: 1px solid rgba(125, 76, 47, 0.12);
+  box-shadow: 0 3px 8px rgba(31, 85, 52, 0.08);
+}
+
+.valkyrie-fringe {
+  position: absolute;
+  left: -2px;
+  top: -8px;
+  width: 40px;
+  height: 17px;
+  border-radius: 18px 18px 10px 10px;
+  background: linear-gradient(145deg, #ffffff, #e2e8f0);
+  clip-path: polygon(0 0, 100% 0, 92% 72%, 68% 54%, 52% 100%, 34% 58%, 8% 84%);
+}
+
+.valkyrie-face {
+  position: absolute;
+  inset: 0;
+}
+
+.valkyrie-eye {
+  position: absolute;
+  top: 15px;
+  width: 4px;
+  height: 6px;
+  border-radius: 999px;
+  background: #163124;
+}
+
+.valkyrie-eye-left { left: 10px; }
+.valkyrie-eye-right { right: 10px; }
+
+.valkyrie-smile {
+  position: absolute;
+  left: 15px;
+  top: 23px;
+  width: 7px;
+  height: 3px;
+  border-bottom: 1.5px solid rgba(22, 49, 36, 0.75);
+  border-radius: 0 0 8px 8px;
+}
+
+.valkyrie-crown {
+  position: absolute;
+  left: 11px;
+  top: -12px;
+  width: 16px;
+  height: 13px;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  clip-path: polygon(0 100%, 18% 26%, 42% 78%, 52% 0, 68% 78%, 94% 24%, 100% 100%);
+  filter: drop-shadow(0 2px 2px rgba(245, 158, 11, 0.2));
+}
+
+.valkyrie-body {
+  position: absolute;
+  left: 30px;
+  top: 51px;
+  width: 34px;
+  height: 31px;
+  border-radius: 13px 13px 11px 11px;
+  background:
+    linear-gradient(90deg, transparent 0 7px, rgba(255,255,255,0.65) 7px 9px, transparent 9px),
+    linear-gradient(145deg, #dff7e7, #22c55e 62%, #15803d);
+  border: 1px solid rgba(21, 128, 61, 0.22);
+  box-shadow: inset 0 1px rgba(255,255,255,0.6);
+}
+
+.valkyrie-gem {
+  position: absolute;
+  left: 13px;
+  top: 6px;
+  width: 8px;
+  height: 10px;
+  background: linear-gradient(145deg, #fbcfe8, #ec4899);
+  clip-path: polygon(50% 0, 100% 42%, 50% 100%, 0 42%);
+  filter: drop-shadow(0 2px 3px rgba(236, 72, 153, 0.25));
+}
+
+.valkyrie-arm {
+  position: absolute;
+  top: 6px;
+  width: 10px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fef3c7, #f59e0b);
+  transform-origin: top center;
+}
+
+.valkyrie-arm-left {
+  left: -8px;
+  transform: rotate(28deg);
+}
+
+.valkyrie-arm-right {
+  right: -8px;
+  transform: rotate(-30deg);
+}
+
+.valkyrie-sword {
+  position: absolute;
+  transform-origin: 50% 82%;
+  pointer-events: none;
+}
+
+.valkyrie-sword-main {
+  left: 61px;
+  top: 26px;
+  width: 14px;
+  height: 56px;
+  transform: rotate(35deg);
+}
+
+.valkyrie-sword-off {
+  left: 15px;
+  top: 40px;
+  width: 12px;
+  height: 44px;
+  transform: rotate(-45deg);
+  opacity: 0.18;
+}
+
+.valkyrie-blade {
+  position: absolute;
+  left: 5px;
+  top: 0;
+  width: 5px;
+  height: 42px;
+  border-radius: 999px 999px 2px 2px;
+  background: linear-gradient(90deg, #ffffff, #bfdbfe 45%, #7c6ce8);
+  clip-path: polygon(50% 0, 100% 14%, 76% 100%, 24% 100%, 0 14%);
+}
+
+.valkyrie-hilt {
+  position: absolute;
+  left: 1px;
+  top: 37px;
+  width: 13px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+}
+
+.valkyrie-shine {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #f59e0b;
+  clip-path: polygon(50% 0, 63% 36%, 100% 50%, 63% 64%, 50% 100%, 37% 64%, 0 50%, 37% 36%);
+  opacity: 0.85;
+}
+
+.valkyrie-shine-one {
+  left: 17px;
+  top: 16px;
+}
+
+.valkyrie-shine-two {
+  right: 16px;
+  top: 10px;
+  transform: scale(0.7);
+}
+
+.valkyrie-label {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.86);
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(31, 85, 52, 0.08);
+}
+
+.valkyrie-progress {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.valkyrie-progress span {
+  height: 7px;
+  border-radius: 999px;
+}
+
+.valkyrie-stage-seed .valkyrie-cape,
+.valkyrie-stage-seed .valkyrie-sword-off {
+  opacity: 0.12;
+}
+
+.valkyrie-stage-seed .valkyrie-crown {
+  transform: scale(0.72);
+  opacity: 0.55;
+}
+
+.valkyrie-stage-sprout .valkyrie-sword-off {
+  opacity: 0.08;
+}
+
+.valkyrie-stage-sapling .valkyrie-sword-off,
+.valkyrie-stage-tree .valkyrie-sword-off {
+  opacity: 1;
+}
+
+.valkyrie-stage-tree {
+  box-shadow: 0 18px 34px rgba(245, 158, 11, 0.18), 0 14px 28px rgba(31, 85, 52, 0.14);
+}
+
+.valkyrie-stage-tree .valkyrie-aura {
+  background:
+    radial-gradient(circle at 72% 18%, rgba(245, 158, 11, 0.28), transparent 26%),
+    radial-gradient(circle at 24% 82%, rgba(124, 108, 232, 0.2), transparent 26%),
+    radial-gradient(circle at 54% 54%, rgba(34, 197, 94, 0.15), transparent 45%);
+}
+
+.valkyrie-action-swing {
+  animation: valkyrieHop 0.72s ease both;
+}
+
+.valkyrie-action-swing .valkyrie-sword-main {
+  animation: valkyrieSwordSwing 0.72s ease both;
+}
+
+.valkyrie-action-swing .valkyrie-cape,
+.valkyrie-action-victory .valkyrie-cape {
+  animation: valkyrieCape 0.72s ease both;
+}
+
+.valkyrie-action-victory {
+  animation: valkyrieVictory 0.85s ease both;
+}
+
+.valkyrie-action-victory .valkyrie-ring {
+  animation: valkyrieGoldRing 0.85s ease both;
+}
+
+.valkyrie-action-duel {
+  animation: valkyrieDuel 0.8s ease both;
+}
+
+.valkyrie-action-duel .valkyrie-sword-off {
+  opacity: 1;
+  animation: valkyrieOffSword 0.8s ease both;
+}
+
+.valkyrie-action-duel .valkyrie-ring {
+  animation: valkyrieGoldRing 0.85s ease both;
+}
+
+.valkyrie-action-nudge {
+  animation: valkyrieNudge 0.62s ease both;
+}
+
+.valkyrie-action-nudge .valkyrie-sword-main {
+  animation: valkyrieTapSword 0.62s ease both;
+}
+
+@keyframes valkyrieBubbleIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes valkyrieHop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-8px) scale(1.04); }
+  70% { transform: translateY(1px) scale(0.99); }
+}
+
+@keyframes valkyrieSwordSwing {
+  0% { transform: rotate(35deg); }
+  42% { transform: rotate(88deg) translateX(2px); }
+  100% { transform: rotate(35deg); }
+}
+
+@keyframes valkyrieCape {
+  0%, 100% { transform: skewX(0deg); }
+  45% { transform: skewX(-9deg) translateX(-2px); }
+}
+
+@keyframes valkyrieVictory {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-9px) scale(1.05); }
+  58% { transform: translateY(-4px) rotate(-3deg); }
+}
+
+@keyframes valkyrieGoldRing {
+  0% { transform: scaleX(1); background: rgba(34, 197, 94, 0.16); }
+  45% { transform: scaleX(1.35); background: rgba(245, 158, 11, 0.34); }
+  100% { transform: scaleX(1); background: rgba(34, 197, 94, 0.16); }
+}
+
+@keyframes valkyrieDuel {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-3px) rotate(-3deg); }
+  55% { transform: translateX(4px) rotate(3deg); }
+}
+
+@keyframes valkyrieOffSword {
+  0%, 100% { transform: rotate(-45deg); }
+  45% { transform: rotate(-94deg) translateX(-1px); }
+}
+
+@keyframes valkyrieNudge {
+  0%, 100% { transform: translateX(0); }
+  22% { transform: translateX(-2px); }
+  44% { transform: translateX(3px); }
+  66% { transform: translateX(-1px); }
+}
+
+@keyframes valkyrieTapSword {
+  0%, 100% { transform: rotate(35deg); }
+  40% { transform: rotate(18deg) translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .valkyrie-pet,
+  .valkyrie-pet *,
+  .valkyrie-bubble {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* 移动端键盘弹出时确保输入框可见 */
 @supports (padding: max(0px)) {
   .chat-input-bar {

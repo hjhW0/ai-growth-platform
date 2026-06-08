@@ -1,13 +1,32 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Leaf, Sparkles, Droplets, Trophy, Heart } from 'lucide-react';
+import { Heart, Sparkles, Trophy } from 'lucide-react';
 import { getGoals, getStreak, getTodayStats, trackEvent } from '../api/apiClient';
 import { t } from '../styles/tokens';
 
 const stageMeta = {
-  seed: { label: '种子', emoji: '•', message: '今天先浇一点点水吧' },
-  sprout: { label: '幼苗', emoji: '🌱', message: '已经冒芽了，继续保持节奏' },
-  sapling: { label: '小树', emoji: '🌿', message: '状态不错，小树在长高' },
-  tree: { label: '大树', emoji: '🌳', message: '今天的温室很有生命力' },
+  seed: {
+    label: '见习剑士',
+    message: '剑已出鞘，等你下令。',
+  },
+  sprout: {
+    label: '轻剑巡守',
+    message: '节奏开始亮起来了。',
+  },
+  sapling: {
+    label: '双刃武者',
+    message: '这一击很稳，再推进一点。',
+  },
+  tree: {
+    label: '荣耀女武神',
+    message: '锋芒正盛，今天很漂亮。',
+  },
+};
+
+const lines = {
+  idle: ['先斩一个小任务吧。', '剑已出鞘，等你下令。'],
+  active: ['节奏不错，再推进一点。', '这一击很稳。'],
+  complete: ['训练完成，收剑。', '今天的战绩很漂亮。'],
+  streak: ['连胜还在继续。', '你的坚持已经成了锋芒。'],
 };
 
 function getStage(rate, streak, activeGoals) {
@@ -17,18 +36,31 @@ function getStage(rate, streak, activeGoals) {
   return 'seed';
 }
 
+function getInteraction(rate, streak) {
+  if (rate >= 100) return { action: 'victory', lineGroup: 'complete' };
+  if (streak >= 7) return { action: 'duel', lineGroup: 'streak' };
+  if (rate >= 80) return { action: 'victory', lineGroup: 'active' };
+  if (rate <= 0) return { action: 'nudge', lineGroup: 'idle' };
+  return { action: 'swing', lineGroup: 'active' };
+}
+
+function pickLine(group) {
+  const pool = lines[group] || lines.active;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function clampPosition(pos) {
   if (typeof window === 'undefined') return pos;
   return {
-    x: Math.min(Math.max(pos.x, 12), window.innerWidth - 112),
-    y: Math.min(Math.max(pos.y, 84), window.innerHeight - 172),
+    x: Math.min(Math.max(pos.x, 12), window.innerWidth - 116),
+    y: Math.min(Math.max(pos.y, 84), window.innerHeight - 178),
   };
 }
 
 function GrowthPet() {
   const [summary, setSummary] = useState({ rate: 0, streak: 0, activeGoals: 0 });
   const [bubble, setBubble] = useState('');
-  const [isHappy, setIsHappy] = useState(false);
+  const [action, setAction] = useState('');
   const [position, setPosition] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('growthPetPosition') || 'null');
@@ -36,9 +68,10 @@ function GrowthPet() {
     } catch (e) {
       // Ignore malformed saved positions.
     }
-    return { x: Math.max(16, window.innerWidth - 120), y: Math.max(100, window.innerHeight - 220) };
+    return { x: Math.max(16, window.innerWidth - 122), y: Math.max(100, window.innerHeight - 226) };
   });
   const dragRef = useRef(null);
+  const actionTimerRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -73,6 +106,8 @@ function GrowthPet() {
     localStorage.setItem('growthPetPosition', JSON.stringify(next));
   }, [position]);
 
+  useEffect(() => () => clearTimeout(actionTimerRef.current), []);
+
   const stage = useMemo(
     () => getStage(summary.rate, summary.streak, summary.activeGoals),
     [summary.rate, summary.streak, summary.activeGoals]
@@ -90,132 +125,130 @@ function GrowthPet() {
       startX: event.clientX,
       startY: event.clientY,
       origin: position,
+      moved: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const handlePointerMove = (event) => {
     if (!dragRef.current) return;
+    const dx = event.clientX - dragRef.current.startX;
+    const dy = event.clientY - dragRef.current.startY;
+    if (Math.abs(dx) + Math.abs(dy) > 4) dragRef.current.moved = true;
     const next = clampPosition({
-      x: dragRef.current.origin.x + event.clientX - dragRef.current.startX,
-      y: dragRef.current.origin.y + event.clientY - dragRef.current.startY,
+      x: dragRef.current.origin.x + dx,
+      y: dragRef.current.origin.y + dy,
     });
     setPosition(next);
   };
 
   const handlePointerUp = () => {
-    dragRef.current = null;
+    window.setTimeout(() => {
+      dragRef.current = null;
+    }, 0);
   };
 
   const handleClick = () => {
-    setIsHappy(true);
-    setBubble(summary.rate >= 100 ? '今天已经全部收获，真不错' : '我在这儿陪你，先完成一个小任务');
-    trackEvent('pet_interact', JSON.stringify({ stage, rate: summary.rate, streak: summary.streak }));
-    setTimeout(() => setIsHappy(false), 800);
+    if (dragRef.current?.moved) return;
+    const next = getInteraction(summary.rate, summary.streak);
+    clearTimeout(actionTimerRef.current);
+    setAction('');
+    window.requestAnimationFrame(() => {
+      setAction(next.action);
+      setBubble(pickLine(next.lineGroup));
+    });
+    trackEvent('pet_interact', JSON.stringify({
+      stage,
+      action: next.action,
+      rate: summary.rate,
+      streak: summary.streak,
+    }));
+    actionTimerRef.current = setTimeout(() => setAction(''), 900);
   };
 
-  const moodIcon = summary.rate >= 100 ? Trophy : summary.streak >= 3 ? Sparkles : summary.rate > 0 ? Droplets : Heart;
-  const MoodIcon = moodIcon;
+  const statusIcon = summary.rate >= 100 ? Trophy : summary.streak >= 7 ? Sparkles : Heart;
+  const StatusIcon = statusIcon;
 
   return (
     <div
-      aria-label={`成长桌宠，当前阶段 ${meta.label}`}
+      aria-label={`荣耀女武神桌宠，当前阶段 ${meta.label}`}
       style={{
         position: 'fixed',
         left: position.x,
         top: position.y,
         zIndex: 70,
-        width: 96,
+        width: 100,
         touchAction: 'none',
         userSelect: 'none',
       }}
     >
       {bubble && (
-        <div style={{
-          position: 'absolute',
-          right: 4,
-          bottom: 92,
-          width: 170,
-          padding: '10px 12px',
-          borderRadius: t.rLg,
-          background: '#ffffff',
-          border: `1px solid ${t.border}`,
-          color: t.textSecondary,
-          fontSize: t.xs,
-          lineHeight: 1.5,
-          boxShadow: '0 14px 28px rgba(31, 85, 52, 0.12)',
-        }}>
+        <div className={`valkyrie-bubble ${action ? `valkyrie-bubble-${action}` : ''}`}>
           {bubble}
         </div>
       )}
 
       <button
         type="button"
+        className={`valkyrie-pet valkyrie-stage-${stage} ${action ? `valkyrie-action-${action}` : ''}`}
         onClick={handleClick}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{
-          width: 88,
-          height: 88,
-          borderRadius: '28px',
-          border: `1px solid ${t.borderGlow}`,
-          background: 'linear-gradient(145deg, #ffffff 0%, #e9fbef 58%, #ccf5d9 100%)',
-          boxShadow: isHappy
-            ? '0 18px 34px rgba(34, 197, 94, 0.24)'
-            : '0 12px 26px rgba(31, 85, 52, 0.13)',
-          cursor: 'grab',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 3,
-          transform: isHappy ? 'translateY(-4px) scale(1.04)' : 'translateY(0) scale(1)',
-          transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-          color: t.primaryDark,
-          fontFamily: 'inherit',
+          '--pet-primary': t.primary,
+          '--pet-primary-dark': t.primaryDark,
+          '--pet-gold': t.accentGold,
+          '--pet-purple': t.accentPurple,
         }}
       >
-        <span style={{ fontSize: stage === 'seed' ? 28 : 34, lineHeight: 1 }}>
-          {meta.emoji}
+        <span className="valkyrie-aura" />
+        <span className="valkyrie-ring" />
+        <span className="valkyrie-cape" />
+        <span className="valkyrie-pony" />
+        <span className="valkyrie-hair" />
+        <span className="valkyrie-head">
+          <span className="valkyrie-fringe" />
+          <span className="valkyrie-face">
+            <span className="valkyrie-eye valkyrie-eye-left" />
+            <span className="valkyrie-eye valkyrie-eye-right" />
+            <span className="valkyrie-smile" />
+          </span>
+          <span className="valkyrie-crown" />
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700 }}>
-          <MoodIcon size={11} />
+        <span className="valkyrie-body">
+          <span className="valkyrie-gem" />
+          <span className="valkyrie-arm valkyrie-arm-left" />
+          <span className="valkyrie-arm valkyrie-arm-right" />
+        </span>
+        <span className="valkyrie-sword valkyrie-sword-main">
+          <span className="valkyrie-blade" />
+          <span className="valkyrie-hilt" />
+        </span>
+        <span className="valkyrie-sword valkyrie-sword-off">
+          <span className="valkyrie-blade" />
+          <span className="valkyrie-hilt" />
+        </span>
+        <span className="valkyrie-shine valkyrie-shine-one" />
+        <span className="valkyrie-shine valkyrie-shine-two" />
+        <span className="valkyrie-label">
+          <StatusIcon size={11} />
           {meta.label}
         </span>
       </button>
 
-      <div style={{
-        marginTop: 6,
-        display: 'flex',
-        justifyContent: 'center',
-        gap: 4,
-      }}>
+      <div className="valkyrie-progress" aria-hidden="true">
         {[0, 1, 2].map((step) => (
           <span
             key={step}
             style={{
               width: step === 0 ? 18 : 7,
-              height: 7,
-              borderRadius: 999,
-              background: summary.rate / 34 > step ? t.primary : '#cfe6d6',
+              background: summary.rate / 34 > step ? t.primary : '#d7e8dc',
             }}
           />
         ))}
       </div>
-
-      <Leaf
-        size={16}
-        style={{
-          position: 'absolute',
-          top: -4,
-          right: 11,
-          color: t.primary,
-          transform: isHappy ? 'rotate(20deg)' : 'rotate(0deg)',
-          transition: 'transform 0.25s ease',
-        }}
-      />
     </div>
   );
 }
