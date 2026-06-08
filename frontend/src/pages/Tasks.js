@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, ChevronLeft, ChevronRight, Check, Trash2, ListChecks, Sprout } from 'lucide-react';
-import { createTask, getTasks, completeTask, deleteTask, updateTask, trackEvent } from '../api/apiClient';
+import { Plus, ChevronLeft, ChevronRight, Check, Trash2, Trophy } from 'lucide-react';
+import { createTask, getTasks, completeTask, deleteTask, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday, formatDate } from '../utils/dateFormatter';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
 import EmptyPot from '../components/EmptyPot';
@@ -73,7 +73,7 @@ function Tasks() {
   };
 
   const getProgressText = () => {
-    if (progress === 100) return '🎉 全部搞定！';
+    if (progress === 100) return '全部搞定！';
     if (progress >= 80) return '快完成了，冲刺！';
     if (progress >= 50) return '过半了，节奏很好';
     if (progress > 0) return '刚刚起步，加油';
@@ -203,6 +203,7 @@ function Tasks() {
           marginBottom: t.sp3, padding: `0 ${t.sp2}`,
         }}>
           {getProgressText()}
+          {progress === 100 && <Trophy size={14} style={{ color: t.warning, marginLeft: 6, verticalAlign: '-2px' }} />}
         </div>
       )}
 

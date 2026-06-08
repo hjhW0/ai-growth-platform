@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Target, Sparkles, Check, Edit3, Trash2, Plus } from 'lucide-react';
+import { Target, Sparkles, Check, Edit3, Trash2, Plus, Trophy, X, Sprout } from 'lucide-react';
 import useGoalsStore from '../store/useGoalsStore';
 import { generateTasks, trackEvent } from '../api/apiClient';
 import { t, card, input, btnPrimary, focusBorder, blurBorder } from '../styles/tokens';
@@ -118,7 +118,11 @@ export default function Goals() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
             <span style={{ fontSize: t.sm, fontWeight: '600', color: t.text }}>
-              {goalProgress === 100 ? '🎉 全部目标已完成！' : '整体进度'}
+              {goalProgress === 100 ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <Trophy size={15} style={{ color: t.warning }} /> 全部目标已完成！
+                </span>
+              ) : '整体进度'}
             </span>
             <span style={{ fontSize: t.sm, color: t.textSecondary }}>
               {completedGoals.length}/{goals.length}
@@ -161,7 +165,7 @@ export default function Goals() {
           marginBottom: t.sp3,
         }}>
           <span>{error}</span>
-          <button onClick={clearError} style={{ background: 'none', border: 'none', cursor: 'pointer', color: t.error, fontSize: t.lg }}>✕</button>
+          <button onClick={clearError} aria-label="关闭错误提示" style={{ background: 'none', border: 'none', cursor: 'pointer', color: t.error, display: 'flex', alignItems: 'center', padding: 4 }}><X size={16} /></button>
         </div>
       )}
 
@@ -183,7 +187,11 @@ export default function Goals() {
             animation: 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}>
             <h3 style={{ margin: `0 0 ${t.sp5} 0`, fontSize: t.lg, fontWeight: '600', color: t.text }}>
-              {editingGoal ? '编辑目标' : '播下一颗新种子 🌱'}
+              {editingGoal ? '编辑目标' : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <Sprout size={18} style={{ color: t.primary }} /> 播下一颗新种子
+                </span>
+              )}
             </h3>
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: t.sp4 }}>
@@ -256,7 +264,7 @@ export default function Goals() {
                 return (
                   <div key={goal.id} className="card-hover" style={{
                     ...card, marginBottom: t.sp3,
-                    borderLeft: `3px solid ${pc.color}`,
+                    border: `1px solid ${pc.color}30`,
                     cursor: 'default',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: t.sp3 }}>

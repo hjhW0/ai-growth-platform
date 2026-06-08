@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CloudSun, Meh, SunMedium } from 'lucide-react';
 import { getGrowthLogs } from '../api/apiClient';
 import { t, card } from '../styles/tokens';
 import EmptyPot from '../components/EmptyPot';
@@ -6,9 +7,9 @@ import ErrorState from '../components/ErrorState';
 import { SkeletonCard } from '../components/Skeleton';
 
 const moodConfig = {
-  good: { icon: '😊', label: '不错', color: t.success, bg: 'rgba(78, 238, 148, 0.1)' },
-  bad: { icon: '😔', label: '一般', color: t.error, bg: 'rgba(239, 68, 68, 0.08)' },
-  normal: { icon: '😐', label: '还行', color: t.textMuted, bg: 'rgba(255, 255, 255, 0.04)' },
+  good: { Icon: SunMedium, label: '不错', color: t.success, bg: 'rgba(78, 238, 148, 0.1)' },
+  bad: { Icon: CloudSun, label: '一般', color: t.error, bg: 'rgba(239, 68, 68, 0.08)' },
+  normal: { Icon: Meh, label: '还行', color: t.textMuted, bg: 'rgba(255, 255, 255, 0.04)' },
 };
 
 function GrowthLogs() {
@@ -78,6 +79,7 @@ function GrowthLogs() {
 
             {logs.map((log, index) => {
               const mood = moodConfig[log.mood] || moodConfig.normal;
+              const MoodIcon = mood.Icon;
               return (
                 <div key={log.id || index} className="animate-in" style={{
                   position: 'relative',
@@ -106,7 +108,7 @@ function GrowthLogs() {
                           display: 'flex', alignItems: 'center', gap: '4px',
                           border: `1px solid ${mood.color}20`,
                         }}>
-                          {mood.icon} {mood.label}
+                          <MoodIcon size={12} /> {mood.label}
                         </span>
                       )}
                     </div>

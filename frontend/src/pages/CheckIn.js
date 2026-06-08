@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Flame, CheckCircle2, Sprout } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BarChart3, Check, Flame, CheckCircle2, CloudSun, Meh, Sprout, SunMedium, ThermometerSun } from 'lucide-react';
 import { checkIn, getCheckinStatus, getStreak, trackEvent } from '../api/apiClient';
 import { getToday, formatDateChinese, getWeekday } from '../utils/dateFormatter';
 import { t, card } from '../styles/tokens';
@@ -99,11 +99,11 @@ function CheckIn() {
     return '今天也辛苦了，给自己一个拥抱';
   };
 
-  const getMoodEmoji = () => {
-    if (mood === 'good') return '😊';
-    if (mood === 'bad') return '😔';
-    return '😐';
-  };
+  const moodOptions = [
+    { value: 'good', Icon: SunMedium, label: '不错' },
+    { value: 'normal', Icon: Meh, label: '还行' },
+    { value: 'bad', Icon: CloudSun, label: '一般' },
+  ];
 
   if (initialLoading) {
     return (
@@ -169,11 +169,9 @@ function CheckIn() {
           <div style={{ marginBottom: t.sp5 }}>
             <div style={{ fontSize: t.xs, color: t.textMuted, marginBottom: t.sp3 }}>今天心情怎么样？</div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: t.sp3 }}>
-              {[
-                { value: 'good', icon: '😊', label: '不错' },
-                { value: 'normal', icon: '😐', label: '还行' },
-                { value: 'bad', icon: '😔', label: '一般' },
-              ].map(m => (
+              {moodOptions.map(m => {
+                const Icon = m.Icon;
+                return (
                 <button key={m.value} onClick={() => setMood(m.value)} style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
                   background: mood === m.value ? 'rgba(78, 238, 148, 0.12)' : 'rgba(255, 255, 255, 0.04)',
@@ -184,10 +182,10 @@ function CheckIn() {
                   boxShadow: mood === m.value ? '0 0 14px rgba(78, 238, 148, 0.15)' : 'none',
                   transform: mood === m.value ? 'scale(1.05)' : 'scale(1)',
                 }}>
-                  <span style={{ fontSize: '24px' }}>{m.icon}</span>
+                  <Icon size={22} style={{ color: mood === m.value ? t.primary : t.textMuted }} />
                   <span style={{ fontSize: t.xs, color: mood === m.value ? t.primary : t.textMuted, fontWeight: '500' }}>{m.label}</span>
                 </button>
-              ))}
+              );})}
             </div>
           </div>
         )}
@@ -280,7 +278,7 @@ function CheckIn() {
                   fontSize: '9px', color: isToday ? t.primary : t.textMuted, fontWeight: '500',
                   textShadow: isToday ? '0 0 8px rgba(78, 238, 148, 0.4)' : 'none',
                 }}>
-                  {isToday ? '今天' : isPast ? '✓' : ''}
+                  {isToday ? '今天' : isPast ? <Check size={10} /> : ''}
                 </div>
               </div>
             );
@@ -295,9 +293,16 @@ function CheckIn() {
           <span style={{ fontSize: t.sm, color: t.textMuted, fontWeight: '600' }}>温室小贴士</span>
         </div>
         <div style={{ color: t.textSecondary, fontSize: t.sm, lineHeight: 1.9 }}>
-          <div>🌱 每天浇灌一点点，小苗会长成大树</div>
-          <div>🔥 连续打卡让温室保持温暖</div>
-          <div>📊 打卡记录会保存在统计页面</div>
+          {[
+            { Icon: Sprout, text: '每天浇灌一点点，小苗会长成大树' },
+            { Icon: ThermometerSun, text: '连续打卡让温室保持温暖' },
+            { Icon: BarChart3, text: '打卡记录会保存在统计页面' },
+          ].map(({ Icon, text }) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: t.sp2 }}>
+              <Icon size={14} style={{ color: t.primary, flexShrink: 0 }} />
+              <span>{text}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

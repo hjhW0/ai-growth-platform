@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { RefreshCw, Sparkles, ArrowRight } from 'lucide-react';
+import { RefreshCw, Sparkles, ArrowRight, CheckCircle2, CircleDashed } from 'lucide-react';
 import { t, card } from '../styles/tokens';
 
 function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
@@ -36,7 +36,18 @@ function ReviewTab({ review, reviewData, growthLogs, loading, onGenerate }) {
             ))}
           </div>
           <div style={{ marginTop: t.sp3, display: 'flex', gap: t.sp4, fontSize: t.sm, color: t.textMuted }}>
-            <span>打卡：{reviewData.checked_in ? '✅ 已完成' : '❌ 未打卡'}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              打卡：
+              {reviewData.checked_in ? (
+                <>
+                  <CheckCircle2 size={14} style={{ color: t.success }} /> 已完成
+                </>
+              ) : (
+                <>
+                  <CircleDashed size={14} style={{ color: t.textMuted }} /> 未打卡
+                </>
+              )}
+            </span>
             {reviewData.mood && <span>心情：{reviewData.mood}</span>}
           </div>
         </div>

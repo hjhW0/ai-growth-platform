@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Target, Lightbulb, Sparkles, MessageCircle, CheckCircle2, Star, TrendingUp, Sprout } from 'lucide-react';
+import { Flame, Target, Lightbulb, Sparkles, MessageCircle, CheckCircle2, Star, Sprout, Trophy, Droplets } from 'lucide-react';
 import { getTodayStats, getTasks, getStreak, getGoals, getGrowthLogs, submitFeedback, trackEvent } from '../api/apiClient';
 import { getToday } from '../utils/dateFormatter';
 import { t, card, focusBorder, blurBorder } from '../styles/tokens';
@@ -114,7 +114,8 @@ function Dashboard() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: t.sp4 }}>
           <div>
             <div style={{ fontSize: t['2xl'], fontWeight: '700', color: t.text, letterSpacing: '-0.02em' }}>
-              {greeting.text}，{username} ✨
+              {greeting.text}，{username}
+              <Sparkles size={18} style={{ color: t.primary, marginLeft: 6, verticalAlign: '-2px' }} />
             </div>
             <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp1 }}>
               {greeting.sub}
@@ -143,7 +144,11 @@ function Dashboard() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: t.sp3 }}>
             <span style={{ fontSize: t.sm, fontWeight: '600', color: t.text }}>
-              {allDone ? '🎉 今日全部完成！' : '今日进度'}
+              {allDone ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <Trophy size={15} style={{ color: t.warning }} /> 今日全部完成！
+                </span>
+              ) : '今日进度'}
             </span>
             <span style={{ fontSize: t.sm, color: t.textSecondary }}>
               {completedCount}/{totalCount}
@@ -366,14 +371,23 @@ function Dashboard() {
           }} onClick={e => e.stopPropagation()}>
             {feedbackSent ? (
               <div style={{ textAlign: 'center', padding: `${t.sp8} 0` }}>
-                <div style={{ fontSize: 40, marginBottom: t.sp3 }}>🌱</div>
+                <div style={{
+                  width: 52, height: 52, borderRadius: t.rFull,
+                  margin: `0 auto ${t.sp3}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.18), rgba(167, 139, 250, 0.1))',
+                  border: '1px solid rgba(74, 222, 128, 0.2)',
+                }}>
+                  <Sprout size={24} style={{ color: t.primary }} />
+                </div>
                 <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text }}>感谢你的浇灌！</div>
                 <div style={{ fontSize: t.sm, color: t.textSecondary, marginTop: t.sp2 }}>你的反馈会让温室变得更好</div>
               </div>
             ) : (
               <>
                 <div style={{ fontSize: t.lg, fontWeight: '600', color: t.text, marginBottom: t.sp5 }}>
-                  给温室浇浇水 💧
+                  <Droplets size={18} style={{ color: t.primary, marginRight: 6, verticalAlign: '-3px' }} />
+                  给温室浇浇水
                 </div>
                 <div style={{ marginBottom: t.sp4 }}>
                   <div style={{ fontSize: t.sm, color: t.textSecondary, marginBottom: t.sp2 }}>今天的体验如何？</div>
