@@ -23,55 +23,84 @@ const NAV_ITEMS = [
 // PWA 安装提示组件
 function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstall, setShowInstall] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const android = /Android/.test(navigator.userAgent);
+    setIsIOS(iOS);
+    setIsAndroid(android);
+
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstall(true);
     };
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstall(false);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      setShowTip(!showTip);
     }
-    setDeferredPrompt(null);
   };
 
-  if (!showInstall) return null;
-
   return (
-    <button
-      onClick={handleInstall}
-      style={{
-        position: 'fixed',
-        bottom: '80px',
-        right: '16px',
-        background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
-        color: 'white',
-        border: 'none',
-        borderRadius: '50%',
-        width: '48px',
-        height: '48px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        boxShadow: '0 4px 16px rgba(78, 238, 148, 0.3)',
-        zIndex: 100,
-        animation: 'breathe 3s ease-in-out infinite',
-      }}
-      title="安装到桌面"
-    >
-      <Download size={20} />
-    </button>
+    <div style={{
+      position: 'fixed',
+      bottom: '80px',
+      right: '16px',
+      zIndex: 100,
+    }}>
+      <button
+        onClick={handleInstall}
+        style={{
+          background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '50%',
+          width: '48px',
+          height: '48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(78, 238, 148, 0.3)',
+          animation: 'breathe 3s ease-in-out infinite',
+        }}
+        title="安装到桌面"
+      >
+        <Download size={20} />
+      </button>
+      {showTip && (
+        <div style={{
+          position: 'absolute',
+          bottom: '56px',
+          right: '0',
+          background: 'rgba(26, 28, 41, 0.95)',
+          backdropFilter: 'blur(16px)',
+          color: t.text,
+          padding: '12px 16px',
+          borderRadius: '12px',
+          fontSize: '13px',
+          whiteSpace: 'nowrap',
+          border: '1px solid rgba(78, 238, 148, 0.2)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        }}>
+          {isIOS ? '点击分享 → 添加到主屏幕' :
+           isAndroid ? 'Chrome 菜单 ⋮ → 安装应用' :
+           '浏览器菜单 → 安装到桌面'}
+        </div>
+      )}
+    </div>
   );
 }
 
