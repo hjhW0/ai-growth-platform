@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Rocket, ClipboardCheck, Zap, TrendingUp, Brain, Sprout, LogOut } from 'lucide-react';
+import { LayoutDashboard, Rocket, ClipboardCheck, Zap, TrendingUp, Brain, Sprout, LogOut, Download } from 'lucide-react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Goals from './pages/Goals';
@@ -19,6 +19,61 @@ const NAV_ITEMS = [
   { path: '/stats', label: '统计', Icon: TrendingUp },
   { path: '/ai', label: 'AI', Icon: Brain },
 ];
+
+// PWA 安装提示组件
+function InstallPrompt() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstall(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  if (!showInstall) return null;
+
+  return (
+    <button
+      onClick={handleInstall}
+      style={{
+        position: 'fixed',
+        bottom: '80px',
+        right: '16px',
+        background: 'linear-gradient(135deg, #4EEE94, #3cc07a)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '50%',
+        width: '48px',
+        height: '48px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        boxShadow: '0 4px 16px rgba(78, 238, 148, 0.3)',
+        zIndex: 100,
+        animation: 'breathe 3s ease-in-out infinite',
+      }}
+      title="安装到桌面"
+    >
+      <Download size={20} />
+    </button>
+  );
+}
 
 function BottomNav() {
   const location = useLocation();
@@ -226,6 +281,7 @@ function App() {
         </main>
 
         <BottomNav />
+        <InstallPrompt />
       </div>
     </Router>
   );
